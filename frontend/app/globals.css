@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #f2f4f7;
+  --color-paper: #f7f8fa;
+  --color-ink: #0f1b2d;
+  --color-ink-soft: #2a3a52;
+  --color-muted: #5a6b82;
+  --color-line: #d4dae3;
+  --color-navy: #0f1b2d;
+  --color-navy-field: #15233a;
+  --color-gold: #b08d3e;
+  --color-gold-hover: #9a7a32;
+  --color-gold-ink: #0f1b2d;
+  --color-signal: #1f6b4a;
+  --color-signal-soft: #e4f0ea;
+  --color-danger: #8b3a3a;
+  --color-danger-soft: #f5e8e8;
+  --font-display: var(--font-display-face), "Bricolage Grotesque", ui-sans-serif, sans-serif;
+  --font-body: var(--font-body-face), Manrope, ui-sans-serif, sans-serif;
+  --radius-card: 14px;
+  --radius-control: 10px;
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    background-color: var(--color-canvas);
+  }
+
+  a {
+    color: var(--color-ink);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+
+  a:hover {
+    color: var(--color-gold-hover);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-gold) 28%, white);
+  }
+}
+
+/* App shell + navigation */
+.shell {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 0 0 4rem;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.85rem;
+  align-items: center;
+  min-height: 60px;
+  padding: 0.35rem 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--color-line);
+  margin-bottom: 0;
+}
+
+.nav .brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--color-ink);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  /* Own row on narrow screens so links stay left-aligned below it. */
+  flex: 1 0 100%;
+  padding-top: 0.35rem;
+}
+
+@media (min-width: 640px) {
+  .nav {
+    gap: 0 1.25rem;
+    min-height: 64px;
+    font-size: 0.95rem;
+  }
+
+  .nav .brand {
+    font-size: 1.15rem;
+    flex: 0 0 auto;
+    margin-right: auto;
+    padding-top: 0;
+  }
+}
+
+.nav a:not(.brand) {
+  color: var(--color-muted);
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nav a:not(.brand):hover {
+  color: var(--color-ink);
+}
+
+/* Motion */
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .motion-enter {
+    animation: fade-rise 200ms var(--ease-out-strong) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-enter {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* InfoTip */
+.info-tip {
+  position: relative;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.info-tip__trigger {
+  appearance: none;
+  position: relative;
+  border: 1px solid var(--color-line);
+  background: var(--color-paper);
+  color: var(--color-muted);
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 140ms var(--ease-out-strong),
+    border-color 140ms var(--ease-out-strong),
+    color 140ms var(--ease-out-strong);
+}
+
+/* Keeps a 44px pointer target without a 44px visual circle inline in text. */
+.info-tip__trigger::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+.info-tip__trigger:hover,
+.info-tip__trigger:focus-visible {
+  color: var(--color-ink);
+  border-color: var(--color-ink-soft);
+}
+
+.info-tip__trigger:active {
+  transform: scale(0.97);
+}
+
+.info-tip__panel {
+  position: absolute;
+  z-index: 40;
+  width: min(18rem, calc(100vw - 2rem));
+  padding: 0.75rem 0.85rem;
+  background: var(--color-navy);
+  color: #e8edf5;
+  border-radius: var(--radius-control);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-navy) 28%, transparent);
+  opacity: 0;
+  transform: scale(0.97);
+  transform-origin: var(--tip-origin, top left);
+  pointer-events: none;
+  /* visibility keeps the closed panel out of the accessibility tree */
+  visibility: hidden;
+  transition:
+    opacity 150ms var(--ease-out-strong),
+    transform 150ms var(--ease-out-strong),
+    visibility 150ms;
+}
+
+.info-tip__panel[data-open="true"] {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* Bridges the gap under the trigger so hover survives the trip to the link. */
+.info-tip__panel::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -0.5rem;
+  height: 0.5rem;
+}
+
+.info-tip__panel a {
+  color: #f0d78c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .info-tip__panel {
+    transition: none;
+    transform: none;
+  }
+}
