@@ -28,7 +28,7 @@ from rapidfuzz import fuzz
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from . import ats_probe, ats_store  # noqa: E402
+from . import ats_probe, ats_store, user_routes, user_store  # noqa: E402
 from .uk_location import board_has_uk_jobs, filter_uk, is_uk  # noqa: E402
 from cv_feedback import (  # noqa: E402
     generate_cv_feedback,
@@ -45,7 +45,9 @@ from run_jobs_pipeline import JobFetchError, fetch_all_jobs  # noqa: E402
 
 load_env()
 
-MAX_PER_SOURCE = 100
+MAX_PER_SOURCE = int(os.getenv("ANALYZE_MAX_PER_SOURCE", "40"))
+MAX_REED_ENRICH = int(os.getenv("ANALYZE_MAX_REED_ENRICH", "30"))
+MAX_ATS_BOARDS = int(os.getenv("ANALYZE_MAX_ATS_BOARDS", "12"))
 MAX_CV_BYTES = 5 * 1024 * 1024  # 5 MB
 MAX_CV_TEXT_CHARS = 80_000
 RATE_LIMIT_PER_MIN = int(os.getenv("ANALYZE_RATE_LIMIT_PER_MIN", "6"))
@@ -83,6 +85,8 @@ app.add_middleware(
 
 ats_store.init_db()
 ats_store.load_seed()
+user_store.init_db()
+app.include_router(user_routes.router)
 
 _rate_hits: dict[str, list[float]] = defaultdict(list)
 
@@ -235,6 +239,24 @@ def _check_analyze_key(x_analyze_key: str | None) -> None:
         raise HTTPException(status_code=401, detail="Invalid or missing API key.")
 
 
+def _require_analyze_user(
+    authorization: str | None,
+    x_analyze_key: str | None,
+) -> None:
+    """Prefer X-Analyze-Key when configured; otherwise require a Clerk Bearer JWT."""
+    expected = os.getenv("ANALYZE_API_KEY", "").strip()
+    if expected:
+        _check_analyze_key(x_analyze_key)
+        return
+    if not authorization or not authorization.lower().startswith("bearer "):
+        raise HTTPException(
+            status_code=401,
+            detail="Sign in required to run a search.",
+        )
+    token = authorization.split(" ", 1)[1].strip()
+    user_routes._verify_clerk_jwt(token)
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
@@ -290,16 +312,18 @@ def fetch_ats_jobs(company_keys: list[str], role: str) -> pd.DataFrame:
     role_terms = [t for t in role.lower().split() if len(t) > 2]
     fetched_at = utc_now_iso()
 
-    for company_key, row in mapping.items():
-        if row.get("status") != "live":
-            continue
-        if not row.get("has_uk_jobs"):
-            continue
+    live_items = [
+        (company_key, row)
+        for company_key, row in mapping.items()
+        if row.get("status") == "live"
+        and row.get("has_uk_jobs")
+        and row.get("ats_provider")
+        and row.get("board_token")
+    ][:MAX_ATS_BOARDS]
+
+    for company_key, row in live_items:
         provider = row.get("ats_provider")
         token = row.get("board_token")
-        if not provider or not token:
-            continue
-
         result = ats_probe.fetch_board(str(provider), str(token))
         if not result:
             ats_store.mark_stale(company_key)
@@ -430,8 +454,9 @@ async def analyze(
     min_salary: str = Form(""),
     experience_level: str = Form(""),
     x_analyze_key: str | None = Header(default=None, alias="X-Analyze-Key"),
+    authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
-    _check_analyze_key(x_analyze_key)
+    _require_analyze_user(authorization, x_analyze_key)
     _check_rate_limit(request)
 
     role = (role or "").strip()
@@ -497,7 +522,11 @@ async def analyze(
         )
 
     try:
-        jobs = fetch_all_jobs(role, max_per_source=MAX_PER_SOURCE)
+        jobs = fetch_all_jobs(
+            role,
+            max_per_source=MAX_PER_SOURCE,
+            max_enrich_reed=MAX_REED_ENRICH,
+        )
     except JobFetchError as exc:
         status = 503 if exc.config_error else 502
         raise HTTPException(status_code=status, detail=str(exc)) from exc
