@@ -182,6 +182,17 @@ export async function analyzeRole(
     const headers: Record<string, string> = {};
     const key = process.env.NEXT_PUBLIC_ANALYZE_API_KEY;
     if (key) headers["X-Analyze-Key"] = key;
+    try {
+      const clerk = (
+        window as unknown as {
+          Clerk?: { session?: { getToken: () => Promise<string | null> } };
+        }
+      ).Clerk;
+      const token = await clerk?.session?.getToken?.();
+      if (token) headers.Authorization = `Bearer ${token}`;
+    } catch {
+      /* ignore */
+    }
 
     res = await fetch(`${API_URL}/analyze`, {
       method: "POST",

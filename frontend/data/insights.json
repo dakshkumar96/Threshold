@@ -1,0 +1,23 @@
+{
+  "headline": {
+    "sponsors_tracked": 133979,
+    "exits_observed": 12780,
+    "still_active": 121199,
+    "pct_2023_cohort_exited": 12.9,
+    "snapshots": 10,
+    "window": "Sep 2023 – Jul 2026"
+  },
+  "regions": [
+    { "region": "Scotland", "n": 3815, "exit_rate_pct": 8.3 },
+    { "region": "Northern Ireland", "n": 611, "exit_rate_pct": 8.5 },
+    { "region": "Rest of England", "n": 87757, "exit_rate_pct": 9.4 },
+    { "region": "Wales", "n": 1500, "exit_rate_pct": 9.3 },
+    { "region": "London", "n": 40296, "exit_rate_pct": 10.1 }
+  ],
+  "tenure_bands": [
+    { "band": "Established", "label": "5+ years observed tenure", "meaning": "Longer observed register history in our archive" },
+    { "band": "Moderate", "label": "2–5 years", "meaning": "Mid-length observed tenure" },
+    { "band": "Newly registered", "label": "<2 years", "meaning": "Shorter observed tenure; left-truncated for older licences" }
+  ],
+  "caveat": "Stability is a relative ranking signal from our snapshot archive, not a prediction that an employer will hire or keep sponsoring you."
+}
