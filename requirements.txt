@@ -1,5 +1,13 @@
-
 pandas
 jupyter
 requests
 pyarrow
+python-dotenv
+rapidfuzz
+lifelines
+matplotlib
+fastapi
+uvicorn
+python-multipart
+pdfplumber
+PyJWT
