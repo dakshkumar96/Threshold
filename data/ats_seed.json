@@ -1,0 +1,87 @@
+{
+  "monzo": {
+    "ats": "greenhouse",
+    "token": "monzo",
+    "published_name": "Monzo"
+  },
+  "gocardless": {
+    "ats": "greenhouse",
+    "token": "gocardless",
+    "published_name": "GoCardless"
+  },
+  "marshmallow": {
+    "ats": "ashby",
+    "token": "marshmallow",
+    "published_name": "Marshmallow"
+  },
+  "cleo": {
+    "ats": "greenhouse",
+    "token": "cleo",
+    "published_name": "Cleo"
+  },
+  "tide": {
+    "ats": "greenhouse",
+    "token": "tide",
+    "published_name": "Tide"
+  },
+  "zilch": {
+    "ats": "ashby",
+    "token": "zilch",
+    "published_name": "Zilch"
+  },
+  "oaknorth": {
+    "ats": "ashby",
+    "token": "oaknorth",
+    "published_name": "OakNorth"
+  },
+  "zego": {
+    "ats": "ashby",
+    "token": "zego",
+    "published_name": "Zego"
+  },
+  "trainline": {
+    "ats": "ashby",
+    "token": "trainline",
+    "published_name": "Trainline"
+  },
+  "skyscanner": {
+    "ats": "greenhouse",
+    "token": "skyscanner",
+    "published_name": "Skyscanner"
+  },
+  "deliveroo": {
+    "ats": "ashby",
+    "token": "deliveroo",
+    "published_name": "Deliveroo"
+  },
+  "ovo energy": {
+    "ats": "greenhouse",
+    "token": "ovoenergy",
+    "published_name": "OVO Energy"
+  },
+  "stripe": {
+    "ats": "greenhouse",
+    "token": "stripe",
+    "published_name": "Stripe"
+  },
+  "notion": {
+    "ats": "ashby",
+    "token": "notion",
+    "published_name": "Notion"
+  },
+  "figma": {
+    "ats": "greenhouse",
+    "token": "figma",
+    "published_name": "Figma"
+  },
+  "datadog": {
+    "ats": "greenhouse",
+    "token": "datadog",
+    "published_name": "Datadog"
+  },
+  "cloudflare": {
+    "ats": "greenhouse",
+    "token": "cloudflare",
+    "published_name": "Cloudflare"
+  }
+}
