@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import re
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pandas as pd
@@ -83,38 +84,54 @@ def fetch_all_jobs(
     role: str,
     max_per_source: int = 250,
     enrich_full_jd: bool = True,
+    max_enrich_reed: int | None = None,
 ) -> pd.DataFrame:
-    """Fetch jobs from Reed + Adzuna; expand Reed to full JDs; clean Adzuna text."""
+    """Fetch jobs from Reed + Adzuna in parallel; expand Reed to full JDs; clean Adzuna text."""
     frames: list[pd.DataFrame] = []
     errors: list[str] = []
     config_errors = 0
 
-    try:
-        reed = fetch_reed_jobs(role, max_jobs=max_per_source)
-        print(f"Reed: {len(reed)} jobs")
-        if not reed.empty:
+    def _reed() -> pd.DataFrame | Exception:
+        try:
+            reed = fetch_reed_jobs(role, max_jobs=max_per_source)
+            print(f"Reed: {len(reed)} jobs")
+            if reed.empty:
+                return reed
             if enrich_full_jd:
-                reed = enrich_reed_full_descriptions(reed)
-            frames.append(reed)
-    except Exception as exc:
-        msg = f"Reed: {exc}"
-        print(f"Reed skipped: {exc}")
-        errors.append(msg)
-        if "Missing REED_API_KEY" in str(exc):
-            config_errors += 1
+                reed = enrich_reed_full_descriptions(
+                    reed, max_enrich=max_enrich_reed
+                )
+            return reed
+        except Exception as exc:
+            return exc
 
-    try:
-        adzuna = fetch_adzuna_jobs(role, max_jobs=max_per_source)
-        print(f"Adzuna: {len(adzuna)} jobs")
-        if not adzuna.empty:
-            adzuna = enrich_adzuna_descriptions(adzuna)
-            frames.append(adzuna)
-    except Exception as exc:
-        msg = f"Adzuna: {exc}"
-        print(f"Adzuna skipped: {exc}")
-        errors.append(msg)
-        if "Missing ADZUNA" in str(exc):
-            config_errors += 1
+    def _adzuna() -> pd.DataFrame | Exception:
+        try:
+            adzuna = fetch_adzuna_jobs(role, max_jobs=max_per_source)
+            print(f"Adzuna: {len(adzuna)} jobs")
+            if adzuna.empty:
+                return adzuna
+            return enrich_adzuna_descriptions(adzuna)
+        except Exception as exc:
+            return exc
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        reed_fut = pool.submit(_reed)
+        adzuna_fut = pool.submit(_adzuna)
+        reed_result = reed_fut.result()
+        adzuna_result = adzuna_fut.result()
+
+    for label, result in (("Reed", reed_result), ("Adzuna", adzuna_result)):
+        if isinstance(result, Exception):
+            msg = f"{label}: {result}"
+            print(f"{label} skipped: {result}")
+            errors.append(msg)
+            if label == "Reed" and "Missing REED_API_KEY" in str(result):
+                config_errors += 1
+            if label == "Adzuna" and "Missing ADZUNA" in str(result):
+                config_errors += 1
+        elif isinstance(result, pd.DataFrame) and not result.empty:
+            frames.append(result)
 
     if frames:
         combined = pd.concat(frames, ignore_index=True)
