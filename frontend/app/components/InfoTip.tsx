@@ -79,7 +79,7 @@ export default function InfoTip({ label, children, className = "" }: InfoTipProp
         data-open={open ? "true" : "false"}
         style={{ ["--tip-origin" as string]: "top left" }}
       >
-        <span className="mb-1 block font-semibold text-[#f0d78c]">{label}</span>
+        <span className="mb-1 block font-semibold text-ink">{label}</span>
         {children}
       </span>
     </span>

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import ConfidenceBadge from "./ConfidenceBadge";
 import InfoTip from "./InfoTip";
 import { VISA_CONTENT } from "@/lib/visa-content";
@@ -31,9 +32,22 @@ export default function SponsorCard({ sponsor }: { sponsor: SponsorItem }) {
     Array.isArray(sponsor.other_locations) && sponsor.other_locations.length > 0
       ? ` (+ ${sponsor.other_locations.slice(0, 2).join(", ")})`
       : "";
+  const isVerified = sponsor.sponsor_confidence === "verified";
 
   return (
-    <article className="rounded-[14px] border border-line bg-paper p-4 md:p-5 motion-enter">
+    <motion.article
+      whileHover={{ y: -3, scale: 1.005 }}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+      className="sponsor-card surface-card"
+      data-confidence={sponsor.sponsor_confidence ?? ""}
+      style={{
+        padding: "1.25rem",
+        borderColor: isVerified ? "rgba(29,184,116,0.3)" : undefined,
+        background: isVerified
+          ? "linear-gradient(180deg,rgba(29,184,116,0.04) 0%,transparent 32%),var(--color-paper)"
+          : undefined,
+      }}
+    >
       <div className="flex flex-wrap items-center gap-2">
         <ConfidenceBadge
           confidence={sponsor.sponsor_confidence}
@@ -41,13 +55,11 @@ export default function SponsorCard({ sponsor }: { sponsor: SponsorItem }) {
           source={sponsor.source}
         />
         {sponsor.stability_band ? (
-          <span className="inline-flex items-center gap-1 rounded-full border border-line px-2.5 py-1 text-xs font-semibold text-ink-soft">
+          <span className="inline-flex items-center gap-1 rounded-full border border-line px-2.5 py-1 text-[11px] font-medium text-ink-soft">
             {sponsor.stability_band}
             {sponsor.long_standing_licence ? " · Long-standing" : ""}
             <InfoTip label={licence.label}>
-              <span className="block">
-                {sponsor.stability_tooltip || licence.body}
-              </span>
+              <span className="block">{sponsor.stability_tooltip || licence.body}</span>
               <span className="mt-2 block">
                 <a href={licence.href}>{licence.linkLabel}</a>
               </span>
@@ -56,7 +68,7 @@ export default function SponsorCard({ sponsor }: { sponsor: SponsorItem }) {
         ) : null}
       </div>
 
-      <h3 className="mt-3 mb-1 font-[family-name:var(--font-display)] text-lg font-semibold tracking-[-0.02em] text-ink md:text-xl">
+      <h3 className="mt-3.5 mb-1 text-base font-medium text-ink" style={{ lineHeight: 1.3 }}>
         {sponsor.title}
       </h3>
       <p className="m-0 text-sm text-ink-soft">
@@ -68,45 +80,45 @@ export default function SponsorCard({ sponsor }: { sponsor: SponsorItem }) {
           : ""}
       </p>
 
-      <dl className="mt-3 grid gap-2 text-sm text-muted sm:grid-cols-2">
+      <dl className="mt-3 grid gap-1.5 text-sm text-muted sm:grid-cols-2">
         <div>
           <dt className="sr-only">Location</dt>
-          <dd className="m-0">
-            {sponsor.location || "Location not stated"}
-            {extras}
-          </dd>
+          <dd className="m-0">{sponsor.location || "Location not stated"}{extras}</dd>
         </div>
         <div className="inline-flex items-center gap-1">
           <dt className="sr-only">Salary</dt>
-          <dd className="m-0">
-            {sponsor.salary_display || "Salary not stated"}
-          </dd>
+          <dd className="m-0">{sponsor.salary_display || "Salary not stated"}</dd>
           <InfoTip label={salary.label}>
             <span className="block">{salary.body}</span>
             <span className="mt-2 block">
-              <a href={salary.href} target="_blank" rel="noreferrer">
-                {salary.linkLabel}
-              </a>
+              <a href={salary.href} target="_blank" rel="noreferrer">{salary.linkLabel}</a>
             </span>
           </InfoTip>
         </div>
       </dl>
 
-      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-xs font-medium uppercase tracking-wide text-muted">
+      <div className="mt-4 flex items-center justify-between gap-3">
+        <span className="text-[11px] font-medium uppercase tracking-wider text-muted">
           {sponsor.source}
         </span>
         {sponsor.url ? (
-          <a
+          <motion.a
             href={sponsor.url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-11 w-full items-center justify-center rounded-[10px] bg-gold px-4 text-sm font-semibold text-gold-ink no-underline transition-transform duration-[160ms] ease-[cubic-bezier(0.23,1,0.32,1)] hover:bg-gold-hover active:scale-[0.98] sm:w-auto"
+            className="cta-primary"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            style={{
+              display: "inline-flex", alignItems: "center", minHeight: 34,
+              padding: "0 0.875rem", fontSize: "0.8125rem", fontWeight: 500,
+              textDecoration: "none",
+            }}
           >
             Apply
-          </a>
+          </motion.a>
         ) : null}
       </div>
-    </article>
+    </motion.article>
   );
 }
