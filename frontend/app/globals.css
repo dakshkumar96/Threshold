@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
 @theme {
-  --color-canvas: #f2f4f7;
-  --color-paper: #f7f8fa;
-  --color-ink: #0f1b2d;
-  --color-ink-soft: #2a3a52;
-  --color-muted: #5a6b82;
-  --color-line: #d4dae3;
-  --color-navy: #0f1b2d;
-  --color-navy-field: #15233a;
-  --color-gold: #b08d3e;
-  --color-gold-hover: #9a7a32;
-  --color-gold-ink: #0f1b2d;
-  --color-signal: #1f6b4a;
-  --color-signal-soft: #e4f0ea;
-  --color-danger: #8b3a3a;
-  --color-danger-soft: #f5e8e8;
-  --font-display: var(--font-display-face), "Bricolage Grotesque", ui-sans-serif, sans-serif;
-  --font-body: var(--font-body-face), Manrope, ui-sans-serif, sans-serif;
-  --radius-card: 14px;
-  --radius-control: 10px;
+  /* Warm paper base. Pure white reads clinical, so the canvas is off-white. */
+  --color-canvas: #f8f7f4;
+  --color-paper: #ffffff;
+  --color-elevated: #f2f1ee;
+  --color-nav: #ffffff;
+  --color-ink: #0f1117;
+  --color-ink-soft: #3d4152;
+  /* Spec value #7a7f94 computes to 3.7:1 on the canvas; darkened to clear 4.5:1. */
+  --color-muted: #6b7085;
+  --color-ghost: #b8bbca;
+  --color-line: rgba(0, 0, 0, 0.08);
+  --color-line-hover: rgba(0, 0, 0, 0.14);
+  --color-line-strong: rgba(0, 0, 0, 0.2);
+  --color-gold-pale: #fff3dc;
+  --color-gold-light: #ffca6b;
+  --color-gold: #f5a623;
+  --color-gold-hover: #d4860a;
+  --color-gold-dark: #8c5500;
+  /* Amber is a light hue: white label text on it computes to 2.0:1, so the
+     label is a deep amber-brown instead. */
+  --color-gold-ink: #3a2400;
+  --color-link: #8c5500;
+  --color-signal: #0a6640;
+  --color-signal-primary: #1db874;
+  --color-signal-soft: #d4f5e6;
+  --color-signal-tint: #f0fbf6;
+  --color-warning: #92610a;
+  --color-warning-soft: #fef3c7;
+  --color-warning-tint: #fffbeb;
+  --color-danger: #991b1b;
+  --color-danger-strong: #dc3535;
+  --color-danger-soft: #fee2e2;
+  --color-danger-tint: #fff5f5;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --font-display: var(--font-inter-face), "Inter", -apple-system, sans-serif;
+  --font-body: var(--font-inter-face), "Inter", -apple-system, sans-serif;
+  --radius-card: 12px;
+  --radius-control: 8px;
   --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+:root {
+  --gradient-hero: radial-gradient(
+    ellipse 80% 60% at 20% 50%,
+    #fff3dc 0%,
+    #f8f7f4 60%
+  );
+  --gradient-shimmer: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 247, 244, 0.6) 100%
+  );
+  --gradient-cta: linear-gradient(135deg, #ffca6b 0%, #f5a623 50%, #d4860a 100%);
+  --gradient-cta-hover: linear-gradient(180deg, #ffca6b 0%, #f5a623 50%, #d4860a 100%);
+  --gradient-skill: linear-gradient(90deg, #f5a623 0%, #ffca6b 100%);
+  --gradient-verified-strip: linear-gradient(180deg, #1db874 0%, #0e7a4e 100%);
 }
 
 @layer base {
@@ -36,10 +73,16 @@
     color: var(--color-ink);
     font-family: var(--font-body);
     background-color: var(--color-canvas);
+    /* Warmth bleeds in from the top only, so the hero feels alive but the
+       reading surfaces below stay flat paper. */
+    background-image: var(--gradient-hero);
+    background-repeat: no-repeat;
+    background-size: 100% 720px;
+    color-scheme: light;
   }
 
   a {
-    color: var(--color-ink);
+    color: var(--color-link);
     text-decoration-thickness: 1px;
     text-underline-offset: 0.15em;
   }
@@ -49,13 +92,70 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-gold);
+    /* Focus rings need 3:1; #f5a623 only reaches 1.9:1 on the paper canvas. */
+    outline: 2px solid var(--color-gold-dark);
     outline-offset: 2px;
   }
 
   ::selection {
-    background: color-mix(in srgb, var(--color-gold) 28%, white);
+    color: var(--color-gold-dark);
+    background: var(--color-gold-pale);
   }
+}
+
+.cta-primary {
+  color: var(--color-gold-ink);
+  background: var(--gradient-cta);
+  border-radius: var(--radius-control);
+  box-shadow: 0 6px 16px rgba(212, 134, 10, 0.22);
+}
+
+.cta-primary:hover {
+  color: var(--color-gold-ink);
+  background: var(--gradient-cta-hover);
+}
+
+.surface-card {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  background: var(--gradient-shimmer), var(--color-paper);
+}
+
+.surface-card:hover {
+  border-color: var(--color-line-hover);
+}
+
+/* A 3px gradient strip marks verified sponsors before the badge is read. It is
+   painted into the transparent left border so the card radius still clips it,
+   which overflow:hidden would do at the cost of clipping InfoTip panels. */
+.sponsor-card[data-confidence="verified"] {
+  border-color: rgba(29, 184, 116, 0.3);
+  border-left: 3px solid transparent;
+  background:
+    var(--gradient-verified-strip) left center / 3px 100% no-repeat border-box,
+    var(--color-signal-tint) padding-box;
+}
+
+.sponsor-card:hover {
+  box-shadow: 0 4px 14px rgba(15, 17, 23, 0.07);
+}
+
+.sponsor-card[data-confidence="verified"]:hover {
+  border-color: rgba(29, 184, 116, 0.45);
+}
+
+.skill-progress {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-line-hover);
+}
+
+.skill-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gradient-skill);
 }
 
 /* App shell + navigation */
@@ -63,6 +163,159 @@
   width: min(1120px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 0 0 4rem;
+}
+
+.shell--pad-top {
+  padding-top: 0.5rem;
+}
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background 200ms ease,
+    border-color 200ms ease,
+    backdrop-filter 200ms ease;
+}
+
+.site-nav--scrolled {
+  background: rgba(248, 247, 244, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom-color: var(--color-line);
+}
+
+.site-nav__inner {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 0 auto;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+
+.site-nav__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  flex-shrink: 0;
+}
+
+.site-nav__links {
+  display: none;
+  align-items: center;
+  gap: 1.5rem;
+  margin-left: 1.5rem;
+}
+
+.site-nav__link {
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.site-nav__link:hover,
+.site-nav__link--active {
+  color: var(--color-ink);
+}
+
+.site-nav__actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.site-nav__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.site-nav__menu-btn {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-control);
+  background: var(--color-paper);
+  color: var(--color-ink-soft);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.site-nav__mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem 1.25rem;
+  border-top: 1px solid var(--color-line);
+  background: var(--color-paper);
+}
+
+.site-nav__mobile-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+@media (min-width: 768px) {
+  .site-nav__links {
+    display: flex;
+  }
+
+  .site-nav__menu-btn,
+  .site-nav__mobile {
+    display: none;
+  }
+}
+
+.hero-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  padding: 2.5rem 0 4rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .hero-split {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: 3rem;
+    padding: 3.5rem 0 5rem;
+  }
 }
 
 .nav {
@@ -74,12 +327,15 @@
   padding: 0.35rem 0;
   font-size: 0.9rem;
   border-bottom: 1px solid var(--color-line);
+  background: var(--color-nav);
+  box-shadow: 0 0 0 100vmax var(--color-nav);
+  clip-path: inset(0 -100vmax);
   margin-bottom: 0;
 }
 
 .nav .brand {
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 1.1rem;
   color: var(--color-ink);
   text-decoration: none;
@@ -114,7 +370,7 @@
 }
 
 .nav a:not(.brand):hover {
-  color: var(--color-ink);
+  color: var(--color-link);
 }
 
 /* Motion */
@@ -160,8 +416,8 @@
   appearance: none;
   position: relative;
   border: 1px solid var(--color-line);
-  background: var(--color-paper);
-  color: var(--color-muted);
+  background: var(--color-elevated);
+  color: var(--color-ink-soft);
   width: 1.15rem;
   height: 1.15rem;
   padding: 0;
@@ -193,8 +449,8 @@
 
 .info-tip__trigger:hover,
 .info-tip__trigger:focus-visible {
-  color: var(--color-ink);
-  border-color: var(--color-ink-soft);
+  color: var(--color-gold-dark);
+  border-color: var(--color-line-strong);
 }
 
 .info-tip__trigger:active {
@@ -206,12 +462,13 @@
   z-index: 40;
   width: min(18rem, calc(100vw - 2rem));
   padding: 0.75rem 0.85rem;
-  background: var(--color-navy);
-  color: #e8edf5;
+  border: 1px solid var(--color-line-hover);
+  background: var(--color-paper);
+  color: var(--color-ink-soft);
   border-radius: var(--radius-control);
   font-size: 0.85rem;
   line-height: 1.45;
-  box-shadow: 0 8px 24px color-mix(in srgb, var(--color-navy) 28%, transparent);
+  box-shadow: 0 10px 28px rgba(15, 17, 23, 0.14);
   opacity: 0;
   transform: scale(0.97);
   transform-origin: var(--tip-origin, top left);
@@ -242,7 +499,7 @@
 }
 
 .info-tip__panel a {
-  color: #f0d78c;
+  color: var(--color-link);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -250,4 +507,56 @@
     transition: none;
     transform: none;
   }
+}
+
+/* Full-bleed: escape a max-width container to span full viewport */
+.full-bleed {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Marquee scroll animation */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  animation: marquee 28s linear infinite;
+}
+
+.marquee-wrap:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Skill progress bar (used in skill roadmap) */
+.skill-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-line-hover);
+  overflow: hidden;
+}
+
+.skill-bar__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gradient-skill);
+}
+
+/* Stat counter card */
+.stat-card {
+  background: var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+  padding: 1.5rem;
+  text-align: center;
 }
