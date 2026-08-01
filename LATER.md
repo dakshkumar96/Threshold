@@ -2,17 +2,15 @@
 
 Ideas that sound good but are **not** in scope right now.
 
-Rule from the plan: no new features after Day 1. Write them here and keep moving.
-
 ---
 
 ## Parked ideas
 
-<!-- Add ideas below as they come up. Do not build them yet. -->
-
--
--
--
+- **Sector survival / KM by industry** — Home Office register has no sector column; needs external industry join
+- **Salary-threshold 2024–25 by sector** — cannot test without sector
+- Tableau Desktop polish beyond Public embed
+- Companies House company-number matching for cleaner IDs
+- Larger QA sample (>100) with full JD text when APIs allow
 
 ---
 
