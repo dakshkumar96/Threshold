@@ -1,12 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-const isProtectedRoute = createRouteMatcher([
-  "/home(.*)",
-  "/search(.*)",
-  "/results(.*)",
-  "/insights(.*)",
-  "/profile(.*)",
-]);
+/** Home + profile stay signed-in. Search, results, and insights are public. */
+const isProtectedRoute = createRouteMatcher(["/home(.*)", "/profile(.*)"]);
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
