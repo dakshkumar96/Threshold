@@ -126,6 +126,7 @@ class PreferencesIn(BaseModel):
     locations: str | None = None
     email_alerts: bool | None = None
     cv_filename: str | None = None
+    is_new_entrant: bool | None = None
 
 
 class LastMatchIn(BaseModel):

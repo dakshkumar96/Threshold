@@ -38,6 +38,7 @@ def init_db() -> None:
               locations TEXT,
               email_alerts INTEGER NOT NULL DEFAULT 0,
               cv_filename TEXT,
+              is_new_entrant INTEGER NOT NULL DEFAULT 0,
               updated_at TEXT NOT NULL DEFAULT (datetime('now'))
             );
 
@@ -50,6 +51,16 @@ def init_db() -> None:
             );
             """
         )
+        # Migrate older DBs that predate is_new_entrant.
+        cols = {
+            r[1]
+            for r in conn.execute("PRAGMA table_info(user_preferences)").fetchall()
+        }
+        if "is_new_entrant" not in cols:
+            conn.execute(
+                "ALTER TABLE user_preferences "
+                "ADD COLUMN is_new_entrant INTEGER NOT NULL DEFAULT 0"
+            )
 
 
 def list_saved_searches(user_id: str) -> list[dict[str, Any]]:
@@ -96,7 +107,8 @@ def delete_saved_search(user_id: str, search_id: int) -> bool:
 def get_preferences(user_id: str) -> dict[str, Any]:
     with _connect() as conn:
         row = conn.execute(
-            "SELECT user_id, default_experience, locations, email_alerts, cv_filename, updated_at "
+            "SELECT user_id, default_experience, locations, email_alerts, "
+            "cv_filename, is_new_entrant, updated_at "
             "FROM user_preferences WHERE user_id = ?",
             (user_id,),
         ).fetchone()
@@ -107,10 +119,12 @@ def get_preferences(user_id: str) -> dict[str, Any]:
             "locations": "",
             "email_alerts": False,
             "cv_filename": None,
+            "is_new_entrant": False,
             "updated_at": None,
         }
     d = dict(row)
     d["email_alerts"] = bool(d.get("email_alerts"))
+    d["is_new_entrant"] = bool(d.get("is_new_entrant"))
     return d
 
 
@@ -120,20 +134,25 @@ def upsert_preferences(user_id: str, data: dict[str, Any]) -> dict[str, Any]:
     locations = data.get("locations", current["locations"] or "")
     email_alerts = 1 if data.get("email_alerts", current["email_alerts"]) else 0
     cv_filename = data.get("cv_filename", current.get("cv_filename"))
+    is_new_entrant = (
+        1 if data.get("is_new_entrant", current.get("is_new_entrant")) else 0
+    )
     with _connect() as conn:
         conn.execute(
             """
             INSERT INTO user_preferences
-              (user_id, default_experience, locations, email_alerts, cv_filename, updated_at)
-            VALUES (?, ?, ?, ?, ?, datetime('now'))
+              (user_id, default_experience, locations, email_alerts, cv_filename,
+               is_new_entrant, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
             ON CONFLICT(user_id) DO UPDATE SET
               default_experience = excluded.default_experience,
               locations = excluded.locations,
               email_alerts = excluded.email_alerts,
               cv_filename = excluded.cv_filename,
+              is_new_entrant = excluded.is_new_entrant,
               updated_at = datetime('now')
             """,
-            (user_id, experience, locations, email_alerts, cv_filename),
+            (user_id, experience, locations, email_alerts, cv_filename, is_new_entrant),
         )
         conn.commit()
     return get_preferences(user_id)
