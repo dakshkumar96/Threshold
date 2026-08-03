@@ -16,7 +16,7 @@ const STEPS = [
   },
   {
     t: "Close one high-frequency skill gap",
-    d: "From your roadmap, ship one concrete project for the skill that appears most often and is learnable in weeks — then put it on the CV.",
+    d: "From your roadmap, ship one concrete project for the skill that appears most often and is learnable in weeks. Then put it on the CV.",
   },
   {
     t: "Apply with a direct link",
@@ -24,7 +24,7 @@ const STEPS = [
   },
   {
     t: "Track and follow up calmly",
-    d: "Note where you applied. Follow up once if the process allows. Keep searching while you wait — silence is normal, not a verdict on you.",
+    d: "Note where you applied. Follow up once if the process allows. Keep searching while you wait. Silence is normal, not a verdict on you.",
   },
 ];
 

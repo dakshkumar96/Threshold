@@ -1,163 +1,386 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import {
+  Briefcase,
+  CheckCircle,
+  MagnifyingGlass,
+  Path,
+  SealCheck,
+  Student,
+  WarningCircle,
+  XCircle,
+} from "@phosphor-icons/react/dist/ssr";
 
 export const metadata: Metadata = {
   title: "About",
+  description:
+    "Why Sponsor Signal exists, how sponsor checks work, and what the product does and does not claim.",
 };
 
 const STATS = [
-  { value: "133,979", label: "licensed sponsors tracked" },
-  { value: "200+", label: "live UK ads per search" },
-  { value: "59%", label: "name-match precision, documented" },
+  { value: "133,979", label: "Sponsor licences checked per search", note: "Home Office register, refreshed monthly" },
+  { value: "200", label: "Live UK ads analysed per search", note: "Reed, Adzuna, and mapped ATS boards" },
+  { value: "59%", label: "Name-match precision", note: "Documented on a 100-sample review" },
+  { value: "10", label: "Register snapshots since 2023", note: "Used for licence tenure context" },
 ];
 
-const WHAT_IT_DOES = [
+const FOR_WHO = [
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <circle cx="9" cy="9" r="6" stroke="#f5a623" strokeWidth="1.5"/>
-        <path d="M13.5 13.5L17 17" stroke="#f5a623" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    ),
-    heading: "Pull live ads",
-    body: "200 live UK job ads, every search. Reed and Adzuna, filtered to UK only.",
+    title: "International students",
+    body: "You need a sponsored role before your Graduate visa runs out, and you cannot afford another dead-end application.",
   },
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="3" y="4" width="14" height="12" rx="2" stroke="#f5a623" strokeWidth="1.5"/>
-        <path d="M7 9h6M7 12h4" stroke="#f5a623" strokeWidth="1.5" strokeLinecap="round"/>
-      </svg>
-    ),
-    heading: "Check every employer",
-    body: "Every employer checked against the 133,979-company Home Office sponsor register.",
+    title: "Recent graduates",
+    body: "You are qualified on paper, but the market keeps asking for skills you have not listed yet, and you need a clear sequence.",
   },
   {
-    icon: (
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <path d="M4 10h12M10 4v12" stroke="#f5a623" strokeWidth="1.5" strokeLinecap="round"/>
-        <circle cx="10" cy="10" r="8" stroke="#f5a623" strokeWidth="1.5"/>
-      </svg>
-    ),
-    heading: "Score your CV",
-    body: "Compare your CV against real market data — skills, gaps, what to learn first.",
+    title: "Anyone tired of guessing",
+    body: "You have clicked \"visa sponsorship available\" too many times and watched half the results fall apart after HR got involved.",
   },
+];
+
+const FLOW = [
+  {
+    n: "01",
+    t: "Search a role",
+    d: "Type any UK job title. We pull up to 200 live ads from Reed and Adzuna, plus roles from mapped employer career boards where available.",
+  },
+  {
+    n: "02",
+    t: "Check every sponsor",
+    d: "Each employer is cross-referenced against the current Home Office Skilled Worker register. Verified means we confirmed it on the company careers page. Name matches carry a confidence score.",
+  },
+  {
+    n: "03",
+    t: "Read the market",
+    d: "Every job description is scanned for skills, seniority signals, and salary against the visa threshold. You see what this specific role market is asking for right now.",
+  },
+  {
+    n: "04",
+    t: "Build your next step",
+    d: "Upload a CV and you get a match score, prioritised gaps, weeks-to-learn estimates, CV guidance, and a shortlist of sponsored roles worth applying to.",
+  },
+];
+
+const CONFIDENCE = [
+  {
+    label: "Verified",
+    tone: "mint" as const,
+            body: "The role came from the employer's own careers page or ATS board. Employer identity is certain.",
+  },
+  {
+    label: "Likely",
+    tone: "indigo" as const,
+    body: "Strong name match against the register. Useful signal, still not the same as a verified careers-page match.",
+  },
+  {
+    label: "Possible",
+    tone: "amber" as const,
+    body: "Weaker name match. We show it with a dashed treatment so you know it needs extra caution.",
+  },
+];
+
+const PROMISES = [
+  {
+    Icon: SealCheck,
+    t: "Honest confidence",
+    d: "We label uncertainty. A name match is a guess with a score, not a guarantee that HR will sponsor you.",
+  },
+  {
+    Icon: MagnifyingGlass,
+    t: "Live market data",
+    d: "Skills and gaps come from the ads in your search, not a generic checklist or last year's advice.",
+  },
+  {
+    Icon: Path,
+    t: "A practical roadmap",
+    d: "What to learn first, what to rewrite on your CV, and which sponsored roles fit your current profile.",
+  },
+  {
+    Icon: Student,
+    t: "Calm under pressure",
+    d: "Built for people already stressed about visas and time. Clear next steps, no fake urgency.",
+  },
+];
+
+const NOT_THIS = [
+  "A guarantee that a company will hire or sponsor you",
+  "Proof that an employer previously hired international graduates",
+  "Immigration advice from a solicitor",
+  "A prediction of visa approval",
+  "A job board that hides uncertainty behind a green tick",
+];
+
+const IS_THIS = [
+  "A check against the live Home Office sponsor register",
+  "Confidence labels you can actually interpret",
+  "Skill demand from the ads you just searched",
+  "A roadmap grounded in that market picture",
+  "Documented accuracy, including the 59% name-match figure",
 ];
 
 export default function AboutPage() {
   return (
-    <main className="pb-20">
-      {/* Hero */}
-      <div className="motion-enter" style={{ paddingTop: "3rem", paddingBottom: "3rem" }}>
-        <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--color-gold-dark)" }}>
-          About Sponsor Signal
-        </p>
-        <h1 style={{ margin: "0.75rem 0 0", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 500, letterSpacing: "-0.03em", color: "var(--color-ink)", maxWidth: "14ch", lineHeight: 1.12 }}>
-          You&apos;ve probably done this.
-        </h1>
-      </div>
+    <main className="about-page pb-24">
+      <section className="about-hero section-orb">
+        <div className="about-hero__copy">
+          <h1>
+            Built after the HR conversation that ends the offer.
+          </h1>
+          <p>
+            Sponsor Signal helps international students find UK roles that can actually
+            sponsor a Skilled Worker visa, understand how strong each sponsor match is,
+            and see what to improve next. It exists because guessing is expensive when
+            your visa clock is already running.
+          </p>
+          <div className="about-hero__actions">
+            <Link href="/search" className="cta-primary about-cta">
+              Try a search
+            </Link>
+            <Link href="/methodology" className="cta-secondary about-cta">
+              Read the methodology
+            </Link>
+          </div>
+        </div>
+        <aside className="about-hero__panel" aria-label="At a glance">
+          <p className="about-panel-kicker">At a glance</p>
+          <ul>
+            <li>
+              <SealCheck size={18} weight="fill" color="#10B981" aria-hidden />
+              <span>Live ads + Home Office register in one search</span>
+            </li>
+            <li>
+              <CheckCircle size={18} weight="fill" color="#4F6EF7" aria-hidden />
+              <span>Verified, likely, and possible confidence labels</span>
+            </li>
+            <li>
+              <Path size={18} weight="fill" color="#7C3AED" aria-hidden />
+              <span>Skill gaps and CV guidance from your search data</span>
+            </li>
+            <li>
+              <WarningCircle size={18} weight="fill" color="#D97706" aria-hidden />
+              <span>No invented testimonials, partners, or hire promises</span>
+            </li>
+          </ul>
+        </aside>
+      </section>
 
-      {/* Opening story with pull-quote styling */}
-      <div style={{ display: "grid", gap: "2rem", gridTemplateColumns: "1fr" }} className="md:grid-cols-[3px_1fr]">
-        <div className="hidden md:block" style={{ background: "var(--color-gold)", borderRadius: 999 }} />
-        <div style={{ maxWidth: "62ch", display: "flex", flexDirection: "column", gap: "1.25rem", fontSize: "1.0625rem", lineHeight: 1.75, color: "var(--color-ink-soft)" }}>
-          <p style={{ margin: 0 }}>
+      <section className="about-story">
+        <div className="about-story__rail" aria-hidden />
+        <div className="about-story__body">
+          <h2>You&apos;ve probably done this</h2>
+          <p>
             You applied to a job you were qualified for. You got to interview. You got
-            to offer. HR asked about your right to work. You explained your visa. The
-            offer went silent.
+            to offer. HR asked about your right to work. You explained your visa. Then
+            the offer went silent.
           </p>
-          <p style={{ margin: 0 }}>
-            Or maybe earlier. You clicked &quot;visa sponsorship available&quot; on Indeed and
-            half the results turned out to not sponsor. You downloaded the Home Office
-            register — 130,000 companies, alphabetical, unsearchable. You gave up.
+          <p>
+            Or it happened earlier. You filtered for &quot;visa sponsorship available&quot; and
+            half the results still could not sponsor. You downloaded the Home Office
+            register: more than a hundred thousand companies, alphabetical, almost
+            impossible to search by role. You gave up and started again.
           </p>
-          <p style={{ margin: 0, fontStyle: "italic", color: "var(--color-ink)" }}>
+          <p className="about-story__pull">
             I built Sponsor Signal because I was that person. I&apos;m on the Graduate
             visa. I&apos;ve had the HR conversation. I know what it feels like to spend
-            two months on a job application that was never going to work out.
+            weeks on an application that was never going to work out.
+          </p>
+          <p>
+            The product is simple on purpose. Type a role. See which employers look
+            licensed. See how confident that match is. See what the market is asking
+            for. If you want, upload a CV and get a roadmap instead of another vague
+            pep talk.
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* Stats strip */}
-      <div style={{ margin: "3.5rem 0", background: "linear-gradient(135deg, #fff3dc 0%, #fff8ed 100%)", border: "1px solid rgba(245,166,35,0.2)", borderRadius: "var(--radius-card)", padding: "2rem" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem" }} className="grid-cols-1 sm:grid-cols-3">
-          {STATS.map((s) => (
-            <div key={s.label} style={{ textAlign: "center" }}>
-              <p style={{ margin: 0, fontSize: "clamp(1.75rem,3vw,2.5rem)", fontWeight: 500, color: "var(--color-gold-dark)", letterSpacing: "-0.03em", lineHeight: 1 }}>{s.value}</p>
-              <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-gold-dark)", opacity: 0.75 }}>{s.label}</p>
-            </div>
+      <section className="about-stats" aria-label="Key figures">
+        {STATS.map((s) => (
+          <article key={s.label} className="about-stat">
+            <p className="about-stat__value">{s.value}</p>
+            <p className="about-stat__label">{s.label}</p>
+            <p className="about-stat__note">{s.note}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="about-section" aria-labelledby="who-heading">
+        <div className="about-section__intro">
+          <h2 id="who-heading">Who it is for</h2>
+          <p>
+            If you are hunting under visa pressure, you do not need more listings. You
+            need signal: who can sponsor, how sure we are, and what to do next.
+          </p>
+        </div>
+        <div className="about-who-grid">
+          {FOR_WHO.map((item) => (
+            <article key={item.title} className="about-who-card">
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* What this does */}
-      <div style={{ paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }}>
-        <p style={{ margin: "0 0 0.5rem", fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--color-muted)" }}>
-          What this actually does
-        </p>
-        <h2 style={{ margin: "0 0 1.75rem", fontSize: "1.5rem", fontWeight: 500, letterSpacing: "-0.02em", color: "var(--color-ink)" }}>
-          You type a role. We do the rest.
-        </h2>
+      <section className="about-section" aria-labelledby="flow-heading">
+        <div className="about-section__intro">
+          <h2 id="flow-heading">What happens when you search</h2>
+          <p>
+            One role title opens ads, sponsor checks, market skills, and an optional
+            personal roadmap. No account required to start.
+          </p>
+        </div>
+        <ol className="about-flow">
+          {FLOW.map((step) => (
+            <li key={step.n} className="about-flow__item">
+              <p className="about-flow__n">{step.n}</p>
+              <h3>{step.t}</h3>
+              <p>{step.d}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
 
-        {/* Feature cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.875rem", marginBottom: "1.5rem" }} className="md:grid-cols-3">
-          {WHAT_IT_DOES.map((item) => (
-            <div key={item.heading} style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: "var(--color-gold-pale)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.875rem" }}>
-                {item.icon}
-              </div>
-              <h3 style={{ margin: 0, fontSize: "0.9375rem", fontWeight: 500, color: "var(--color-ink)" }}>{item.heading}</h3>
-              <p style={{ margin: "0.375rem 0 0", fontSize: "0.875rem", lineHeight: 1.6, color: "var(--color-ink-soft)" }}>{item.body}</p>
-            </div>
+      <section className="about-section" aria-labelledby="confidence-heading">
+        <div className="about-section__intro">
+          <h2 id="confidence-heading">How to read sponsor confidence</h2>
+          <p>
+            Not every match is equal. Aggregator ads are name-matched to the register.
+            Careers-page matches are stronger. We show the difference instead of hiding it.
+          </p>
+        </div>
+        <div className="about-confidence">
+          {CONFIDENCE.map((c) => (
+            <article key={c.label} className={`about-confidence__card about-confidence__card--${c.tone}`}>
+              <span className="about-confidence__badge">{c.label}</span>
+              <p>{c.body}</p>
+            </article>
           ))}
         </div>
-
-        <p style={{ margin: 0, maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.7, color: "var(--color-ink-soft)" }}>
-          If you upload your CV, we compare it against the actual market data from your
-          search — not a generic template — and give you a full roadmap. The skills to
-          learn first. The CV lines to rewrite. The sponsored jobs to apply to.
+        <p className="about-footnote">
+          Aggregator name-match precision is about 59% on a reviewed 100-row sample.
+          That is the cautious product figure, not a marketing polish.{" "}
+          <Link href="/methodology" className="text-link">
+            See the methodology
+          </Link>
+          .
         </p>
-      </div>
+      </section>
 
-      {/* What this isn't */}
-      <div style={{ marginTop: "3rem", paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }}>
-        <h2 style={{ margin: "0 0 1.25rem", fontSize: "1.5rem", fontWeight: 500, letterSpacing: "-0.02em", color: "var(--color-ink)" }}>
-          What this isn&apos;t
-        </h2>
-        {/* Honest callout card */}
-        <div style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", overflow: "hidden" }}>
-          <div style={{ background: "var(--color-gold-pale)", borderBottom: "1px solid rgba(245,166,35,0.2)", padding: "0.75rem 1.25rem" }}>
-            <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-gold-dark)" }}>
-              Honest disclaimer
-            </p>
-          </div>
-          <div style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <p style={{ margin: 0, fontSize: "0.9375rem", lineHeight: 1.7, color: "var(--color-ink-soft)" }}>
-              This isn&apos;t a guarantee. Companies on the register can revoke a role. Our
-              sponsor name-matching is 59% precise — that&apos;s the honest number, tested and
-              documented. The roadmap is a starting point, not a promise.
-            </p>
-            <p style={{ margin: 0, fontSize: "0.9375rem", lineHeight: 1.7, color: "var(--color-ink)", fontWeight: 500 }}>
-              I&apos;m not going to tell you this fixes your job hunt. I&apos;m going to tell
-              you it removes the guessing.
-            </p>
-          </div>
+      <section className="about-section" aria-labelledby="promises-heading">
+        <div className="about-section__intro">
+          <h2 id="promises-heading">What you can expect</h2>
+          <p>
+            Sponsor Signal is a signal desk, not another noisy board. These are the
+            product principles behind every page.
+          </p>
         </div>
-      </div>
+        <div className="about-promise-grid">
+          {PROMISES.map((item) => {
+            const Icon = item.Icon;
+            return (
+              <article key={item.t} className="about-promise">
+                <span className="about-promise__icon" aria-hidden>
+                  <Icon size={20} weight="duotone" color="#4F6EF7" />
+                </span>
+                <h3>{item.t}</h3>
+                <p>{item.d}</p>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
-      {/* Footer */}
-      <p style={{ marginTop: "2rem", marginBottom: 0, fontSize: "0.875rem", color: "var(--color-muted)" }}>
-        Built by an international student, for international students.
-      </p>
-      <div style={{ marginTop: "1.5rem", display: "flex", flexWrap: "wrap", gap: "0.875rem", alignItems: "center" }}>
-        <Link href="/search" className="cta-primary inline-flex min-h-11 items-center px-5 no-underline" style={{ fontWeight: 500 }}>
-          Search a role
-        </Link>
-        <Link href="/methodology" style={{ fontSize: "0.9375rem", fontWeight: 500, color: "var(--color-link)" }}>
-          Read the methodology →
-        </Link>
-      </div>
+      <section className="about-compare" aria-labelledby="honest-heading">
+        <div>
+          <h2 id="honest-heading">What this is, and what it isn&apos;t</h2>
+          <p>
+            Honesty matters more than a bigger claim. Licence tenure is archive-based.
+            Salary can be missing from ads. A green badge never means “they will hire you.”
+          </p>
+        </div>
+        <div className="about-compare__grid">
+          <article className="about-compare__card about-compare__card--yes">
+            <p className="about-compare__label">
+              <CheckCircle size={18} weight="fill" color="#4F6EF7" aria-hidden />
+              This is
+            </p>
+            <ul>
+              {IS_THIS.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </article>
+          <article className="about-compare__card about-compare__card--no">
+            <p className="about-compare__label">
+              <XCircle size={18} weight="fill" color="#94A3B8" aria-hidden />
+              This isn&apos;t
+            </p>
+            <ul>
+              {NOT_THIS.map((line) => (
+                <li key={line}>{line}</li>
+              ))}
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section className="about-section about-sources" aria-labelledby="sources-heading">
+        <div className="about-section__intro">
+          <h2 id="sources-heading">Where the data comes from</h2>
+          <p>
+            Every number on the site should be traceable. If we cannot document it, we
+            do not invent it.
+          </p>
+        </div>
+        <div className="about-sources__grid">
+          <article className="about-source-card">
+            <Briefcase size={22} weight="duotone" color="#4F6EF7" aria-hidden />
+            <h3>Live job ads</h3>
+            <p>
+              Reed and Adzuna for aggregator listings. Greenhouse, Ashby, Workable, and
+              similar boards where we can map an employer&apos;s own careers page.
+            </p>
+          </article>
+          <article className="about-source-card">
+            <SealCheck size={22} weight="duotone" color="#4F6EF7" aria-hidden />
+            <h3>Home Office register</h3>
+            <p>
+              The current Skilled Worker sponsor list, refreshed monthly, with historical
+              snapshots used for observed licence tenure bands.
+            </p>
+          </article>
+          <article className="about-source-card">
+            <Student size={22} weight="duotone" color="#4F6EF7" aria-hidden />
+            <h3>Your CV, optionally</h3>
+            <p>
+              Read in memory for the assessment, then gone. Not stored, not trained on,
+              not shared. Without a CV you still see sponsors and market skills.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="about-cta-band">
+        <div>
+          <h2>Ready to stop guessing?</h2>
+          <p>
+            Search a role without signing up. It takes about thirty seconds. Your CV is
+            never kept after the analysis.
+          </p>
+        </div>
+        <div className="about-hero__actions">
+          <Link href="/search" className="cta-primary about-cta">
+            Search a role
+          </Link>
+          <a href="mailto:dakshkumar2k2@gmail.com" className="cta-secondary about-cta">
+            dakshkumar2k2@gmail.com
+          </a>
+        </div>
+        <p className="about-cta-band__note">
+          Built by an international student, for international students.
+        </p>
+      </section>
     </main>
   );
 }

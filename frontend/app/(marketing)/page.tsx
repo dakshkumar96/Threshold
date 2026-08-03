@@ -1,515 +1,716 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ChartLineUp,
+  CheckCircle,
+  MagnifyingGlass,
+  Path,
+  SealCheck,
+  Student,
+  XCircle,
+} from "@phosphor-icons/react";
 import insights from "@/data/insights.json";
+import HeroDashboard from "@/app/components/landing/HeroDashboard";
+import LandingChart from "@/app/components/landing/LandingChart";
+import IntegrationsHub from "@/app/components/landing/IntegrationsHub";
 
-const TICKS = [
-  "Every job description analysed against your CV — so you know exactly what's missing, not what a template thinks",
-  "Full roadmap to close the gap and get the job — the skills to learn first, the CV lines to rewrite, the roles to target",
-  "Sponsor licence checked for every employer against 133,979 companies on the Home Office register — 59% name-match precision, measured and documented",
-];
+function SectionOrb({
+  variant,
+  side,
+}: {
+  variant: "blue" | "violet" | "sky";
+  side: "left" | "right";
+}) {
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return;
+    const onScroll = () => setOffset(window.scrollY * 0.3);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <div
+      aria-hidden
+      className={`orb orb-${variant}`}
+      style={{
+        width: variant === "blue" ? 700 : 600,
+        height: variant === "blue" ? 700 : 600,
+        top: side === "left" ? "-120px" : "40px",
+        left: side === "left" ? "-220px" : "auto",
+        right: side === "right" ? "-220px" : "auto",
+        filter: "blur(60px)",
+        transform: `translate3d(0, ${offset * (side === "left" ? 0.15 : -0.1)}px, 0)`,
+      }}
+    />
+  );
+}
 
 const FEATURES = [
   {
-    t: "Not every company on a job board can sponsor a visa.",
-    d: "You've had the conversation with HR. You've had the polite rejection after the offer. Sponsor Signal checks every employer in your search against the current Home Office sponsor register — 133,979 companies. If they can sponsor, we show you. If we verified the job on the company's own careers page, it gets a green badge. If we matched by name, we tell you the confidence level — because a name match is a guess, and we don't pretend otherwise.",
+    t: "Sponsor check",
+    d: "Live register match. Verified, likely, or possible.",
+    tone: "mint" as const,
+    Icon: SealCheck,
   },
   {
-    t: "We read every job description so you don't have to guess what's missing.",
-    d: "Every JD in your search gets scanned for skills, seniority signals, and language patterns. Then we hold that against your CV and tell you the exact gap — SQL appearing in 71% of these ads but not on your CV, or Power BI marked essential in 12 of 20 ads and missing from your skills section. You're not guessing what employers want anymore. You're seeing it, ad by ad.",
+    t: "Skill demand",
+    d: "What ads ask for, held against your CV.",
+    tone: "indigo" as const,
+    Icon: MagnifyingGlass,
   },
   {
-    t: "Knowing the gap doesn't help. Closing it does.",
-    d: "After we find your gap, we build the roadmap. The skills to learn first, in the order that gives you the highest return. Weeks to learn each one. The CV lines that need rewriting. The roles you should be targeting given your current profile. The ones you should skip until you've closed the gap. It's not advice. It's a sequence. You know exactly what to do next.",
+    t: "Learning path",
+    d: "Skills first, then CV lines, then roles.",
+    tone: "violet" as const,
+    Icon: Path,
   },
   {
-    t: "A recruiter reads your CV in 7 seconds. This tells you what they see.",
-    d: "You get a score out of 100 across five categories a real recruiter uses — whether it survives the seven-second scan, whether the impact is real or hand-wavey, whether it sounds like you or like ChatGPT wrote it, whether the skills match what employers are asking for, whether it stands out. Then a full CV guide grounded in your specific search — the one line to fix first, the summary rewritten as an example, the sections that are working, the sections that aren't. Not twenty changes. The specific ones that move the needle.",
+    t: "CV score",
+    d: "Five recruiter checks. One fix that matters.",
+    tone: "sky" as const,
+    Icon: Student,
   },
 ];
 
-const TABS = [
-  {
-    id: "jd",
-    label: "Every JD analysed",
-    title:
-      "Before you apply, you know exactly what each employer wants — and what's missing from your CV.",
-    body: "Every job description in your search is scanned. Every skill mentioned is counted. Every employer is checked against the sponsor register with a confidence tier. Salary is compared against the £38,700 Skilled Worker threshold. You see the full picture per job — not just a list of results.",
-  },
-  {
-    id: "roadmap",
-    label: "Full roadmap",
-    title: "You learn what to do next, not just what's wrong.",
-    body: "Skill gaps are ranked by priority — how often they appear in your search divided by how long they take to learn. So Excel ranks above Kubernetes even if both are mentioned equally. You get weeks to learn each one, in the order that gets you interview-ready fastest.",
-  },
-  {
-    id: "cv",
-    label: "CV guide",
-    title: "The CV guide isn't generic. It's built from the exact ads in your search.",
-    body: 'The feedback is grounded in the real skill frequencies from your specific role search. When it says "your CV is missing SQL, which appears in 71% of these ads" — that number is from this search. When it says the impact language is weak, it points at a specific line. When it says the summary sounds generic, it rewrites it.',
-  },
-] as const;
-
 const STEPS = [
-  {
-    n: "01",
-    t: "You type a role.",
-    d: "Any UK job title. Data Analyst. Marketing Manager. Software Engineer. We pull up to 200 live ads from Reed and Adzuna.",
-  },
-  {
-    n: "02",
-    t: "We check every sponsor licence.",
-    d: "Every employer in those ads gets cross-referenced against 133,979 licensed UK sponsors. Verified via the company's own careers page, or name-matched with a confidence score. You see which is which.",
-  },
-  {
-    n: "03",
-    t: "We analyse every job description.",
-    d: "Every JD is scanned. Every skill is counted. Every salary is checked against the visa threshold. The result is a picture of what the market for this specific role is actually asking for — right now, not last year.",
-  },
-  {
-    n: "04",
-    t: "You get the roadmap.",
-    d: "Upload your CV and you get a match score, prioritised skill gaps with weeks-to-learn estimates, a full CV guide with the one thing to fix first, and a shortlist of the sponsored jobs you should apply to. Without a CV you still see the sponsors and the market picture — the CV unlocks the personal roadmap.",
-  },
+  { n: "01", t: "Search a role" },
+  { n: "02", t: "Check sponsors" },
+  { n: "03", t: "Read every JD" },
+  { n: "04", t: "Get the roadmap" },
 ];
 
 const FAQ_ITEMS = [
   {
-    q: "How do you check if a company has a sponsor licence?",
-    a: "We cross-reference every employer against the current Home Office sponsor register — the same list the government publishes. If they're on it, they hold a licence. If we verified the job on the company's own careers page, we mark it Verified. If we name-matched them to the register, we give you a confidence score.",
+    q: "How do you check sponsor licences?",
+    a: "Against the current Home Office register. Verified on the careers page, or name-matched with a confidence score.",
   },
   {
-    q: "What does it mean when you say you analyse every job description?",
-    a: "Every JD in your search gets read by our system. We pull out skills mentioned, count how often each appears across the batch, flag which are marked essential vs desirable, and check the salary against the visa threshold. Then we compare all of that against your CV if you upload one.",
+    q: "What does job analysis cover?",
+    a: "Skills, essential vs desirable language, and salary against the visa threshold. Upload a CV to compare.",
   },
   {
     q: "What's in the roadmap?",
-    a: "Prioritised skill gaps — the top skills to learn ranked by how often they appear in your search divided by how long they take to learn. Weeks to learn each one. The CV sections that need rewriting with examples. The roles you should be targeting now vs the ones to skip until you've closed the gap.",
+    a: "Prioritised gaps, weeks to learn, CV rewrites, and which roles to target now.",
   },
   {
-    q: "How is the CV guide different from ChatGPT feedback?",
-    a: "ChatGPT gives you generic advice. Our CV guide is grounded in the specific skill frequencies from your specific role search. When it says a skill is missing, it's a skill that actually appears in the ads you just searched — not a guess. When it rewrites your summary, it uses language that matches what employers in your search are writing.",
+    q: "How is this different from ChatGPT?",
+    a: "Grounded in skill frequencies from your specific search, not generic advice.",
   },
   {
-    q: "What happens to my CV after I upload it?",
-    a: "Read in-memory, sent to the LLM for the recruiter assessment, then gone. Not stored, not trained on, not shared.",
+    q: "What happens to my CV?",
+    a: "Read in memory, used for the assessment, then gone. Not stored or trained on.",
   },
   {
-    q: "Is this the current register or old data?",
-    a: "Current, updated 28 July 2026. Refreshed monthly. We also keep 10 historical snapshots since September 2023 — that's what the licence stability feature is built on.",
+    q: "Is the register current?",
+    a: "Yes, as of 28 July 2026. Refreshed monthly, with 10 snapshots since 2023.",
   },
   {
     q: "Why does salary matter?",
-    a: "The Skilled Worker visa has a minimum salary of £38,700, or the going rate for the role — whichever is higher. If a job pays below that, sponsorship isn't legally possible even if the company holds a licence. That's why we check every ad.",
+    a: "Skilled Worker needs £38,700 or the going rate, whichever is higher.",
   },
   {
-    q: "Do I have to upload my CV to use this?",
-    a: "No. Without a CV you see the sponsored jobs, the market skill picture, and the licence stability data. Uploading a CV unlocks the personal gap analysis, the roadmap, and the CV guide.",
+    q: "Do I need to upload a CV?",
+    a: "No. A CV opens the personal gap analysis and roadmap.",
   },
 ];
 
 const NOW_HUNT = [
-  "You find a job on Reed or LinkedIn",
-  "You guess whether the company can sponsor",
-  "You guess whether your CV matches what they want",
-  "You spend an hour on the application",
-  "You get to interview or offer",
-  "HR asks about your visa",
-  "You never hear back",
-  "You start again",
+  "Guess who can sponsor",
+  "Guess if your CV fits",
+  "Apply for an hour",
+  "Hit a visa wall",
+  "Start again",
 ];
 
 const WITH_US = [
-  "You search a role once",
-  "Every job description gets analysed",
-  "Every employer's sponsor licence gets checked",
-  "Your CV gets scored against the actual market data",
-  "You get a roadmap — skills to learn, CV lines to rewrite, roles to target",
-  "You apply to the sponsored jobs that fit your profile",
+  "Search once",
+  "Sponsors labelled",
+  "Gaps ranked",
+  "CV scored",
+  "Apply with a plan",
 ];
 
 const SOLUTIONS = [
   {
-    href: "/solutions/immigration-guide",
-    title: "Immigration guide",
-    body: "Skilled Worker and Graduate routes in plain English, with links to GOV.UK — not a solicitor, just the map.",
+    href: "/search",
+    title: "Sponsor search",
+    body: "Search UK roles and match them to licensed sponsors.",
+    tone: "indigo" as const,
   },
   {
-    href: "/solutions/job-hunt-guide",
-    title: "Job hunt guide",
-    body: "A calm sequence for searching and applying when the clock on your visa is already running.",
+    href: "/solutions/immigration-guide",
+    title: "Immigration guide",
+    body: "Skilled Worker and Graduate routes, with GOV.UK links.",
+    tone: "violet" as const,
   },
   {
     href: "/solutions/sponsorship-checker",
     title: "Sponsorship checker",
-    body: "Look up a company name against the sponsor register before you invest an hour in the application.",
+    body: "Look up a company before you invest an hour.",
+    tone: "blue" as const,
   },
   {
     href: "/solutions/cv-guide",
     title: "CV guide",
-    body: "How to write for sponsor-market ads, then score your CV against live demand for your role.",
+    body: "Write for sponsor-market ads. Score against live demand.",
+    tone: "indigo" as const,
   },
 ];
 
 export default function LandingPage() {
-  const [role, setRole] = useState("");
-  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("jd");
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
-  const activeTab = TABS.find((t) => t.id === tab) ?? TABS[0];
   const sponsors = insights.headline.sponsors_tracked;
-  const snapshots = insights.headline.snapshots;
-  const searchHref = role.trim()
-    ? `/search?role=${encodeURIComponent(role.trim())}`
-    : "/search";
-
-  function onSearch(e: FormEvent) {
-    e.preventDefault();
-    window.location.href = searchHref;
-  }
 
   return (
     <main className="pb-0">
-      <section className="hero-split">
-        <div>
-          <p
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.4rem",
-              margin: "0 0 1.25rem",
-              background: "var(--color-gold-pale)",
-              border: "1px solid rgba(245,166,35,0.25)",
-              borderRadius: 999,
-              padding: "0.35rem 0.9rem",
-              fontSize: "0.75rem",
-              fontWeight: 500,
-              color: "var(--color-gold-dark)",
-            }}
-          >
-            <span
-              aria-hidden
+      <section className="hero-bento section-orb" style={{ position: "relative" }}>
+        <SectionOrb variant="violet" side="left" />
+        <SectionOrb variant="blue" side="right" />
+        <div
+          aria-hidden
+          className="orb orb-sky"
+          style={{
+            width: 650,
+            height: 650,
+            bottom: "-20%",
+            left: "30%",
+            filter: "blur(60px)",
+          }}
+        />
+
+        <div className="hero-bento__top">
+          <div className="hero-bento__copy">
+            <h1
+              className="motion-enter"
               style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "var(--color-gold)",
-              }}
-            />
-            Register data updated 28 July 2026 · {sponsors.toLocaleString()} sponsors
-            checked
-          </p>
-
-          <h1
-            className="motion-enter"
-            style={{
-              margin: 0,
-              maxWidth: "16ch",
-              fontSize: "clamp(2rem, 4.5vw, 3.15rem)",
-              fontWeight: 500,
-              lineHeight: 1.1,
-              letterSpacing: "-0.03em",
-              color: "var(--color-ink)",
-            }}
-          >
-            You&apos;ve been applying to jobs that can&apos;t sponsor you.
-          </h1>
-
-          <p
-            style={{
-              margin: "1.25rem 0 0",
-              maxWidth: "42ch",
-              fontSize: "1.05rem",
-              lineHeight: 1.65,
-              color: "var(--color-ink-soft)",
-            }}
-          >
-            Type a role. We analyse every job description, tell you exactly what
-            you&apos;re falling behind on, check whether each employer can actually
-            sponsor a Skilled Worker visa, and give you a full roadmap to get the
-            job — including how to fix your CV.
-          </p>
-
-          <ul
-            style={{
-              listStyle: "none",
-              margin: "1.5rem 0 0",
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.75rem",
-              maxWidth: "48ch",
-            }}
-          >
-            {TICKS.map((line) => (
-              <li
-                key={line}
-                style={{
-                  display: "flex",
-                  gap: "0.65rem",
-                  fontSize: "0.9rem",
-                  lineHeight: 1.5,
-                  color: "var(--color-ink-soft)",
-                }}
-              >
-                <span
-                  aria-hidden
-                  style={{
-                    marginTop: 5,
-                    width: 8,
-                    height: 8,
-                    borderRadius: "50%",
-                    background: "var(--color-gold)",
-                    flexShrink: 0,
-                  }}
-                />
-                {line}
-              </li>
-            ))}
-          </ul>
-
-          <form
-            onSubmit={onSearch}
-            style={{
-              marginTop: "1.75rem",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.75rem",
-              maxWidth: 520,
-            }}
-          >
-            <label className="sr-only" htmlFor="landing-role">
-              Role
-            </label>
-            <input
-              id="landing-role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              placeholder="e.g. data analyst, software engineer"
-              style={{
-                flex: "1 1 200px",
-                minHeight: 48,
-                borderRadius: "var(--radius-control)",
-                border: "1px solid var(--color-line-hover)",
-                background: "var(--color-paper)",
-                padding: "0 1rem",
-                fontSize: "1rem",
+                margin: 0,
+                maxWidth: "16ch",
+                fontSize: "clamp(2.15rem, 4.2vw, 3.25rem)",
+                fontWeight: 500,
+                lineHeight: 1.08,
+                letterSpacing: "-0.03em",
                 color: "var(--color-ink)",
               }}
-            />
-            <button
-              type="submit"
-              className="cta-primary"
-              style={{
-                minHeight: 48,
-                padding: "0 1.25rem",
-                border: 0,
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
             >
-              Search without signing up
-            </button>
-            <a
-              href="#how-it-works"
+              You&apos;ve been applying to jobs that can&apos;t sponsor you.
+            </h1>
+
+            <p
               style={{
-                display: "inline-flex",
-                alignItems: "center",
-                minHeight: 48,
-                padding: "0 0.5rem",
-                fontWeight: 500,
+                margin: "1.1rem 0 0",
+                maxWidth: "40ch",
+                fontSize: "clamp(0.95rem, 1.3vw, 1.0625rem)",
+                lineHeight: 1.55,
                 color: "var(--color-ink-soft)",
-                textDecoration: "none",
               }}
             >
-              See how it works
-            </a>
-          </form>
+              Type a role. We check sponsors, map skill gaps, and give you a clear next step.
+            </p>
+
+            <div
+              style={{
+                marginTop: "1.35rem",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "0.65rem",
+                alignItems: "center",
+              }}
+            >
+              <Link
+                href="/search"
+                className="cta-primary"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  minHeight: 46,
+                  padding: "0 1.35rem",
+                  fontWeight: 500,
+                  fontSize: "0.9375rem",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                }}
+              >
+                Search without signing up
+              </Link>
+              <a
+                href="#how-it-works"
+                className="cta-secondary"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  minHeight: 46,
+                  padding: "0 1.2rem",
+                  fontWeight: 500,
+                  fontSize: "0.9375rem",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                }}
+              >
+                See how it works
+              </a>
+            </div>
+          </div>
+
+          <div className="hero-bento__visual">
+            <HeroDashboard />
+          </div>
         </div>
 
-        <div aria-hidden className="surface-card" style={{ padding: "1.25rem" }}>
-          <p
+        <div className="hero-bento__bottom">
+          <div
+            className="hero-stat hero-stat--wide"
             style={{
-              margin: 0,
-              fontSize: "0.7rem",
-              fontWeight: 500,
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              color: "var(--color-muted)",
+              background:
+                "radial-gradient(ellipse 80% 90% at 90% 40%, rgba(79,110,247,0.5) 0%, transparent 55%), linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)",
+              color: "#fff",
             }}
           >
-            Example roadmap (static mock)
-          </p>
-          <p
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "0.75rem",
+                  fontWeight: 500,
+                  color: "rgba(255,255,255,0.7)",
+                  lineHeight: 1.4,
+                }}
+              >
+                Register data updated 28 July 2026 · {sponsors.toLocaleString()} sponsors checked
+              </p>
+              <p
+                style={{
+                  margin: "0.55rem 0 0",
+                  fontSize: "clamp(1.75rem, 3vw, 2.35rem)",
+                  fontWeight: 500,
+                  letterSpacing: "-0.03em",
+                  lineHeight: 1,
+                }}
+              >
+                {sponsors.toLocaleString()}
+              </p>
+              <p style={{ margin: "0.35rem 0 0", fontSize: "0.8125rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.3 }}>
+                Sponsor licences checked per search
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="hero-stat"
             style={{
-              margin: "0.75rem 0 0",
-              fontSize: "2rem",
-              fontWeight: 500,
-              letterSpacing: "-0.03em",
+              background: "rgba(238,242,255,0.95)",
+              border: "1px solid rgba(199,210,254,0.9)",
+              backdropFilter: "blur(12px)",
+              alignItems: "flex-start",
+              justifyContent: "center",
             }}
           >
-            72%
-            <span style={{ fontSize: "1rem", color: "var(--color-muted)" }}>
-              {" "}
-              match
-            </span>
-          </p>
-          <p style={{ margin: "0.25rem 0 0", fontSize: "0.85rem", color: "var(--color-ink-soft)" }}>
-            Data Analyst · mid-level UK ads
-          </p>
-          <ul
-            style={{
-              listStyle: "none",
-              margin: "1.1rem 0 0",
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.65rem",
-            }}
-          >
-            <li
+            <p
               style={{
-                padding: "0.65rem 0.85rem",
-                borderRadius: 8,
-                border: "1px solid rgba(29,184,116,0.25)",
-                background: "var(--color-signal-tint)",
+                margin: 0,
+                fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+                fontWeight: 500,
+                letterSpacing: "-0.03em",
+                lineHeight: 1,
+                color: "var(--color-gold)",
               }}
             >
-              <span style={{ fontSize: "0.7rem", fontWeight: 500, color: "var(--color-signal)" }}>
-                Verified sponsor
-              </span>
-              <p style={{ margin: "0.2rem 0 0", fontSize: "0.875rem", fontWeight: 500 }}>
-                Data Analyst, Lending
-              </p>
-              <p style={{ margin: "0.1rem 0 0", fontSize: "0.75rem", color: "var(--color-muted)" }}>
-                Monzo Bank · Established
-              </p>
-            </li>
-            <li
+              59%
+            </p>
+            <p style={{ margin: "0.4rem 0 0", fontSize: "0.8125rem", color: "var(--color-ink-soft)", lineHeight: 1.3 }}>
+              Name-match precision, tested on 100 samples
+            </p>
+          </div>
+
+          <div
+            className="hero-stat"
+            style={{
+              background: "var(--gradient-cta)",
+              color: "#fff",
+              boxShadow: "0 8px 28px rgba(79,110,247,0.28)",
+              alignItems: "flex-start",
+              justifyContent: "center",
+            }}
+          >
+            <p
               style={{
-                padding: "0.65rem 0.85rem",
-                borderRadius: 8,
-                border: "1px solid var(--color-line)",
+                margin: 0,
+                fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
+                fontWeight: 500,
+                letterSpacing: "-0.03em",
+                lineHeight: 1,
               }}
             >
-              <span style={{ fontSize: "0.7rem", fontWeight: 500, color: "var(--color-gold-dark)" }}>
-                Priority gap
-              </span>
-              <p style={{ margin: "0.2rem 0 0", fontSize: "0.875rem", fontWeight: 500 }}>
-                SQL · 71% of ads · ~3 weeks
-              </p>
-            </li>
-            <li style={{ borderTop: "1px solid var(--color-line)", paddingTop: "0.75rem" }}>
-              <p style={{ margin: 0, fontSize: "0.7rem", fontWeight: 500, color: "var(--color-muted)" }}>
-                One thing to fix first
-              </p>
-              <p style={{ margin: "0.25rem 0 0", fontSize: "0.8125rem", color: "var(--color-ink-soft)" }}>
-                Rewrite the summary so a recruiter sees SQL and dbt in seven seconds.
-              </p>
-            </li>
-          </ul>
+              200
+            </p>
+            <p style={{ margin: "0.4rem 0 0", fontSize: "0.8125rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.3 }}>
+              Live job descriptions analysed per search
+            </p>
+          </div>
         </div>
       </section>
 
-      <div className="marquee-wrap full-bleed" style={{ borderTop: "1px solid var(--color-line)", borderBottom: "1px solid var(--color-line)", padding: "0.85rem 0", background: "var(--color-elevated)" }}>
-        <div className="marquee-track" style={{ display: "flex", gap: "3rem", whiteSpace: "nowrap", fontSize: "0.85rem", color: "var(--color-muted)" }}>
+      <div className="marquee-wrap full-bleed" style={{ padding: "0.85rem 0", background: "var(--gradient-marquee)" }}>
+        <div
+          className="marquee-track"
+          style={{
+            display: "flex",
+            gap: "3rem",
+            whiteSpace: "nowrap",
+            fontSize: "0.85rem",
+            color: "rgba(255,255,255,0.65)",
+          }}
+        >
           {Array.from({ length: 6 }).map((_, i) => (
             <span key={i}>Built for international students.</span>
           ))}
         </div>
       </div>
 
-      <section style={{ padding: "4.5rem 0 2rem" }} aria-labelledby="what-it-does">
+      <section className="section-orb" style={{ padding: "4.5rem 0 2rem" }} aria-labelledby="what-it-does">
+        <SectionOrb variant="blue" side="right" />
         <h2
           id="what-it-does"
           style={{
             margin: 0,
-            fontSize: "clamp(1.45rem, 2.8vw, 1.9rem)",
+            fontSize: "clamp(1.85rem, 3.4vw, 2.5rem)",
             fontWeight: 500,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.03em",
+            color: "var(--color-ink)",
           }}
         >
-          What Sponsor Signal actually does
+          What you get
         </h2>
-        <div
+        <p
           style={{
-            marginTop: "1.75rem",
-            display: "grid",
-            gap: "1rem",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            margin: "0.65rem 0 0",
+            maxWidth: "36ch",
+            fontSize: "1rem",
+            lineHeight: 1.5,
+            color: "var(--color-ink-soft)",
           }}
         >
-          {FEATURES.map((f) => (
-            <article key={f.t} className="surface-card" style={{ padding: "1.25rem 1.35rem" }}>
-              <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 500, lineHeight: 1.35 }}>
-                {f.t}
-              </h3>
-              <p style={{ margin: "0.85rem 0 0", fontSize: "0.9rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
-                {f.d}
-              </p>
-            </article>
-          ))}
+          Four signals. No job-board noise.
+        </p>
+
+        <div className="feature-bento" style={{ marginTop: "1.85rem" }}>
+          {FEATURES.map((f, i) => {
+            const Icon = f.Icon;
+            return (
+              <motion.article
+                key={f.t}
+                className={`feature-tile feature-tile--${f.tone}`}
+                initial={{ opacity: 0, y: 14 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.25 }}
+                transition={{ delay: i * 0.06, duration: 0.35 }}
+              >
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.75rem" }}>
+                  <h3
+                    style={{
+                      margin: 0,
+                      fontSize: "clamp(1.15rem, 1.5vw, 1.35rem)",
+                      fontWeight: 500,
+                      lineHeight: 1.2,
+                      letterSpacing: "-0.02em",
+                      color: "var(--color-ink)",
+                    }}
+                  >
+                    {f.t}
+                  </h3>
+                  <span className="dash-card-icon" aria-hidden>
+                    <Icon size={18} color="#4F6EF7" weight="duotone" />
+                  </span>
+                </div>
+
+                <div className="feature-tile__visual">
+                  {i === 0 ? (
+                    <div style={{ display: "grid", gap: "0.55rem" }}>
+                      {[
+                        { name: "Monzo", label: "Verified", color: "#065F46", bg: "rgba(209,250,229,0.95)", fill: "#10B981", pct: 92 },
+                        { name: "Deliveroo", label: "Likely", color: "#3730A3", bg: "rgba(224,231,255,0.95)", fill: "#4F6EF7", pct: 68 },
+                        { name: "LocalCo", label: "Possible", color: "#92400E", bg: "rgba(254,243,199,0.95)", fill: "#F59E0B", pct: 34 },
+                      ].map((b) => (
+                        <div key={b.label}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                            <span style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--color-ink)" }}>{b.name}</span>
+                            <span
+                              style={{
+                                fontSize: "0.625rem",
+                                fontWeight: 500,
+                                padding: "0.18rem 0.45rem",
+                                borderRadius: 999,
+                                background: b.bg,
+                                color: b.color,
+                              }}
+                            >
+                              {b.label}
+                            </span>
+                          </div>
+                          <div className="abs-track">
+                            <div className="abs-track__fill" style={{ width: `${b.pct}%`, background: b.fill }} />
+                            <span className="abs-track__thumb" style={{ left: `${b.pct}%`, background: b.fill }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {i === 1 ? (
+                    <div className="mini-bars" aria-hidden>
+                      {[44, 72, 38, 86, 55, 64, 48].map((h, idx) => (
+                        <span
+                          key={idx}
+                          className="mini-bars__bar"
+                          style={{ height: `${h}%`, opacity: 0.45 + idx * 0.07 }}
+                        />
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {i === 2 ? (
+                    <div style={{ display: "grid", gap: "0.7rem" }}>
+                      {[
+                        { skill: "SQL", pct: 71 },
+                        { skill: "Power BI", pct: 23 },
+                        { skill: "dbt", pct: 18 },
+                      ].map((row) => (
+                        <div key={row.skill}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                            <span style={{ fontSize: "0.8125rem", fontWeight: 500 }}>{row.skill}</span>
+                            <span style={{ fontSize: "0.75rem", color: "var(--color-muted)" }}>{row.pct}%</span>
+                          </div>
+                          <div className="abs-track">
+                            <div className="abs-track__fill" style={{ width: `${row.pct}%` }} />
+                            <span className="abs-track__thumb" style={{ left: `${row.pct}%` }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {i === 3 ? (
+                    <div className="score-ring-wrap">
+                      <div className="hero-score-ring" aria-hidden>
+                        <svg viewBox="0 0 96 96" width="96" height="96">
+                          <circle cx="48" cy="48" r="36" fill="none" stroke="rgba(79,110,247,0.12)" strokeWidth="8" />
+                          <circle
+                            cx="48"
+                            cy="48"
+                            r="36"
+                            fill="none"
+                            stroke="#4F6EF7"
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                            strokeDasharray={`${2 * Math.PI * 36 * 0.72} ${2 * Math.PI * 36}`}
+                            transform="rotate(-90 48 48)"
+                          />
+                          <text
+                            x="48"
+                            y="48"
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                            fill="var(--color-ink)"
+                            fontSize="22"
+                            fontWeight="600"
+                            style={{ letterSpacing: "-0.04em" }}
+                          >
+                            72%
+                          </text>
+                        </svg>
+                      </div>
+                      <p style={{ margin: "0.35rem 0 0", fontSize: "0.75rem", color: "var(--color-muted)", textAlign: "center" }}>
+                        Match score
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+
+                <p style={{ margin: "auto 0 0", fontSize: "0.8125rem", lineHeight: 1.45, color: "var(--color-muted)" }}>
+                  {f.d}
+                </p>
+              </motion.article>
+            );
+          })}
         </div>
       </section>
 
-      <section style={{ padding: "3.5rem 0" }} aria-labelledby="see-working">
+      <LandingChart />
+
+      <section className="section-orb" style={{ padding: "3rem 0" }} aria-labelledby="see-working">
+        <SectionOrb variant="violet" side="left" />
         <h2
           id="see-working"
           style={{
             margin: 0,
-            fontSize: "clamp(1.45rem, 2.8vw, 1.9rem)",
+            fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
             fontWeight: 500,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.03em",
+            color: "var(--color-ink)",
           }}
         >
           See it working
         </h2>
-        <div
-          role="tablist"
-          aria-label="Product overview"
-          style={{ marginTop: "1.25rem", display: "flex", flexWrap: "wrap", gap: "0.5rem" }}
+        <p
+          style={{
+            margin: "0.75rem 0 0",
+            maxWidth: "40ch",
+            fontSize: "1.0625rem",
+            lineHeight: 1.55,
+            color: "var(--color-ink-soft)",
+          }}
         >
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              role="tab"
-              aria-selected={tab === t.id}
-              onClick={() => setTab(t.id)}
-              style={{
-                minHeight: 40,
-                padding: "0 0.95rem",
-                borderRadius: 999,
-                border: tab === t.id ? "1px solid var(--color-gold-dark)" : "1px solid var(--color-line)",
-                background: tab === t.id ? "var(--color-gold-pale)" : "var(--color-paper)",
-                color: tab === t.id ? "var(--color-gold-dark)" : "var(--color-ink-soft)",
-                fontWeight: 500,
-                fontSize: "0.875rem",
-                cursor: "pointer",
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-        <div className="surface-card" style={{ marginTop: "1rem", padding: "1.35rem 1.5rem" }} role="tabpanel">
-          <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 500, maxWidth: "40ch" }}>
-            {activeTab.title}
-          </h3>
-          <p style={{ margin: "0.85rem 0 0", maxWidth: "62ch", fontSize: "0.95rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
-            {activeTab.body}
-          </p>
+          Data Analyst search, condensed.
+        </p>
+
+        <div className="demo-grid" style={{ marginTop: "1.75rem" }}>
+          <article className="dash-card">
+            <div className="dash-card__head">
+              <span className="dash-card-icon dash-card-icon--mint" aria-hidden>
+                <SealCheck size={16} color="#065F46" weight="fill" />
+              </span>
+              <h3>Sponsors</h3>
+              <span className="dash-card__menu" aria-hidden>· · ·</span>
+            </div>
+            <div className="dash-card__metrics">
+              <div>
+                <p className="dash-metric">47</p>
+                <p className="dash-label">Sponsors</p>
+              </div>
+              <div>
+                <p className="dash-metric">3</p>
+                <p className="dash-label">Verified</p>
+              </div>
+              <div>
+                <p className="dash-metric">200</p>
+                <p className="dash-label">Ads scanned</p>
+              </div>
+            </div>
+            <div style={{ display: "grid", gap: "0.5rem", marginTop: "1rem" }}>
+              {[
+                { label: "Verified", detail: "Monzo · Data Analyst", tone: "mint" },
+                { label: "Likely", detail: "SQL gap · 71% of ads", tone: "indigo" },
+                { label: "Possible", detail: "Rewrite summary first", tone: "amber" },
+              ].map((row) => (
+                <div key={row.label} className={`dash-row dash-row--${row.tone}`}>
+                  <span>{row.label}</span>
+                  <strong>{row.detail}</strong>
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="dash-card">
+            <div className="dash-card__head">
+              <span className="dash-card-icon" aria-hidden>
+                <MagnifyingGlass size={16} color="#4F6EF7" weight="duotone" />
+              </span>
+              <h3>Skills</h3>
+              <span className="dash-card__menu" aria-hidden>· · ·</span>
+            </div>
+            <div className="dash-card__metrics">
+              <div>
+                <p className="dash-metric">71%</p>
+                <p className="dash-label">SQL</p>
+              </div>
+              <div>
+                <p className="dash-metric">23%</p>
+                <p className="dash-label">Power BI</p>
+              </div>
+            </div>
+            <div className="mini-bars mini-bars--tall" aria-hidden style={{ marginTop: "1.1rem" }}>
+              {[40, 68, 32, 84, 52, 61, 45, 73].map((h, idx) => (
+                <span key={idx} className="mini-bars__bar" style={{ height: `${h}%` }} />
+              ))}
+            </div>
+          </article>
+
+          <article className="dash-card">
+            <div className="dash-card__head">
+              <span className="dash-card-icon dash-card-icon--violet" aria-hidden>
+                <ChartLineUp size={16} color="#5B21B6" weight="duotone" />
+              </span>
+              <h3>Tenure</h3>
+              <span className="dash-card__menu" aria-hidden>· · ·</span>
+            </div>
+            <div style={{ display: "grid", gap: "0.75rem", marginTop: "0.35rem" }}>
+              {insights.tenure_bands.map((b) => {
+                const color = b.band === "Established" ? "#10B981" : b.band === "Moderate" ? "#4F6EF7" : "#F59E0B";
+                return (
+                  <div key={b.band} className="dash-row" style={{ background: "rgba(245,243,255,0.55)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: color }} aria-hidden />
+                      <span style={{ color: "var(--color-ink)", fontSize: "0.8125rem", fontWeight: 500 }}>{b.band}</span>
+                    </div>
+                    <strong style={{ color: "var(--color-muted)", fontWeight: 400, fontSize: "0.75rem" }}>{b.label}</strong>
+                  </div>
+                );
+              })}
+            </div>
+          </article>
         </div>
       </section>
+
+      <section id="how-it-works" className="section-orb" style={{ padding: "2rem 0 3.5rem" }} aria-labelledby="how-heading">
+        <SectionOrb variant="sky" side="right" />
+        <div className="how-steps-wrap">
+          <h2
+            id="how-heading"
+            style={{
+              margin: 0,
+              fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
+              fontWeight: 500,
+              letterSpacing: "-0.03em",
+              color: "var(--color-ink)",
+              position: "relative",
+            }}
+          >
+            How it works
+          </h2>
+          <p
+            style={{
+              margin: "0.65rem 0 0",
+              maxWidth: "36ch",
+              fontSize: "1.0625rem",
+              lineHeight: 1.5,
+              color: "var(--color-ink-soft)",
+              position: "relative",
+            }}
+          >
+            From a job title to a sponsored shortlist.
+          </p>
+
+          <ol className="how-steps" style={{ listStyle: "none", margin: "2.25rem 0 0", padding: 0, position: "relative" }}>
+            {STEPS.map((s) => (
+              <li key={s.n} className="how-step">
+                <div className="how-step__top">
+                  <p className="how-step__num">{s.n}</p>
+                  <span className="how-step__arrow" aria-hidden />
+                </div>
+                <h3 className="how-step__label">{s.t}</h3>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <IntegrationsHub />
 
       <section id="solutions" style={{ padding: "3.5rem 0" }} aria-labelledby="solutions-heading">
         <h2
           id="solutions-heading"
           style={{
             margin: 0,
-            fontSize: "clamp(1.45rem, 2.8vw, 1.9rem)",
+            fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
             fontWeight: 500,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.03em",
+            color: "var(--color-ink)",
           }}
         >
           Solutions
@@ -517,205 +718,72 @@ export default function LandingPage() {
         <p
           style={{
             margin: "0.75rem 0 0",
-            maxWidth: "48ch",
-            fontSize: "1rem",
-            lineHeight: 1.6,
+            maxWidth: "42ch",
+            fontSize: "1.0625rem",
+            lineHeight: 1.55,
             color: "var(--color-ink-soft)",
           }}
         >
-          Guides and tools for the bits around the search — visa context, how to hunt,
-          checking a company, and writing a CV that matches what sponsors ask for.
+          Guides around the search.
         </p>
-        <ul
-          style={{
-            listStyle: "none",
-            margin: "1.75rem 0 0",
-            padding: 0,
-            display: "grid",
-            gap: "1rem",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-          }}
-        >
+        <ul className="solutions-row">
           {SOLUTIONS.map((item) => (
             <li key={item.href}>
-              <Link
-                href={item.href}
-                className="surface-card"
-                style={{
-                  display: "block",
-                  height: "100%",
-                  padding: "1.25rem 1.35rem",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
+              <Link href={item.href} className={`solution-tile solution-tile--${item.tone}`}>
                 <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 500, color: "var(--color-ink)" }}>
                   {item.title}
                 </h3>
-                <p
-                  style={{
-                    margin: "0.65rem 0 0",
-                    fontSize: "0.9rem",
-                    lineHeight: 1.6,
-                    color: "var(--color-ink-soft)",
-                  }}
-                >
+                <p style={{ margin: "0.7rem 0 0", fontSize: "0.875rem", lineHeight: 1.55, color: "var(--color-ink-soft)", flex: 1 }}>
                   {item.body}
                 </p>
+                <span style={{ marginTop: "1.15rem", fontSize: "0.8125rem", fontWeight: 500, color: "#4F6EF7" }}>
+                  Open →
+                </span>
               </Link>
             </li>
           ))}
         </ul>
-        <p style={{ margin: "1.25rem 0 0" }}>
-          <Link href="/solutions" className="text-link" style={{ fontWeight: 500 }}>
-            All solutions
-          </Link>
-        </p>
       </section>
 
-      <section id="how-it-works" style={{ padding: "3.5rem 0" }} aria-labelledby="how-heading">
-        <h2
-          id="how-heading"
-          style={{
-            margin: 0,
-            fontSize: "clamp(1.45rem, 2.8vw, 1.9rem)",
-            fontWeight: 500,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          How it works, actually
-        </h2>
-        <ol
-          style={{
-            listStyle: "none",
-            margin: "1.75rem 0 0",
-            padding: 0,
-            display: "grid",
-            gap: "1rem",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          }}
-        >
-          {STEPS.map((s) => (
-            <li key={s.n} className="surface-card" style={{ padding: "1.2rem 1.25rem" }}>
-              <p style={{ margin: 0, fontSize: "0.8rem", fontWeight: 500, color: "var(--color-gold-dark)" }}>
-                {s.n}
-              </p>
-              <h3 style={{ margin: "0.45rem 0 0", fontSize: "1rem", fontWeight: 500 }}>{s.t}</h3>
-              <p style={{ margin: "0.55rem 0 0", fontSize: "0.875rem", lineHeight: 1.6, color: "var(--color-ink-soft)" }}>
-                {s.d}
-              </p>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section style={{ padding: "2rem 0 4rem" }} aria-labelledby="numbers">
-        <h2
-          id="numbers"
-          style={{
-            margin: 0,
-            fontSize: "clamp(1.45rem, 2.8vw, 1.9rem)",
-            fontWeight: 500,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          The numbers behind this
-        </h2>
-        <div
-          style={{
-            marginTop: "1.5rem",
-            display: "grid",
-            gap: "1rem",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-          }}
-        >
-          {[
-            { n: sponsors.toLocaleString(), l: "Sponsor licences checked per search" },
-            { n: String(snapshots), l: "Snapshots of the register since September 2023" },
-            { n: "200", l: "Live job descriptions analysed per search" },
-            { n: "59%", l: "Name-match precision, tested on 100 samples" },
-          ].map((s) => (
-            <div key={s.l} className="stat-card">
-              <p style={{ margin: 0, fontSize: "clamp(1.6rem, 3vw, 2.2rem)", fontWeight: 500, color: "var(--color-gold)", letterSpacing: "-0.03em" }}>
-                {s.n}
-              </p>
-              <p style={{ margin: "0.35rem 0 0", fontSize: "0.8125rem", color: "var(--color-muted)", lineHeight: 1.4 }}>
-                {s.l}
-              </p>
-            </div>
-          ))}
-        </div>
-        <p style={{ margin: "1rem 0 0", fontSize: "0.85rem", color: "var(--color-muted)" }}>
-          Every number here is documented.{" "}
-          <Link href="/methodology" className="text-link">
-            Read the methodology
-          </Link>
-          .
-        </p>
-      </section>
-
-      <section style={{ padding: "0 0 4rem" }} aria-labelledby="difference">
+      <section className="section-orb compare-section" style={{ padding: "0 0 4rem" }} aria-labelledby="difference">
+        <SectionOrb variant="violet" side="right" />
         <h2
           id="difference"
           style={{
             margin: 0,
-            fontSize: "clamp(1.45rem, 2.8vw, 1.9rem)",
+            fontSize: "clamp(1.85rem, 3.4vw, 2.5rem)",
             fontWeight: 500,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.03em",
+            color: "var(--color-ink)",
           }}
         >
           The difference
         </h2>
-        <div
-          style={{
-            marginTop: "1.5rem",
-            display: "grid",
-            gap: "1rem",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-          }}
-        >
-          <div className="surface-card" style={{ padding: "1.35rem" }}>
-            <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-muted)" }}>
-              How you&apos;re job hunting now
-            </p>
-            <ul style={{ listStyle: "none", margin: "1rem 0 0", padding: 0 }}>
+        <div className="compare-grid">
+          <div className="compare-other">
+            <div className="compare-head">
+              <span className="compare-badge compare-badge--muted">Before</span>
+              <p className="compare-title">How you&apos;re hunting now</p>
+            </div>
+            <ul className="compare-list">
               {NOW_HUNT.map((line) => (
-                <li
-                  key={line}
-                  style={{
-                    padding: "0.45rem 0",
-                    borderTop: "1px solid var(--color-line)",
-                    fontSize: "0.9rem",
-                    color: "var(--color-muted)",
-                  }}
-                >
-                  {line}
+                <li key={line} className="compare-item compare-item--muted">
+                  <XCircle size={18} weight="fill" className="compare-item__icon" aria-hidden />
+                  <span>{line}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div
-            className="surface-card"
-            style={{
-              padding: "1.35rem",
-              borderTop: "3px solid var(--color-gold)",
-            }}
-          >
-            <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--color-gold-dark)" }}>
-              How this changes it
-            </p>
-            <ul style={{ listStyle: "none", margin: "1rem 0 0", padding: 0 }}>
+          <div className="compare-ours">
+            <div className="compare-head">
+              <span className="compare-badge compare-badge--brand">After</span>
+              <p className="compare-title compare-title--brand">With Sponsor Signal</p>
+            </div>
+            <ul className="compare-list">
               {WITH_US.map((line) => (
-                <li
-                  key={line}
-                  style={{
-                    padding: "0.45rem 0",
-                    borderTop: "1px solid var(--color-line)",
-                    fontSize: "0.9rem",
-                    color: "var(--color-ink-soft)",
-                  }}
-                >
-                  {line}
+                <li key={line} className="compare-item compare-item--brand">
+                  <CheckCircle size={18} weight="fill" className="compare-item__icon" aria-hidden />
+                  <span>{line}</span>
                 </li>
               ))}
             </ul>
@@ -724,15 +792,39 @@ export default function LandingPage() {
       </section>
 
       <section style={{ padding: "0 0 4rem" }} aria-labelledby="stories">
-        <div className="surface-card" style={{ padding: "1.5rem" }}>
-          <h2 id="stories" style={{ margin: 0, fontSize: "1.15rem", fontWeight: 500 }}>
-            We&apos;re still early. If Sponsor Signal helped you land something, we&apos;d love to hear about it.
+        <div
+          className="demo-panel"
+          style={{
+            padding: "1.75rem 1.6rem",
+            background: "linear-gradient(135deg, rgba(238,242,255,0.95), rgba(245,243,255,0.9))",
+            position: "relative",
+            overflow: "hidden",
+          }}
+        >
+          <ChartLineUp
+            size={72}
+            color="rgba(79,110,247,0.14)"
+            weight="duotone"
+            aria-hidden
+            style={{ position: "absolute", top: 12, right: 16 }}
+          />
+          <h2 id="stories" style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, maxWidth: "36ch", letterSpacing: "-0.02em" }}>
+            Still early. If this helped you land something, tell us.
           </h2>
-          <p style={{ margin: "0.75rem 0 0" }}>
+          <p style={{ margin: "0.9rem 0 0" }}>
             <a
-              href="mailto:hello@sponsorsignal.com?subject=My%20Sponsor%20Signal%20story"
-              className="text-link"
-              style={{ fontWeight: 500 }}
+              href="mailto:dakshkumar2k2@gmail.com?subject=My%20Sponsor%20Signal%20story"
+              className="cta-primary"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                minHeight: 44,
+                padding: "0 1.25rem",
+                borderRadius: 999,
+                textDecoration: "none",
+                fontWeight: 500,
+                fontSize: "0.9375rem",
+              }}
             >
               Tell us your story
             </a>
@@ -745,18 +837,27 @@ export default function LandingPage() {
           id="faq"
           style={{
             margin: 0,
-            fontSize: "clamp(1.45rem, 2.8vw, 1.9rem)",
+            fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
             fontWeight: 500,
-            letterSpacing: "-0.02em",
+            letterSpacing: "-0.03em",
+            color: "var(--color-ink)",
           }}
         >
-          Things people actually ask
+          Things people ask
         </h2>
-        <div style={{ marginTop: "1.25rem", display: "flex", flexDirection: "column", gap: "0.65rem" }}>
+        <div style={{ marginTop: "1.35rem", display: "flex", flexDirection: "column", gap: "0.65rem" }}>
           {FAQ_ITEMS.map((item, i) => {
             const open = faqOpen === i;
             return (
-              <div key={item.q} className="surface-card" style={{ padding: "0.25rem 1rem" }}>
+              <motion.div
+                key={item.q}
+                layout
+                className="demo-panel"
+                style={{
+                  padding: "0.35rem 1.15rem",
+                  boxShadow: open ? "0 12px 32px rgba(79,110,247,0.1)" : "0 6px 20px rgba(79,110,247,0.05)",
+                }}
+              >
                 <button
                   type="button"
                   aria-expanded={open}
@@ -779,118 +880,260 @@ export default function LandingPage() {
                   }}
                 >
                   {item.q}
-                  <span aria-hidden style={{ color: "var(--color-muted)" }}>
-                    {open ? "▴" : "▾"}
-                  </span>
+                  <motion.span
+                    aria-hidden
+                    animate={{ rotate: open ? 90 : 0 }}
+                    style={{ color: "#4F6EF7", display: "inline-block", fontSize: "1.1rem" }}
+                  >
+                    ›
+                  </motion.span>
                 </button>
-                {open ? (
-                  <p style={{ margin: "0 0 1rem", maxWidth: "65ch", fontSize: "0.9rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
-                    {item.a}
-                  </p>
-                ) : null}
-              </div>
+                <AnimatePresence initial={false}>
+                  {open ? (
+                    <motion.p
+                      key="a"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.22 }}
+                      style={{
+                        margin: "0 0 1rem",
+                        maxWidth: "62ch",
+                        fontSize: "0.9rem",
+                        lineHeight: 1.6,
+                        color: "var(--color-ink-soft)",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {item.a}
+                    </motion.p>
+                  ) : null}
+                </AnimatePresence>
+              </motion.div>
             );
           })}
         </div>
       </section>
 
-      <section
-        className="full-bleed"
-        style={{
-          background: "var(--color-elevated)",
-          borderTop: "1px solid var(--color-line)",
-          padding: "3.5rem clamp(1rem, 4vw, 2.5rem)",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <h2 style={{ margin: 0, fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 500, letterSpacing: "-0.02em" }}>
-            You&apos;ve read enough. Try a search.
-          </h2>
-          <p style={{ margin: "0.75rem 0 0", color: "var(--color-ink-soft)" }}>
-            No sign-up. Takes 30 seconds. Your CV isn&apos;t stored.
-          </p>
-          <Link
-            href="/search"
-            className="cta-primary"
+      <footer className="full-bleed site-footer">
+        <Link
+          href="/"
+          className="site-footer__logo"
+          aria-label="Sponsor Signal home"
+        >
+          <svg width="28" height="28" viewBox="0 0 18 18" fill="none" aria-hidden>
+            <path
+              d="M9 1v16M1 9h16M3.1 3.1l11.8 11.8M14.9 3.1L3.1 14.9"
+              stroke="#A5B4FC"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </Link>
+
+        <div style={{ maxWidth: 1120, margin: "0 auto" }}>
+          {/* Top CTA row: headline left, actions right */}
+          <div
+            className="footer-cta-row"
             style={{
-              display: "inline-flex",
+              display: "flex",
+              flexWrap: "wrap",
               alignItems: "center",
-              minHeight: 48,
-              marginTop: "1.35rem",
-              padding: "0 1.5rem",
-              fontWeight: 500,
-              textDecoration: "none",
+              justifyContent: "space-between",
+              gap: "1.5rem",
+              paddingBottom: "2.75rem",
+              borderBottom: "1px solid rgba(255,255,255,0.08)",
             }}
           >
-            Search a role
-          </Link>
-        </div>
-      </section>
-
-      <footer
-        className="full-bleed"
-        style={{
-          background: "#0F1117",
-          padding: "3rem clamp(1rem, 4vw, 2.5rem) 2rem",
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1120,
-            margin: "0 auto",
-            display: "grid",
-            gap: "2rem",
-            gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-          }}
-        >
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.75rem" }}>
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "var(--color-gold)" }} aria-hidden />
-              <span style={{ fontSize: "0.9rem", fontWeight: 500, color: "#C8CCDB" }}>Sponsor Signal</span>
-            </div>
-            <p style={{ margin: 0, fontSize: "0.85rem", color: "rgba(200,204,219,0.65)", lineHeight: 1.55 }}>
-              For international students trying to find work in the UK.
-            </p>
-          </div>
-          <div>
-            {[
-              ["/search", "Search"],
-              ["/solutions", "Solutions"],
-              ["/insights", "Insights"],
-              ["/about", "About"],
-              ["/methodology", "Methodology"],
-              ["/methodology#privacy", "Privacy"],
-              ["mailto:hello@sponsorsignal.com", "Contact"],
-            ].map(([href, label]) => (
-              <Link
-                key={label}
-                href={href}
+            <div style={{ flex: "1 1 240px", maxWidth: 520 }}>
+              <h2
                 style={{
-                  display: "block",
-                  marginBottom: "0.4rem",
-                  fontSize: "0.875rem",
-                  color: "#C8CCDB",
-                  textDecoration: "none",
+                  margin: 0,
+                  fontSize: "clamp(1.5rem, 3vw, 2rem)",
+                  fontWeight: 500,
+                  letterSpacing: "-0.02em",
+                  color: "rgba(255,255,255,0.95)",
+                  lineHeight: 1.2,
                 }}
               >
-                {label}
+                You&apos;ve read enough. Try a search.
+              </h2>
+              <p
+                style={{
+                  margin: "0.65rem 0 0",
+                  fontSize: "0.9375rem",
+                  color: "rgba(255,255,255,0.65)",
+                  lineHeight: 1.5,
+                }}
+              >
+                No sign-up. Takes 30 seconds. Your CV isn&apos;t stored.
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "0.75rem",
+                alignItems: "center",
+                flexShrink: 0,
+              }}
+            >
+              <Link
+                href="/search"
+                className="cta-primary"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  minHeight: 44,
+                  padding: "0 1.35rem",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                  borderRadius: 999,
+                }}
+              >
+                Search a role
               </Link>
-            ))}
+              <Link
+                href="/sign-up"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.35rem",
+                  minHeight: 44,
+                  padding: "0 1.25rem",
+                  fontWeight: 500,
+                  fontSize: "0.9375rem",
+                  textDecoration: "none",
+                  borderRadius: 999,
+                  background: "rgba(255,255,255,0.12)",
+                  border: "1px solid rgba(255,255,255,0.18)",
+                  color: "rgba(255,255,255,0.9)",
+                }}
+              >
+                Search a role
+                <span aria-hidden>→</span>
+              </Link>
+            </div>
           </div>
+
+          {/* Brand left + link columns right */}
+          <div
+            className="footer-nav-row"
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              gap: "2.5rem",
+              paddingTop: "2.75rem",
+            }}
+          >
+            <div style={{ flex: "1 1 220px", maxWidth: 320 }}>
+              <p
+                style={{
+                  margin: "0 0 0.5rem",
+                  fontSize: "0.95rem",
+                  fontWeight: 500,
+                  color: "rgba(255,255,255,0.9)",
+                }}
+              >
+                Sponsor Signal
+              </p>
+              <p style={{ margin: 0, fontSize: "0.85rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.55 }}>
+                For international students trying to find work in the UK.
+              </p>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "2.5rem 3.5rem",
+                flex: "2 1 360px",
+                justifyContent: "flex-end",
+              }}
+            >
+              <div>
+                {[
+                  ["/search", "Search"],
+                  ["/#solutions", "Solutions"],
+                  ["/insights", "Insights"],
+                  ["/about", "About"],
+                ].map(([href, label]) => (
+                  <Link
+                    key={label}
+                    href={href}
+                    className="footer-link"
+                    style={{
+                      display: "block",
+                      marginBottom: "0.55rem",
+                      fontSize: "0.875rem",
+                      color: "rgba(255,255,255,0.65)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+              <div>
+                {[
+                  ["/methodology", "Methodology"],
+                ].map(([href, label]) => (
+                  <Link
+                    key={label}
+                    href={href}
+                    className="footer-link"
+                    style={{
+                      display: "block",
+                      marginBottom: "0.55rem",
+                      fontSize: "0.875rem",
+                      color: "rgba(255,255,255,0.65)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {label}
+                  </Link>
+                ))}
+              </div>
+              <div>
+                <p
+                  style={{
+                    margin: "0 0 0.55rem",
+                    fontSize: "0.875rem",
+                    fontWeight: 500,
+                    color: "rgba(255,255,255,0.9)",
+                  }}
+                >
+                  Contact
+                </p>
+                <a
+                  href="mailto:dakshkumar2k2@gmail.com"
+                  className="footer-link"
+                  style={{
+                    display: "block",
+                    fontSize: "0.875rem",
+                    color: "rgba(255,255,255,0.65)",
+                    textDecoration: "none",
+                  }}
+                >
+                  dakshkumar2k2@gmail.com
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <p
+            style={{
+              margin: "2.5rem 0 0",
+              paddingTop: "1.25rem",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              fontSize: "0.8rem",
+              color: "rgba(255,255,255,0.45)",
+            }}
+          >
+            Built by an international student, for international students.
+          </p>
         </div>
-        <p
-          style={{
-            maxWidth: 1120,
-            margin: "2rem auto 0",
-            paddingTop: "1.25rem",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            fontSize: "0.8rem",
-            color: "rgba(200,204,219,0.45)",
-          }}
-        >
-          Built by an international student, for international students.
-        </p>
       </footer>
     </main>
   );

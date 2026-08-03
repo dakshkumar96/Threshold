@@ -23,7 +23,7 @@ export default function ImmigrationGuidePage() {
           UK immigration routes, without the jargon fog
         </h1>
         <p style={{ margin: "1rem 0 0", maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.6, color: "var(--color-ink-soft)" }}>
-          This is orientation, not legal advice. Always confirm details on GOV.UK —
+          This is orientation, not legal advice. Always confirm details on GOV.UK.
           thresholds and rules change.
         </p>
       </div>
@@ -46,7 +46,7 @@ export default function ImmigrationGuidePage() {
           <p style={{ margin: "0.625rem 0 0", maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
             You need a job offer from a licensed sponsor, a Certificate of
             Sponsorship, and to meet skill and salary rules for the role. Sponsor
-            Signal helps you find licensed employers who are advertising — it does
+            Signal helps you find licensed employers who are advertising. It does
             not guarantee a CoS or visa approval.
           </p>
         </div>
@@ -68,7 +68,7 @@ export default function ImmigrationGuidePage() {
       </section>
 
       <p style={{ marginTop: "2.5rem", marginBottom: 0, display: "flex", flexWrap: "wrap", gap: "1rem 1.5rem", fontSize: "0.9375rem" }}>
-        <Link href="/solutions" style={{ fontWeight: 500, color: "var(--color-link)" }}>All solutions</Link>
+        <Link href="/#solutions" style={{ fontWeight: 500, color: "var(--color-link)" }}>All solutions</Link>
         <Link href="/search" style={{ fontWeight: 500, color: "var(--color-link)" }}>Search sponsors</Link>
       </p>
     </main>

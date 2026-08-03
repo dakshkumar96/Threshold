@@ -57,7 +57,7 @@ export default function SponsorshipCheckerPage() {
             boxSizing: "border-box", outline: "none",
             transition: "border-color 150ms, box-shadow 150ms",
           }}
-          onFocus={(e) => { e.target.style.borderColor = "var(--color-gold-dark)"; e.target.style.boxShadow = "0 0 0 3px rgba(245,166,35,0.2)"; }}
+          onFocus={(e) => { e.target.style.borderColor = "var(--color-gold-dark)"; e.target.style.boxShadow = "0 0 0 3px rgba(79,110,247,0.2)"; }}
           onBlur={(e) => { e.target.style.borderColor = "var(--color-line-hover)"; e.target.style.boxShadow = "none"; }}
         />
         <button
@@ -111,7 +111,7 @@ export default function SponsorshipCheckerPage() {
       ) : null}
 
       <p style={{ marginTop: "2.5rem", marginBottom: 0, display: "flex", flexWrap: "wrap", gap: "1rem 1.5rem", fontSize: "0.9375rem" }}>
-        <Link href="/solutions" style={{ fontWeight: 500, color: "var(--color-link)" }}>All solutions</Link>
+        <Link href="/#solutions" style={{ fontWeight: 500, color: "var(--color-link)" }}>All solutions</Link>
       </p>
     </main>
   );

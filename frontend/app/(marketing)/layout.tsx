@@ -8,7 +8,7 @@ export default function MarketingLayout({
   return (
     <>
       <SiteNav />
-      <div className="shell" style={{ paddingTop: "2rem" }}>{children}</div>
+      <div className="shell" style={{ paddingTop: "1rem" }}>{children}</div>
     </>
   );
 }

@@ -39,7 +39,7 @@ export default function CvGuidePage() {
         </ul>
         <p style={{ margin: 0 }}>
           When you are ready, upload a text-based PDF on search. We score skills
-          against live ads for that role and return a prioritised gap list — then an
+          against live ads for that role and return a prioritised gap list. Then an
           optional LLM note grounded in those frequencies.
         </p>
       </div>

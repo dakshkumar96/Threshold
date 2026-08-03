@@ -48,14 +48,14 @@ const CONFIDENCE = [
     body: "Fetched directly from the employer's own applicant tracking system. Employer identity is certain.",
     color: "var(--color-signal)",
     bg: "var(--color-signal-soft)",
-    dot: "#1db874",
+    dot: "#10B981",
   },
   {
     tier: "Likely",
     body: "Aggregator ad whose employer name matches the register at 90% or above and passes the symmetric name check.",
     color: "var(--color-gold-dark)",
     bg: "var(--color-gold-pale)",
-    dot: "#d4860a",
+    dot: "#3B55E6",
   },
   {
     tier: "Possible",
@@ -86,7 +86,7 @@ export default function MethodologyPage() {
 
       {/* Accuracy callout */}
       <div style={{ marginTop: "2rem", display: "flex", flexWrap: "wrap", gap: "1rem" }}>
-        <div style={{ flex: "1 1 160px", background: "var(--color-gold-pale)", border: "1px solid rgba(245,166,35,0.25)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
+        <div style={{ flex: "1 1 160px", background: "var(--color-gold-pale)", border: "1px solid rgba(79,110,247,0.25)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
           <p style={{ margin: 0, fontSize: "clamp(1.75rem,3vw,2.25rem)", fontWeight: 500, color: "var(--color-gold-dark)", letterSpacing: "-0.03em", lineHeight: 1 }}>59%</p>
           <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-gold-dark)", opacity: 0.8 }}>name-match precision, n=100</p>
         </div>
@@ -113,7 +113,7 @@ export default function MethodologyPage() {
                 <div style={{
                   width: 44, height: 44, borderRadius: "50%",
                   background: "var(--color-gold)", display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0, boxShadow: "0 2px 8px rgba(245,166,35,0.35)",
+                  flexShrink: 0, boxShadow: "0 2px 8px rgba(79,110,247,0.35)",
                 }}>
                   <span style={{ color: "#fff", fontSize: "0.8125rem", fontWeight: 500, fontVariantNumeric: "tabular-nums" }}>
                     {String(i + 1).padStart(2, "0")}
@@ -121,7 +121,7 @@ export default function MethodologyPage() {
                 </div>
                 {/* Connector line */}
                 {i < PIPELINE.length - 1 && (
-                  <div style={{ width: 2, flex: 1, minHeight: 24, background: "linear-gradient(to bottom, rgba(245,166,35,0.35), rgba(245,166,35,0.08))", marginTop: 4 }} />
+                  <div style={{ width: 2, flex: 1, minHeight: 24, background: "linear-gradient(to bottom, rgba(79,110,247,0.35), rgba(79,110,247,0.08))", marginTop: 4 }} />
                 )}
               </div>
               <div style={{ paddingTop: "0.6rem" }}>
