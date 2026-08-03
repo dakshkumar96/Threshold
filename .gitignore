@@ -10,6 +10,17 @@ frontend/node_modules/
 frontend/.next/
 frontend/.env.local
 frontend/.clerk/
+frontend/tsconfig.tsbuildinfo
 data/ats_map.db
+data/ats_map.db.bak
 data/user_data.db
+data/processed/
 ats-scrapers/
+logs/
+skills-lock.json
+
+# Local AI / editor skill packs (not product code)
+.agents/
+.claude/
+.cursor/
+.windsurf/
