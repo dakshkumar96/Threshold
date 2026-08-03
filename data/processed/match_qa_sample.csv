@@ -1,0 +1,101 @@
+source,source_job_id,title,company_raw,company_key,matched_company_key,match_score,correct,note
+reed,57041884,Demand Analyst,Nomad Foods,nomad foods,nomad foods europe,100.0,Y,substring containment
+adzuna,5786373854,Data Analyst,Finlay Jude Associates Ltd,finlay jude associates,q associates,90.9090909090909,Y,shared distinctive token ['associates']
+reed,57117892,MI Analyst,Davies Group,davies group,davies group,100.0,Y,exact company_key
+adzuna,5791206375,Data Analyst,ALH Recruitment,alh recruitment,mh recruitment,89.65517241379311,N,weak/ambiguous overlap ratio=89.65517241379311 tokens=['recruitment']
+adzuna,5800473760,Data Analyst,Stott & May Professional Search Limited,stott may professional search,stott and may professional search,100.0,Y,"high score with overlap ['may', 'professional', 'search', 'stott']"
+reed,57031407,Senior Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+adzuna,5785793147,Data Analyst,Finlay Jude Associates,finlay jude associates,q associates,90.9090909090909,Y,shared distinctive token ['associates']
+adzuna,5789989654,"Staff Data Analyst, Operations",Wise,wise,aaron wise,100.0,N,short substring collision
+reed,57069979,Data Analyst,Gleeson Recruitment Group,gleeson recruitment group,gi group recruitment,91.89189189189189,Y,shared distinctive token ['recruitment']
+reed,55968479,Business Analyst,FDM Group,fdm group,fdm group,100.0,Y,exact company_key
+adzuna,5789987969,Lead Data Analyst - Total Service (Operations),Wise,wise,aaron wise,100.0,N,short substring collision
+adzuna,5785359517,Data Analyst,The Progeny Group Limited,the progeny group,the penny group,87.5,N,"weak/ambiguous overlap ratio=87.5 tokens=['group', 'the']"
+adzuna,5210480225,Data Analyst,virtusa,virtusa,virtusa consulting and services,100.0,Y,substring containment
+reed,57169827,Business Analyst,CMC Markets,cmc markets,cmc markets uk,100.0,Y,substring containment
+reed,57137821,Resource Planning Analyst,SES Water,ses water,sas water,88.88888888888889,N,weak/ambiguous overlap ratio=88.88888888888889 tokens=['water']
+adzuna,5802282434,Data Analyst,Caremark - Franchise Support Centre,caremark franchise support centre,caremark,100.0,Y,substring containment
+adzuna,5755551290,Data Analyst,NHS Professionals,nhs professionals,s h professionals,94.11764705882354,Y,shared distinctive token ['professionals']
+adzuna,5741144130,Data Analyst,Beyond,beyond,1 step beyond support,100.0,Y,substring containment
+adzuna,5789988738,Data Analyst,Opencast Software,opencast software,opencast software europe,100.0,Y,substring containment
+reed,57118550,Fraud Data Analyst,ABL Recruitment,abl recruitment,abiel recruitment,93.75,Y,shared distinctive token ['recruitment']
+adzuna,5790312005,Data Analyst,Peregrine,peregrine,gc studios limited t a peregrine,100.0,Y,substring containment
+adzuna,5679132312,Data Analyst,G-Research,g research,n g business consultancy and market research services,100.0,Y,"high score with overlap ['g', 'research']"
+adzuna,5792489057,SC - Data Analyst,Velocity Talent,velocity talent,velocity outlet,86.66666666666667,N,weak/ambiguous overlap ratio=86.66666666666667 tokens=['velocity']
+adzuna,5814622035,Data Analyst,Stott & May Professional Search Limited,stott may professional search,stott and may professional search,100.0,Y,"high score with overlap ['may', 'professional', 'search', 'stott']"
+reed,56764568,Senior Data Analyst - Ex-Forces Programme,FDM Group,fdm group,fdm group,100.0,Y,exact company_key
+adzuna,5786260145,Data Analyst Placement Programme No Experience Needed,IT Online Learning,it online learning,kress cooper online learning school kcolls,90.9090909090909,Y,"shared distinctive token ['learning', 'online']"
+reed,57165187,Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+adzuna,5809546087,Data Analyst Placement Programme No Experience Needed,IT Online Learning,it online learning,kress cooper online learning school kcolls,90.9090909090909,Y,"shared distinctive token ['learning', 'online']"
+adzuna,5803594977,Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+adzuna,5784172530,Data Analyst,PDSA,pdsa,pdsa,100.0,Y,exact company_key
+adzuna,5812198299,Data Analyst,Career Concept,career concept,g g concept,87.5,N,weak/ambiguous overlap ratio=87.5 tokens=['concept']
+reed,57053595,Business Analyst - AI Consultant,Sanderson ,sanderson,green sanderson opco,100.0,Y,substring containment
+reed,57139452,Data Cleansing Analyst,Rise10 Recruitment,rise10 recruitment,m4 recruitment,88.0,N,weak/ambiguous overlap ratio=88.0 tokens=['recruitment']
+reed,57161991,EDI Analyst,ASDA,asda,asda express,100.0,N,short substring collision
+adzuna,5808338135,Data Analyst,Robert Half,robert half,robert half,100.0,Y,exact company_key
+adzuna,5814229171,Data Analyst,AWD online,awd online,q online,85.71428571428571,N,weak/ambiguous overlap ratio=85.71428571428571 tokens=['online']
+adzuna,5786752438,Data Analyst,Avara Foods,avara foods,aasra foods,90.9090909090909,Y,shared distinctive token ['foods']
+adzuna,5818383221,Data Analyst,Robert Walters,robert walters,robert walters,100.0,Y,exact company_key
+adzuna,5795584533,Data Analyst,Tenth Revolution Group,tenth revolution group,sp revolution,86.95652173913044,N,weak/ambiguous overlap ratio=86.95652173913044 tokens=['revolution']
+adzuna,5799938043,Data Analyst,Finlay Jude Associates Limited,finlay jude associates,q associates,90.9090909090909,Y,shared distinctive token ['associates']
+reed,57119357,Data Privacy Analyst,Robert Half,robert half,robert half,100.0,Y,exact company_key
+adzuna,5778082947,Data Analyst,Sanderson Recruitment,sanderson recruitment,m4 recruitment,88.0,N,weak/ambiguous overlap ratio=88.0 tokens=['recruitment']
+adzuna,5780350523,Data Analyst,MWH Treatment,mwh treatment,mwh treatment,100.0,Y,exact company_key
+reed,57123948,AI Enablement Analyst,Arc IT Recruitment,arc it recruitment,archi recruitment,91.42857142857143,Y,shared distinctive token ['recruitment']
+adzuna,5812149921,Data Analyst,MONY Group,mony group,mony group,100.0,Y,exact company_key
+adzuna,5800186360,Senior Data Analyst - Growth,Wise,wise,aaron wise,100.0,N,short substring collision
+reed,57108970,Data Analyst,Tenth Revolution Group,tenth revolution group,sp revolution,86.95652173913044,N,weak/ambiguous overlap ratio=86.95652173913044 tokens=['revolution']
+adzuna,5812621933,Data Analyst,Hays Technology,hays technology,hays,100.0,N,short substring collision
+reed,57148927,AI Business Analyst,VIQU IT Recruitment,viqu it recruitment,viqu,100.0,N,short substring collision
+adzuna,5737581843,Data Analyst,OLIVER Agency,oliver agency,agency,100.0,Y,substring containment
+adzuna,5809548575,Research & Data Analyst,The ECA International Group,the eca international group,lp group international,92.6829268292683,N,"weak/ambiguous overlap ratio=92.6829268292683 tokens=['group', 'international']"
+adzuna,5791209141,Data Analyst,Think Specialist Recruitment,think specialist recruitment,reed specialist recruitment,89.79591836734694,N,"weak/ambiguous overlap ratio=89.79591836734694 tokens=['recruitment', 'specialist']"
+adzuna,5809724157,Senior Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+adzuna,5817592136,Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+adzuna,5814714953,Data Analyst,RELX INC,relx,relx uk,100.0,N,short substring collision
+adzuna,5808082048,Data Analyst,Millennium Hotel and Resorts UK,millennium hotel and resorts uk,sol millennium uk,86.66666666666667,N,"weak/ambiguous overlap ratio=86.66666666666667 tokens=['millennium', 'uk']"
+adzuna,5727354737,Senior Data Analyst,Viber,viber,viber uk,100.0,N,short substring collision
+reed,57150305,Data Analyst,Hays Specialist Recruitment Limited,hays specialist recruitment,hays,100.0,N,short substring collision
+reed,57154863,Housing Regulatory Analyst,The Hyde Group,the hyde group,the 36 group,85.71428571428571,N,"weak/ambiguous overlap ratio=85.71428571428571 tokens=['group', 'the']"
+reed,57098879,Data Analyst,Think Specialist Recruitment,think specialist recruitment,reed specialist recruitment,89.79591836734694,N,"weak/ambiguous overlap ratio=89.79591836734694 tokens=['recruitment', 'specialist']"
+adzuna,5779215744,Data Analyst,Brookhouse Aerospace,brookhouse aerospace,as aerospace,85.71428571428571,N,weak/ambiguous overlap ratio=85.71428571428571 tokens=['aerospace']
+adzuna,5702459122,Data Analyst,Air Apps,air apps,air air,100.0,Y,high score with overlap ['air']
+reed,56972803,Performance Analyst,MEARS GROUP PLC,mears group,mears group,100.0,Y,exact company_key
+adzuna,5803917979,Data Analyst,TELECOM ACQUISITIONS LTD,telecom acquisitions,telecom 2,87.5,N,weak/ambiguous overlap ratio=87.5 tokens=['telecom']
+reed,57098393,Quality Assurance Analyst, Isio,isio,isio group,100.0,N,short substring collision
+adzuna,5781531084,Data Analyst,Omnia Resourcing,omnia resourcing,omnia resourcing ltd ta staffing match,100.0,Y,substring containment
+reed,57161379,Pricing Analyst- Generation Services,E.ON,e on,e on control solutions,100.0,N,short substring collision
+adzuna,5804800128,Financial Data Analyst,Costello Medical,costello medical,costello medical consulting,100.0,Y,substring containment
+reed,57149519,Data Analyst / SQL Developer,Beagle Technology Group,beagle technology group,group 3 technology,94.11764705882354,N,"weak/ambiguous overlap ratio=94.11764705882354 tokens=['group', 'technology']"
+reed,57140218,Data Analyst,Express Solicitors,express solicitors,c c express,87.5,N,weak/ambiguous overlap ratio=87.5 tokens=['express']
+adzuna,5811046598,Data Analyst,interactive investor,interactive investor,interactive investor services,100.0,Y,substring containment
+adzuna,5799932448,Data Analyst,Think Specialist Recruitment,think specialist recruitment,reed specialist recruitment,89.79591836734694,N,"weak/ambiguous overlap ratio=89.79591836734694 tokens=['recruitment', 'specialist']"
+adzuna,5666299830,Core Data Analyst,Premier Group Recruitment,premier group recruitment,gi group recruitment,91.89189189189189,Y,shared distinctive token ['recruitment']
+reed,57108227,Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+adzuna,5802837235,Data Analyst,Know How Resourcing,know how resourcing,how how,100.0,Y,high score with overlap ['how']
+adzuna,5777008095,Data Analyst,GitHub,github,github software uk,100.0,Y,substring containment
+adzuna,5808180266,Data Analyst,EXPRESS SOLICITORS,express solicitors,c c express,87.5,N,weak/ambiguous overlap ratio=87.5 tokens=['express']
+reed,57139860,Commercial Finance Analyst,PHS Group Limited,phs group,1ps group,88.88888888888889,N,weak/ambiguous overlap ratio=88.88888888888889 tokens=['group']
+reed,57161525,Insight Analyst,Acosta Europe,acosta europe,acasta europe,92.3076923076923,Y,shared distinctive token ['europe']
+reed,56844404,Internal Controls Analyst,AJ Bell,aj bell,aj bell,100.0,Y,exact company_key
+reed,57118845,Client Reporting Analyst,Aon,aon,aon contracts,100.0,N,short substring collision
+reed,57055560,"Senior Analyst, Yield Management",Ocean Network Express (Europe) Ltd,ocean network express europe,ocean network express europe,100.0,Y,exact company_key
+adzuna,5782254064,Data Analyst,Johnson Matthey,johnson matthey,johnson johnson,100.0,Y,high score with overlap ['johnson']
+adzuna,5798907586,Data Analyst,Arne Clo Ltd,arne clo,clo clo,100.0,Y,high score with overlap ['clo']
+adzuna,5813720277,Data Analyst,Sellick Partnership,sellick partnership,s s partnership,91.66666666666667,Y,shared distinctive token ['partnership']
+reed,57130483,Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+adzuna,5804909149,Data Analyst,Lumen Partners,lumen partners,l l partners,88.88888888888889,N,weak/ambiguous overlap ratio=88.88888888888889 tokens=['partners']
+adzuna,5812196763,Data Analyst,Gleeson Recruitment Group,gleeson recruitment group,gi group recruitment,91.89189189189189,Y,shared distinctive token ['recruitment']
+reed,57031375,Lead Data Analyst,Harnham - Data & Analytics Recruitment,harnham data analytics recruitment,ad data analytics,90.3225806451613,Y,"shared distinctive token ['analytics', 'data']"
+reed,57151787,Data Analyst,Sellick Partnership,sellick partnership,s s partnership,91.66666666666667,Y,shared distinctive token ['partnership']
+adzuna,5786260032,Data Analyst Placement Programme No Experience Needed,IT Online Learning,it online learning,kress cooper online learning school kcolls,90.9090909090909,Y,"shared distinctive token ['learning', 'online']"
+adzuna,5808696348,Data Analyst,Millennium Hotels and Resorts,millennium hotels and resorts,myst hotels and resorts,87.8048780487805,N,"weak/ambiguous overlap ratio=87.8048780487805 tokens=['and', 'hotels', 'resorts']"
+reed,57087244,Data Governance Analyst,Reed,reed,alec reed academy,100.0,N,short substring collision
+adzuna,4094618894,Data Analyst,Brakes Group,brakes group,bracket group,88.0,N,weak/ambiguous overlap ratio=88.0 tokens=['group']
+reed,57155420,Income Performance Analyst,Stonewater,stonewater,stonewater,100.0,Y,exact company_key
+adzuna,5748142894,Data Analyst,CDP Global,cdp global,cde global,90.0,N,weak/ambiguous overlap ratio=90.0 tokens=['global']
+adzuna,5812197334,Data Analyst,Hays Technology,hays technology,hays,100.0,N,short substring collision
+adzuna,5818225088,Data Analyst,Mars Recruitment,mars recruitment,mars mission limited t a the global recruitment,100.0,Y,"high score with overlap ['mars', 'recruitment']"
+reed,56815207,Data Analyst,Sagacity ,sagacity,outdoor sagacity,100.0,Y,substring containment
+reed,57154210,Data Analyst Apprentice,QA,qa,global pv qa consultancy,100.0,N,short substring collision

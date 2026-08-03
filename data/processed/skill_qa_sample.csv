@@ -1,0 +1,383 @@
+source,source_job_id,title,desc_len,description_full,check,skill,correct
+reed,57124998,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57124998,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57124998,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57124998,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57124998,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57124998,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57124998,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57124998,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57124998,Data Analyst Trainee,5929,True,recall,Tableau,Y
+reed,57156917,Data Analyst,2864,True,precision,AWS,Y
+reed,57156917,Data Analyst,2864,True,precision,Communication,Y
+reed,57156917,Data Analyst,2864,True,precision,Data Modelling,Y
+reed,57156917,Data Analyst,2864,True,precision,ETL,Y
+reed,57156917,Data Analyst,2864,True,precision,Looker,Y
+reed,57156917,Data Analyst,2864,True,precision,Python,Y
+reed,57156917,Data Analyst,2864,True,precision,Qlik,Y
+reed,57156917,Data Analyst,2864,True,precision,SQL,Y
+reed,57156917,Data Analyst,2864,True,recall,SQL,Y
+reed,57156917,Data Analyst,2864,True,recall,Python,Y
+reed,57156917,Data Analyst,2864,True,recall,AWS,Y
+reed,57156917,Data Analyst,2864,True,recall,ETL,Y
+reed,57156917,Data Analyst,2864,True,recall,Looker,Y
+reed,57166202,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57166202,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57166202,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57166202,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57166202,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57166202,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57166202,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57166202,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57166202,Data Analyst Trainee,5929,True,recall,Tableau,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,precision,Communication,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,precision,Excel,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,precision,Python,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,precision,SAP,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,precision,SQL,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,precision,Stakeholder Management,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,precision,Tableau,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,recall,SQL,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,recall,Python,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,recall,Excel,Y
+reed,57062818,Business Partner Analytics - Technical Analyst,5138,True,recall,Tableau,Y
+adzuna,5808335552,Data Science Analyst - Contract,532,False,precision,Python,Y
+adzuna,5808335552,Data Science Analyst - Contract,532,False,precision,SQL,Y
+adzuna,5808335552,Data Science Analyst - Contract,532,False,recall,SQL,Y
+adzuna,5808335552,Data Science Analyst - Contract,532,False,recall,Python,Y
+reed,57115098,Trainee Data Analyst,5929,True,precision,Excel,Y
+reed,57115098,Trainee Data Analyst,5929,True,precision,Project Management,Y
+reed,57115098,Trainee Data Analyst,5929,True,precision,Python,Y
+reed,57115098,Trainee Data Analyst,5929,True,precision,SQL,Y
+reed,57115098,Trainee Data Analyst,5929,True,precision,Tableau,Y
+reed,57115098,Trainee Data Analyst,5929,True,recall,SQL,Y
+reed,57115098,Trainee Data Analyst,5929,True,recall,Python,Y
+reed,57115098,Trainee Data Analyst,5929,True,recall,Excel,Y
+reed,57115098,Trainee Data Analyst,5929,True,recall,Tableau,Y
+adzuna,5785359517,Data Analyst,513,False,precision,Power BI,Y
+adzuna,5785359517,Data Analyst,513,False,recall,Power BI,Y
+reed,57033571,Data Analyst,2080,True,precision,Communication,Y
+reed,57033571,Data Analyst,2080,True,precision,Excel,Y
+reed,57033571,Data Analyst,2080,True,precision,Power BI,Y
+reed,57033571,Data Analyst,2080,True,precision,SQL,Y
+reed,57033571,Data Analyst,2080,True,recall,Power BI,Y
+reed,57033571,Data Analyst,2080,True,recall,SQL,Y
+reed,57033571,Data Analyst,2080,True,recall,Excel,Y
+reed,57140218,Data Analyst,3904,True,precision,Power BI,Y
+reed,57140218,Data Analyst,3904,True,precision,Python,Y
+reed,57140218,Data Analyst,3904,True,precision,SQL,Y
+reed,57140218,Data Analyst,3904,True,recall,Power BI,Y
+reed,57140218,Data Analyst,3904,True,recall,SQL,Y
+reed,57140218,Data Analyst,3904,True,recall,Python,Y
+reed,57031375,Lead Data Analyst,3164,True,precision,Communication,Y
+reed,57031375,Lead Data Analyst,3164,True,precision,Python,Y
+reed,57031375,Lead Data Analyst,3164,True,precision,Stakeholder Management,Y
+reed,57031375,Lead Data Analyst,3164,True,precision,Statistics,Y
+reed,57031375,Lead Data Analyst,3164,True,recall,Python,Y
+reed,57069135,Data Scientist,4637,True,precision,Git,Y
+reed,57069135,Data Scientist,4637,True,precision,Machine Learning,Y
+reed,57069135,Data Scientist,4637,True,precision,Python,Y
+reed,57069135,Data Scientist,4637,True,precision,Statistics,Y
+reed,57069135,Data Scientist,4637,True,recall,Python,Y
+reed,57108227,Data Analyst,2506,True,precision,Excel,Y
+reed,57108227,Data Analyst,2506,True,precision,SQL,Y
+reed,57108227,Data Analyst,2506,True,recall,SQL,Y
+reed,57108227,Data Analyst,2506,True,recall,Excel,Y
+reed,57148927,AI Business Analyst,1928,True,precision,Communication,Y
+reed,57148927,AI Business Analyst,1928,True,precision,Stakeholder Management,Y
+reed,57161305,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57161305,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57161305,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57161305,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57161305,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57161305,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57161305,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57161305,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57161305,Data Analyst Trainee,5929,True,recall,Tableau,Y
+adzuna,5794322601,Data analyst,513,False,precision,AWS,Y
+adzuna,5794322601,Data analyst,513,False,precision,Data Modelling,Y
+adzuna,5794322601,Data analyst,513,False,recall,AWS,Y
+reed,57130483,Data Analyst,3175,True,precision,Power BI,Y
+reed,57130483,Data Analyst,3175,True,precision,Python,Y
+reed,57130483,Data Analyst,3175,True,precision,SQL,Y
+reed,57130483,Data Analyst,3175,True,precision,Snowflake,Y
+reed,57130483,Data Analyst,3175,True,precision,Tableau,Y
+reed,57130483,Data Analyst,3175,True,precision,dbt,Y
+reed,57130483,Data Analyst,3175,True,recall,Power BI,Y
+reed,57130483,Data Analyst,3175,True,recall,SQL,Y
+reed,57130483,Data Analyst,3175,True,recall,Python,Y
+reed,57130483,Data Analyst,3175,True,recall,Tableau,Y
+reed,57130483,Data Analyst,3175,True,recall,Snowflake,Y
+reed,57088034,Data Analyst,1032,True,precision,Excel,Y
+reed,57088034,Data Analyst,1032,True,precision,Power BI,Y
+reed,57088034,Data Analyst,1032,True,recall,Power BI,Y
+reed,57088034,Data Analyst,1032,True,recall,Excel,Y
+reed,57154863,Housing Regulatory Analyst,3507,True,precision,Power BI,Y
+reed,57154863,Housing Regulatory Analyst,3507,True,precision,SAP,Y
+reed,57154863,Housing Regulatory Analyst,3507,True,precision,Snowflake,Y
+reed,57154863,Housing Regulatory Analyst,3507,True,recall,Power BI,Y
+reed,57154863,Housing Regulatory Analyst,3507,True,recall,Snowflake,Y
+reed,57100464,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57100464,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57100464,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57100464,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57100464,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57100464,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57100464,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57100464,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57100464,Data Analyst Trainee,5929,True,recall,Tableau,Y
+reed,57169866,Data Analyst,2815,True,precision,Communication,Y
+reed,57169866,Data Analyst,2815,True,precision,Looker,Y
+reed,57169866,Data Analyst,2815,True,precision,Power BI,Y
+reed,57169866,Data Analyst,2815,True,precision,SQL,Y
+reed,57169866,Data Analyst,2815,True,precision,Tableau,Y
+reed,57169866,Data Analyst,2815,True,recall,Power BI,Y
+reed,57169866,Data Analyst,2815,True,recall,SQL,Y
+reed,57169866,Data Analyst,2815,True,recall,Tableau,Y
+reed,57169866,Data Analyst,2815,True,recall,Looker,Y
+reed,57143266,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57143266,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57143266,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57143266,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57143266,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57143266,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57143266,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57143266,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57143266,Data Analyst Trainee,5929,True,recall,Tableau,Y
+adzuna,5817554133,Data Analyst,513,False,precision,Salesforce,Y
+reed,57165187,Data Analyst,2724,True,precision,Communication,Y
+reed,57165187,Data Analyst,2724,True,precision,Data Visualisation,Y
+reed,57165187,Data Analyst,2724,True,precision,Power BI,Y
+reed,57165187,Data Analyst,2724,True,precision,Python,Y
+reed,57165187,Data Analyst,2724,True,precision,SQL,Y
+reed,57165187,Data Analyst,2724,True,precision,Stakeholder Management,Y
+reed,57165187,Data Analyst,2724,True,precision,Tableau,Y
+reed,57165187,Data Analyst,2724,True,recall,Power BI,Y
+reed,57165187,Data Analyst,2724,True,recall,SQL,Y
+reed,57165187,Data Analyst,2724,True,recall,Python,Y
+reed,57165187,Data Analyst,2724,True,recall,Tableau,Y
+reed,57161517,Trainee Data Analyst,5929,True,precision,Excel,Y
+reed,57161517,Trainee Data Analyst,5929,True,precision,Project Management,Y
+reed,57161517,Trainee Data Analyst,5929,True,precision,Python,Y
+reed,57161517,Trainee Data Analyst,5929,True,precision,SQL,Y
+reed,57161517,Trainee Data Analyst,5929,True,precision,Tableau,Y
+reed,57161517,Trainee Data Analyst,5929,True,recall,SQL,Y
+reed,57161517,Trainee Data Analyst,5929,True,recall,Python,Y
+reed,57161517,Trainee Data Analyst,5929,True,recall,Excel,Y
+reed,57161517,Trainee Data Analyst,5929,True,recall,Tableau,Y
+adzuna,5804800128,Financial Data Analyst,523,False,precision,Power BI,Y
+adzuna,5804800128,Financial Data Analyst,523,False,recall,Power BI,Y
+reed,57147509,Data Analyst Trainee,5031,True,precision,Excel,Y
+reed,57147509,Data Analyst Trainee,5031,True,precision,Project Management,Y
+reed,57147509,Data Analyst Trainee,5031,True,precision,Python,Y
+reed,57147509,Data Analyst Trainee,5031,True,precision,SQL,Y
+reed,57147509,Data Analyst Trainee,5031,True,precision,Tableau,Y
+reed,57147509,Data Analyst Trainee,5031,True,recall,SQL,Y
+reed,57147509,Data Analyst Trainee,5031,True,recall,Python,Y
+reed,57147509,Data Analyst Trainee,5031,True,recall,Excel,Y
+reed,57147509,Data Analyst Trainee,5031,True,recall,Tableau,Y
+reed,56870728,Data Analyst,1342,True,precision,DAX,Y
+reed,56870728,Data Analyst,1342,True,precision,Power BI,Y
+reed,56870728,Data Analyst,1342,True,precision,Power Query,Y
+reed,56870728,Data Analyst,1342,True,precision,SQL,Y
+reed,56870728,Data Analyst,1342,True,recall,Power BI,Y
+reed,56870728,Data Analyst,1342,True,recall,SQL,Y
+reed,57169827,Business Analyst,5080,True,precision,Agile,Y
+reed,57169827,Business Analyst,5080,True,precision,Communication,Y
+reed,57169827,Business Analyst,5080,True,precision,Figma,Y
+reed,57169827,Business Analyst,5080,True,precision,Stakeholder Management,Y
+reed,57147804,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57147804,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57147804,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57147804,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57147804,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57147804,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57147804,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57147804,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57147804,Data Analyst Trainee,5929,True,recall,Tableau,Y
+adzuna,5790993095,Data Analyst,513,False,precision,Statistics,Y
+adzuna,5813720277,Data Analyst,513,False,precision,Communication,Y
+adzuna,5813720277,Data Analyst,513,False,precision,Data Modelling,Y
+adzuna,5813720277,Data Analyst,513,False,precision,Power BI,Y
+adzuna,5813720277,Data Analyst,513,False,precision,Stakeholder Management,Y
+adzuna,5813720277,Data Analyst,513,False,recall,Power BI,Y
+reed,57149519,Data Analyst / SQL Developer,3758,True,precision,Communication,Y
+reed,57149519,Data Analyst / SQL Developer,3758,True,precision,ETL,Y
+reed,57149519,Data Analyst / SQL Developer,3758,True,precision,Power BI,Y
+reed,57149519,Data Analyst / SQL Developer,3758,True,precision,SQL,Y
+reed,57149519,Data Analyst / SQL Developer,3758,True,recall,Power BI,Y
+reed,57149519,Data Analyst / SQL Developer,3758,True,recall,SQL,Y
+reed,57149519,Data Analyst / SQL Developer,3758,True,recall,ETL,Y
+reed,57153107,KYC & Data Remediation Analyst,1776,True,precision,Excel,Y
+reed,57153107,KYC & Data Remediation Analyst,1776,True,precision,Microsoft Office,Y
+reed,57153107,KYC & Data Remediation Analyst,1776,True,precision,PowerPoint,Y
+reed,57153107,KYC & Data Remediation Analyst,1776,True,recall,Excel,Y
+reed,57147641,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57147641,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57147641,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57147641,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57147641,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57147641,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57147641,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57147641,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57147641,Data Analyst Trainee,5929,True,recall,Tableau,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Azure,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Communication,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Confluence,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Databricks,Y
+reed,57042495,Data Science Analyst,4544,True,precision,DevOps,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Git,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Jira,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Machine Learning,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Python,Y
+reed,57042495,Data Science Analyst,4544,True,precision,SQL,Y
+reed,57042495,Data Science Analyst,4544,True,precision,Statistics,Y
+reed,57042495,Data Science Analyst,4544,True,recall,SQL,Y
+reed,57042495,Data Science Analyst,4544,True,recall,Python,Y
+reed,57042495,Data Science Analyst,4544,True,recall,Azure,Y
+reed,57041884,Demand Analyst,3179,True,precision,Excel,Y
+reed,57041884,Demand Analyst,3179,True,precision,Power BI,Y
+reed,57041884,Demand Analyst,3179,True,precision,Python,Y
+reed,57041884,Demand Analyst,3179,True,recall,Power BI,Y
+reed,57041884,Demand Analyst,3179,True,recall,Python,Y
+reed,57041884,Demand Analyst,3179,True,recall,Excel,Y
+reed,57131454,Geographic Information System Analyst,3712,True,precision,AWS,Y
+reed,57131454,Geographic Information System Analyst,3712,True,precision,Communication,Y
+reed,57131454,Geographic Information System Analyst,3712,True,precision,Power BI,Y
+reed,57131454,Geographic Information System Analyst,3712,True,precision,SQL,Y
+reed,57131454,Geographic Information System Analyst,3712,True,precision,Snowflake,Y
+reed,57131454,Geographic Information System Analyst,3712,True,precision,Stakeholder Management,Y
+reed,57131454,Geographic Information System Analyst,3712,True,recall,Power BI,Y
+reed,57131454,Geographic Information System Analyst,3712,True,recall,SQL,Y
+reed,57131454,Geographic Information System Analyst,3712,True,recall,Snowflake,Y
+reed,57131454,Geographic Information System Analyst,3712,True,recall,AWS,Y
+reed,57166448,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57166448,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57166448,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57166448,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57166448,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57166448,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57166448,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57166448,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57166448,Data Analyst Trainee,5929,True,recall,Tableau,Y
+adzuna,5813720412,Data Analyst,513,False,precision,Excel,Y
+adzuna,5813720412,Data Analyst,513,False,precision,Power BI,Y
+adzuna,5813720412,Data Analyst,513,False,precision,Python,Y
+adzuna,5813720412,Data Analyst,513,False,precision,SQL,Y
+adzuna,5813720412,Data Analyst,513,False,recall,Power BI,Y
+adzuna,5813720412,Data Analyst,513,False,recall,SQL,Y
+adzuna,5813720412,Data Analyst,513,False,recall,Python,Y
+adzuna,5813720412,Data Analyst,513,False,recall,Excel,Y
+adzuna,5805056464,Data Analyst,513,False,precision,Excel,Y
+adzuna,5805056464,Data Analyst,513,False,precision,Looker,Y
+adzuna,5805056464,Data Analyst,513,False,precision,Power BI,Y
+adzuna,5805056464,Data Analyst,513,False,precision,SQL,Y
+adzuna,5805056464,Data Analyst,513,False,precision,Stakeholder Management,Y
+adzuna,5805056464,Data Analyst,513,False,precision,Tableau,Y
+adzuna,5805056464,Data Analyst,513,False,recall,Power BI,Y
+adzuna,5805056464,Data Analyst,513,False,recall,SQL,Y
+adzuna,5805056464,Data Analyst,513,False,recall,Excel,Y
+adzuna,5805056464,Data Analyst,513,False,recall,Tableau,Y
+adzuna,5805056464,Data Analyst,513,False,recall,Looker,Y
+reed,57071025,Placement Analyst,2450,True,precision,Communication,Y
+reed,57071025,Placement Analyst,2450,True,precision,Excel,Y
+reed,57071025,Placement Analyst,2450,True,precision,Project Management,Y
+reed,57071025,Placement Analyst,2450,True,recall,Excel,Y
+reed,57161418,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57161418,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57161418,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57161418,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57161418,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57161418,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57161418,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57161418,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57161418,Data Analyst Trainee,5929,True,recall,Tableau,Y
+adzuna,5787070419,Data Analyst,513,False,precision,Excel,Y
+adzuna,5787070419,Data Analyst,513,False,precision,Power BI,Y
+adzuna,5787070419,Data Analyst,513,False,recall,Power BI,Y
+adzuna,5787070419,Data Analyst,513,False,recall,Excel,Y
+reed,57155420,Income Performance Analyst,4593,True,precision,Agile,Y
+reed,57155420,Income Performance Analyst,4593,True,precision,Communication,Y
+reed,57155420,Income Performance Analyst,4593,True,precision,Data Visualisation,Y
+reed,57155420,Income Performance Analyst,4593,True,precision,Excel,Y
+reed,57155420,Income Performance Analyst,4593,True,precision,Power BI,Y
+reed,57155420,Income Performance Analyst,4593,True,recall,Power BI,Y
+reed,57155420,Income Performance Analyst,4593,True,recall,Excel,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,AWS,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,Airflow,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,Azure,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,CI/CD,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,Communication,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,Databricks,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,DevOps,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,GCP,Y
+reed,57119357,Data Privacy Analyst,3843,True,precision,Snowflake,Y
+reed,57119357,Data Privacy Analyst,3843,True,recall,Snowflake,Y
+reed,57119357,Data Privacy Analyst,3843,True,recall,Azure,Y
+reed,57119357,Data Privacy Analyst,3843,True,recall,AWS,Y
+reed,57161525,Insight Analyst,5419,True,precision,Communication,Y
+reed,57161525,Insight Analyst,5419,True,precision,Excel,Y
+reed,57161525,Insight Analyst,5419,True,precision,Stakeholder Management,Y
+reed,57161525,Insight Analyst,5419,True,recall,Excel,Y
+reed,57098393,Quality Assurance Analyst,5537,True,precision,Communication,Y
+reed,57132308,Trade Operational Systems Analyst,3751,True,precision,Excel,Y
+reed,57132308,Trade Operational Systems Analyst,3751,True,precision,Microsoft Office,Y
+reed,57132308,Trade Operational Systems Analyst,3751,True,recall,Excel,Y
+reed,57105474,Finance Analyst,3360,True,precision,Communication,Y
+reed,57105474,Finance Analyst,3360,True,precision,SAP,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,BigQuery,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,CI/CD,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,Communication,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,Data Modelling,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,ETL,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,GCP,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,Python,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,SQL,Y
+reed,57107723,Senior Data Engineer,5768,True,precision,dbt,Y
+reed,57107723,Senior Data Engineer,5768,True,recall,SQL,Y
+reed,57107723,Senior Data Engineer,5768,True,recall,Python,Y
+reed,57107723,Senior Data Engineer,5768,True,recall,ETL,Y
+reed,57069979,Data Analyst,2549,True,precision,Azure,Y
+reed,57069979,Data Analyst,2549,True,precision,Communication,Y
+reed,57069979,Data Analyst,2549,True,precision,Data Modelling,Y
+reed,57069979,Data Analyst,2549,True,precision,Power BI,Y
+reed,57069979,Data Analyst,2549,True,precision,Python,Y
+reed,57069979,Data Analyst,2549,True,precision,SQL,Y
+reed,57069979,Data Analyst,2549,True,precision,Snowflake,Y
+reed,57069979,Data Analyst,2549,True,recall,Power BI,Y
+reed,57069979,Data Analyst,2549,True,recall,SQL,Y
+reed,57069979,Data Analyst,2549,True,recall,Python,Y
+reed,57069979,Data Analyst,2549,True,recall,Snowflake,Y
+reed,57069979,Data Analyst,2549,True,recall,Azure,Y
+reed,57115261,Data Analyst Trainee,4766,True,precision,Excel,Y
+reed,57115261,Data Analyst Trainee,4766,True,precision,Project Management,Y
+reed,57115261,Data Analyst Trainee,4766,True,precision,Python,Y
+reed,57115261,Data Analyst Trainee,4766,True,precision,SQL,Y
+reed,57115261,Data Analyst Trainee,4766,True,precision,Tableau,Y
+reed,57115261,Data Analyst Trainee,4766,True,recall,SQL,Y
+reed,57115261,Data Analyst Trainee,4766,True,recall,Python,Y
+reed,57115261,Data Analyst Trainee,4766,True,recall,Excel,Y
+reed,57115261,Data Analyst Trainee,4766,True,recall,Tableau,Y
+reed,57071590,Support Analyst,5720,True,precision,Communication,Y
+reed,57071590,Support Analyst,5720,True,precision,SQL,Y
+reed,57071590,Support Analyst,5720,True,recall,SQL,Y
+reed,57136004,Data Analyst,2333,True,precision,Excel,Y
+reed,57136004,Data Analyst,2333,True,precision,Looker,Y
+reed,57136004,Data Analyst,2333,True,precision,Power BI,Y
+reed,57136004,Data Analyst,2333,True,precision,SQL,Y
+reed,57136004,Data Analyst,2333,True,precision,Stakeholder Management,Y
+reed,57136004,Data Analyst,2333,True,precision,Tableau,Y
+reed,57136004,Data Analyst,2333,True,recall,Power BI,Y
+reed,57136004,Data Analyst,2333,True,recall,SQL,Y
+reed,57136004,Data Analyst,2333,True,recall,Excel,Y
+reed,57136004,Data Analyst,2333,True,recall,Tableau,Y
+reed,57136004,Data Analyst,2333,True,recall,Looker,Y
+reed,57138405,Data Analyst Trainee,5929,True,precision,Excel,Y
+reed,57138405,Data Analyst Trainee,5929,True,precision,Project Management,Y
+reed,57138405,Data Analyst Trainee,5929,True,precision,Python,Y
+reed,57138405,Data Analyst Trainee,5929,True,precision,SQL,Y
+reed,57138405,Data Analyst Trainee,5929,True,precision,Tableau,Y
+reed,57138405,Data Analyst Trainee,5929,True,recall,SQL,Y
+reed,57138405,Data Analyst Trainee,5929,True,recall,Python,Y
+reed,57138405,Data Analyst Trainee,5929,True,recall,Excel,Y
+reed,57138405,Data Analyst Trainee,5929,True,recall,Tableau,Y

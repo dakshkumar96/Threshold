@@ -1,0 +1,351 @@
+source,source_job_id,title,field,predicted,correct
+adzuna,5802005386,Data Analyst,sql,False,N/A
+adzuna,5802005386,Data Analyst,python,False,N/A
+adzuna,5802005386,Data Analyst,excel,False,N/A
+adzuna,5802005386,Data Analyst,tableau,False,N/A
+adzuna,5802005386,Data Analyst,power_bi,False,N/A
+adzuna,5802005386,Data Analyst,degree,none,N/A
+adzuna,5802005386,Data Analyst,years_experience,,N/A
+adzuna,5792883497,Data Analyst,sql,False,N/A
+adzuna,5792883497,Data Analyst,python,False,N/A
+adzuna,5792883497,Data Analyst,excel,False,N/A
+adzuna,5792883497,Data Analyst,tableau,False,N/A
+adzuna,5792883497,Data Analyst,power_bi,False,N/A
+adzuna,5792883497,Data Analyst,degree,none,N/A
+adzuna,5792883497,Data Analyst,years_experience,,N/A
+reed,57124998,Data Analyst Trainee,sql,False,N/A
+reed,57124998,Data Analyst Trainee,python,False,N/A
+reed,57124998,Data Analyst Trainee,excel,False,N/A
+reed,57124998,Data Analyst Trainee,tableau,False,N/A
+reed,57124998,Data Analyst Trainee,power_bi,False,N/A
+reed,57124998,Data Analyst Trainee,degree,none,N/A
+reed,57124998,Data Analyst Trainee,years_experience,,N/A
+adzuna,5747468056,Data Analyst,sql,False,N/A
+adzuna,5747468056,Data Analyst,python,False,N/A
+adzuna,5747468056,Data Analyst,excel,False,N/A
+adzuna,5747468056,Data Analyst,tableau,False,N/A
+adzuna,5747468056,Data Analyst,power_bi,False,N/A
+adzuna,5747468056,Data Analyst,degree,none,N/A
+adzuna,5747468056,Data Analyst,years_experience,,N/A
+reed,57156917,Data Analyst,sql,False,N/A
+reed,57156917,Data Analyst,python,False,N/A
+reed,57156917,Data Analyst,excel,False,N/A
+reed,57156917,Data Analyst,tableau,False,N/A
+reed,57156917,Data Analyst,power_bi,False,N/A
+reed,57156917,Data Analyst,degree,none,N/A
+reed,57156917,Data Analyst,years_experience,,N/A
+reed,57141304,Job Analyst,sql,False,N/A
+reed,57141304,Job Analyst,python,False,N/A
+reed,57141304,Job Analyst,excel,False,N/A
+reed,57141304,Job Analyst,tableau,False,N/A
+reed,57141304,Job Analyst,power_bi,False,N/A
+reed,57141304,Job Analyst,degree,none,N/A
+reed,57141304,Job Analyst,years_experience,,N/A
+reed,57166202,Data Analyst Trainee,sql,False,N/A
+reed,57166202,Data Analyst Trainee,python,False,N/A
+reed,57166202,Data Analyst Trainee,excel,False,N/A
+reed,57166202,Data Analyst Trainee,tableau,False,N/A
+reed,57166202,Data Analyst Trainee,power_bi,False,N/A
+reed,57166202,Data Analyst Trainee,degree,none,N/A
+reed,57166202,Data Analyst Trainee,years_experience,,N/A
+reed,57062818,Business Partner Analytics - Technical Analyst,sql,False,N/A
+reed,57062818,Business Partner Analytics - Technical Analyst,python,False,N/A
+reed,57062818,Business Partner Analytics - Technical Analyst,excel,False,N/A
+reed,57062818,Business Partner Analytics - Technical Analyst,tableau,False,N/A
+reed,57062818,Business Partner Analytics - Technical Analyst,power_bi,False,N/A
+reed,57062818,Business Partner Analytics - Technical Analyst,degree,none,N/A
+reed,57062818,Business Partner Analytics - Technical Analyst,years_experience,,N/A
+adzuna,5749288735,Senior Data Analyst,sql,False,N/A
+adzuna,5749288735,Senior Data Analyst,python,False,N/A
+adzuna,5749288735,Senior Data Analyst,excel,False,N/A
+adzuna,5749288735,Senior Data Analyst,tableau,False,N/A
+adzuna,5749288735,Senior Data Analyst,power_bi,False,N/A
+adzuna,5749288735,Senior Data Analyst,degree,none,N/A
+adzuna,5749288735,Senior Data Analyst,years_experience,,N/A
+adzuna,5808335552,Data Science Analyst - Contract,sql,True,Y
+adzuna,5808335552,Data Science Analyst - Contract,python,True,Y
+adzuna,5808335552,Data Science Analyst - Contract,excel,False,N/A
+adzuna,5808335552,Data Science Analyst - Contract,tableau,False,N/A
+adzuna,5808335552,Data Science Analyst - Contract,power_bi,False,N/A
+adzuna,5808335552,Data Science Analyst - Contract,degree,none,N/A
+adzuna,5808335552,Data Science Analyst - Contract,years_experience,,N/A
+reed,56844404,Internal Controls Analyst,sql,False,N/A
+reed,56844404,Internal Controls Analyst,python,False,N/A
+reed,56844404,Internal Controls Analyst,excel,False,N/A
+reed,56844404,Internal Controls Analyst,tableau,False,N/A
+reed,56844404,Internal Controls Analyst,power_bi,False,N/A
+reed,56844404,Internal Controls Analyst,degree,none,N/A
+reed,56844404,Internal Controls Analyst,years_experience,,N/A
+reed,57115098,Trainee Data Analyst,sql,False,N/A
+reed,57115098,Trainee Data Analyst,python,False,N/A
+reed,57115098,Trainee Data Analyst,excel,False,N/A
+reed,57115098,Trainee Data Analyst,tableau,False,N/A
+reed,57115098,Trainee Data Analyst,power_bi,False,N/A
+reed,57115098,Trainee Data Analyst,degree,none,N/A
+reed,57115098,Trainee Data Analyst,years_experience,,N/A
+adzuna,5804122619,Data Analyst - Sustainability,sql,False,N/A
+adzuna,5804122619,Data Analyst - Sustainability,python,False,N/A
+adzuna,5804122619,Data Analyst - Sustainability,excel,False,N/A
+adzuna,5804122619,Data Analyst - Sustainability,tableau,False,N/A
+adzuna,5804122619,Data Analyst - Sustainability,power_bi,False,N/A
+adzuna,5804122619,Data Analyst - Sustainability,degree,none,N/A
+adzuna,5804122619,Data Analyst - Sustainability,years_experience,,N/A
+adzuna,5785359517,Data Analyst,sql,False,N/A
+adzuna,5785359517,Data Analyst,python,False,N/A
+adzuna,5785359517,Data Analyst,excel,False,N/A
+adzuna,5785359517,Data Analyst,tableau,False,N/A
+adzuna,5785359517,Data Analyst,power_bi,True,Y
+adzuna,5785359517,Data Analyst,degree,none,N/A
+adzuna,5785359517,Data Analyst,years_experience,,N/A
+adzuna,5808132494,Data Analyst Trainee,sql,False,N/A
+adzuna,5808132494,Data Analyst Trainee,python,False,N/A
+adzuna,5808132494,Data Analyst Trainee,excel,False,N/A
+adzuna,5808132494,Data Analyst Trainee,tableau,False,N/A
+adzuna,5808132494,Data Analyst Trainee,power_bi,False,N/A
+adzuna,5808132494,Data Analyst Trainee,degree,none,N/A
+adzuna,5808132494,Data Analyst Trainee,years_experience,,N/A
+adzuna,5818225003,Trainee Data Analyst,sql,False,N/A
+adzuna,5818225003,Trainee Data Analyst,python,False,N/A
+adzuna,5818225003,Trainee Data Analyst,excel,False,N/A
+adzuna,5818225003,Trainee Data Analyst,tableau,False,N/A
+adzuna,5818225003,Trainee Data Analyst,power_bi,False,N/A
+adzuna,5818225003,Trainee Data Analyst,degree,none,N/A
+adzuna,5818225003,Trainee Data Analyst,years_experience,,N/A
+reed,57033571,Data Analyst,sql,False,N/A
+reed,57033571,Data Analyst,python,False,N/A
+reed,57033571,Data Analyst,excel,False,N/A
+reed,57033571,Data Analyst,tableau,False,N/A
+reed,57033571,Data Analyst,power_bi,False,N/A
+reed,57033571,Data Analyst,degree,none,N/A
+reed,57033571,Data Analyst,years_experience,,N/A
+adzuna,5799938043,Data Analyst,sql,False,N/A
+adzuna,5799938043,Data Analyst,python,False,N/A
+adzuna,5799938043,Data Analyst,excel,False,N/A
+adzuna,5799938043,Data Analyst,tableau,False,N/A
+adzuna,5799938043,Data Analyst,power_bi,False,N/A
+adzuna,5799938043,Data Analyst,degree,none,N/A
+adzuna,5799938043,Data Analyst,years_experience,,N/A
+adzuna,5798966030,Data Analyst,sql,False,N/A
+adzuna,5798966030,Data Analyst,python,False,N/A
+adzuna,5798966030,Data Analyst,excel,False,N/A
+adzuna,5798966030,Data Analyst,tableau,False,N/A
+adzuna,5798966030,Data Analyst,power_bi,False,N/A
+adzuna,5798966030,Data Analyst,degree,none,N/A
+adzuna,5798966030,Data Analyst,years_experience,,N/A
+reed,57140218,Data Analyst,sql,False,N/A
+reed,57140218,Data Analyst,python,False,N/A
+reed,57140218,Data Analyst,excel,False,N/A
+reed,57140218,Data Analyst,tableau,False,N/A
+reed,57140218,Data Analyst,power_bi,False,N/A
+reed,57140218,Data Analyst,degree,none,N/A
+reed,57140218,Data Analyst,years_experience,,N/A
+reed,57031375,Lead Data Analyst,sql,False,N/A
+reed,57031375,Lead Data Analyst,python,False,N/A
+reed,57031375,Lead Data Analyst,excel,False,N/A
+reed,57031375,Lead Data Analyst,tableau,False,N/A
+reed,57031375,Lead Data Analyst,power_bi,False,N/A
+reed,57031375,Lead Data Analyst,degree,none,N/A
+reed,57031375,Lead Data Analyst,years_experience,,N/A
+reed,57069135,Data Scientist,sql,False,N/A
+reed,57069135,Data Scientist,python,False,N/A
+reed,57069135,Data Scientist,excel,False,N/A
+reed,57069135,Data Scientist,tableau,False,N/A
+reed,57069135,Data Scientist,power_bi,False,N/A
+reed,57069135,Data Scientist,degree,none,N/A
+reed,57069135,Data Scientist,years_experience,,N/A
+reed,57108227,Data Analyst,sql,False,N/A
+reed,57108227,Data Analyst,python,False,N/A
+reed,57108227,Data Analyst,excel,False,N/A
+reed,57108227,Data Analyst,tableau,False,N/A
+reed,57108227,Data Analyst,power_bi,False,N/A
+reed,57108227,Data Analyst,degree,none,N/A
+reed,57108227,Data Analyst,years_experience,,N/A
+reed,57148927,AI Business Analyst,sql,False,N/A
+reed,57148927,AI Business Analyst,python,False,N/A
+reed,57148927,AI Business Analyst,excel,False,N/A
+reed,57148927,AI Business Analyst,tableau,False,N/A
+reed,57148927,AI Business Analyst,power_bi,False,N/A
+reed,57148927,AI Business Analyst,degree,none,N/A
+reed,57148927,AI Business Analyst,years_experience,,N/A
+reed,57161305,Data Analyst Trainee,sql,False,N/A
+reed,57161305,Data Analyst Trainee,python,False,N/A
+reed,57161305,Data Analyst Trainee,excel,False,N/A
+reed,57161305,Data Analyst Trainee,tableau,False,N/A
+reed,57161305,Data Analyst Trainee,power_bi,False,N/A
+reed,57161305,Data Analyst Trainee,degree,none,N/A
+reed,57161305,Data Analyst Trainee,years_experience,,N/A
+adzuna,5794322601,Data analyst,sql,False,N/A
+adzuna,5794322601,Data analyst,python,False,N/A
+adzuna,5794322601,Data analyst,excel,False,N/A
+adzuna,5794322601,Data analyst,tableau,False,N/A
+adzuna,5794322601,Data analyst,power_bi,False,N/A
+adzuna,5794322601,Data analyst,degree,none,N/A
+adzuna,5794322601,Data analyst,years_experience,,N/A
+reed,57130483,Data Analyst,sql,False,N/A
+reed,57130483,Data Analyst,python,False,N/A
+reed,57130483,Data Analyst,excel,False,N/A
+reed,57130483,Data Analyst,tableau,False,N/A
+reed,57130483,Data Analyst,power_bi,False,N/A
+reed,57130483,Data Analyst,degree,none,N/A
+reed,57130483,Data Analyst,years_experience,,N/A
+reed,57088034,Data Analyst,sql,False,N/A
+reed,57088034,Data Analyst,python,False,N/A
+reed,57088034,Data Analyst,excel,True,Y
+reed,57088034,Data Analyst,tableau,False,N/A
+reed,57088034,Data Analyst,power_bi,True,Y
+reed,57088034,Data Analyst,degree,none,N/A
+reed,57088034,Data Analyst,years_experience,,N/A
+adzuna,5800186360,Senior Data Analyst - Growth,sql,False,N/A
+adzuna,5800186360,Senior Data Analyst - Growth,python,False,N/A
+adzuna,5800186360,Senior Data Analyst - Growth,excel,False,N/A
+adzuna,5800186360,Senior Data Analyst - Growth,tableau,False,N/A
+adzuna,5800186360,Senior Data Analyst - Growth,power_bi,False,N/A
+adzuna,5800186360,Senior Data Analyst - Growth,degree,none,N/A
+adzuna,5800186360,Senior Data Analyst - Growth,years_experience,,N/A
+reed,57154863,Housing Regulatory Analyst,sql,False,N/A
+reed,57154863,Housing Regulatory Analyst,python,False,N/A
+reed,57154863,Housing Regulatory Analyst,excel,False,N/A
+reed,57154863,Housing Regulatory Analyst,tableau,False,N/A
+reed,57154863,Housing Regulatory Analyst,power_bi,False,N/A
+reed,57154863,Housing Regulatory Analyst,degree,none,N/A
+reed,57154863,Housing Regulatory Analyst,years_experience,,N/A
+reed,57100464,Data Analyst Trainee,sql,False,N/A
+reed,57100464,Data Analyst Trainee,python,False,N/A
+reed,57100464,Data Analyst Trainee,excel,False,N/A
+reed,57100464,Data Analyst Trainee,tableau,False,N/A
+reed,57100464,Data Analyst Trainee,power_bi,False,N/A
+reed,57100464,Data Analyst Trainee,degree,none,N/A
+reed,57100464,Data Analyst Trainee,years_experience,,N/A
+adzuna,5809118834,Trainee Data Analyst,sql,False,N/A
+adzuna,5809118834,Trainee Data Analyst,python,False,N/A
+adzuna,5809118834,Trainee Data Analyst,excel,False,N/A
+adzuna,5809118834,Trainee Data Analyst,tableau,False,N/A
+adzuna,5809118834,Trainee Data Analyst,power_bi,False,N/A
+adzuna,5809118834,Trainee Data Analyst,degree,none,N/A
+adzuna,5809118834,Trainee Data Analyst,years_experience,,N/A
+reed,57169866,Data Analyst,sql,False,N/A
+reed,57169866,Data Analyst,python,False,N/A
+reed,57169866,Data Analyst,excel,False,N/A
+reed,57169866,Data Analyst,tableau,False,N/A
+reed,57169866,Data Analyst,power_bi,False,N/A
+reed,57169866,Data Analyst,degree,none,N/A
+reed,57169866,Data Analyst,years_experience,,N/A
+adzuna,5805127934,Data Analyst,sql,False,N/A
+adzuna,5805127934,Data Analyst,python,False,N/A
+adzuna,5805127934,Data Analyst,excel,False,N/A
+adzuna,5805127934,Data Analyst,tableau,False,N/A
+adzuna,5805127934,Data Analyst,power_bi,False,N/A
+adzuna,5805127934,Data Analyst,degree,none,N/A
+adzuna,5805127934,Data Analyst,years_experience,,N/A
+reed,57143266,Data Analyst Trainee,sql,False,N/A
+reed,57143266,Data Analyst Trainee,python,False,N/A
+reed,57143266,Data Analyst Trainee,excel,False,N/A
+reed,57143266,Data Analyst Trainee,tableau,False,N/A
+reed,57143266,Data Analyst Trainee,power_bi,False,N/A
+reed,57143266,Data Analyst Trainee,degree,none,N/A
+reed,57143266,Data Analyst Trainee,years_experience,,N/A
+adzuna,5817554133,Data Analyst,sql,False,N/A
+adzuna,5817554133,Data Analyst,python,False,N/A
+adzuna,5817554133,Data Analyst,excel,False,N/A
+adzuna,5817554133,Data Analyst,tableau,False,N/A
+adzuna,5817554133,Data Analyst,power_bi,False,N/A
+adzuna,5817554133,Data Analyst,degree,none,N/A
+adzuna,5817554133,Data Analyst,years_experience,,N/A
+adzuna,5817429308,Data Analyst Trainee,sql,False,N/A
+adzuna,5817429308,Data Analyst Trainee,python,False,N/A
+adzuna,5817429308,Data Analyst Trainee,excel,False,N/A
+adzuna,5817429308,Data Analyst Trainee,tableau,False,N/A
+adzuna,5817429308,Data Analyst Trainee,power_bi,False,N/A
+adzuna,5817429308,Data Analyst Trainee,degree,none,N/A
+adzuna,5817429308,Data Analyst Trainee,years_experience,,N/A
+reed,57165187,Data Analyst,sql,False,N/A
+reed,57165187,Data Analyst,python,False,N/A
+reed,57165187,Data Analyst,excel,False,N/A
+reed,57165187,Data Analyst,tableau,False,N/A
+reed,57165187,Data Analyst,power_bi,False,N/A
+reed,57165187,Data Analyst,degree,none,N/A
+reed,57165187,Data Analyst,years_experience,,N/A
+adzuna,5809724157,Senior Data Analyst,sql,False,N/A
+adzuna,5809724157,Senior Data Analyst,python,False,N/A
+adzuna,5809724157,Senior Data Analyst,excel,False,N/A
+adzuna,5809724157,Senior Data Analyst,tableau,False,N/A
+adzuna,5809724157,Senior Data Analyst,power_bi,False,N/A
+adzuna,5809724157,Senior Data Analyst,degree,none,N/A
+adzuna,5809724157,Senior Data Analyst,years_experience,,N/A
+adzuna,5741144130,Data Analyst,sql,False,N/A
+adzuna,5741144130,Data Analyst,python,False,N/A
+adzuna,5741144130,Data Analyst,excel,False,N/A
+adzuna,5741144130,Data Analyst,tableau,False,N/A
+adzuna,5741144130,Data Analyst,power_bi,False,N/A
+adzuna,5741144130,Data Analyst,degree,none,N/A
+adzuna,5741144130,Data Analyst,years_experience,,N/A
+adzuna,5786752438,Data Analyst,sql,False,N/A
+adzuna,5786752438,Data Analyst,python,False,N/A
+adzuna,5786752438,Data Analyst,excel,False,N/A
+adzuna,5786752438,Data Analyst,tableau,False,N/A
+adzuna,5786752438,Data Analyst,power_bi,False,N/A
+adzuna,5786752438,Data Analyst,degree,none,N/A
+adzuna,5786752438,Data Analyst,years_experience,,N/A
+adzuna,5790938367,Data Analyst Trainee,sql,False,N/A
+adzuna,5790938367,Data Analyst Trainee,python,False,N/A
+adzuna,5790938367,Data Analyst Trainee,excel,False,N/A
+adzuna,5790938367,Data Analyst Trainee,tableau,False,N/A
+adzuna,5790938367,Data Analyst Trainee,power_bi,False,N/A
+adzuna,5790938367,Data Analyst Trainee,degree,none,N/A
+adzuna,5790938367,Data Analyst Trainee,years_experience,,N/A
+reed,57161517,Trainee Data Analyst,sql,False,N/A
+reed,57161517,Trainee Data Analyst,python,False,N/A
+reed,57161517,Trainee Data Analyst,excel,False,N/A
+reed,57161517,Trainee Data Analyst,tableau,False,N/A
+reed,57161517,Trainee Data Analyst,power_bi,False,N/A
+reed,57161517,Trainee Data Analyst,degree,none,N/A
+reed,57161517,Trainee Data Analyst,years_experience,,N/A
+adzuna,5818225172,Data Analyst Trainee,sql,False,N/A
+adzuna,5818225172,Data Analyst Trainee,python,False,N/A
+adzuna,5818225172,Data Analyst Trainee,excel,False,N/A
+adzuna,5818225172,Data Analyst Trainee,tableau,False,N/A
+adzuna,5818225172,Data Analyst Trainee,power_bi,False,N/A
+adzuna,5818225172,Data Analyst Trainee,degree,none,N/A
+adzuna,5818225172,Data Analyst Trainee,years_experience,,N/A
+adzuna,5781531084,Data Analyst,sql,False,N/A
+adzuna,5781531084,Data Analyst,python,False,N/A
+adzuna,5781531084,Data Analyst,excel,False,N/A
+adzuna,5781531084,Data Analyst,tableau,False,N/A
+adzuna,5781531084,Data Analyst,power_bi,False,N/A
+adzuna,5781531084,Data Analyst,degree,none,N/A
+adzuna,5781531084,Data Analyst,years_experience,,N/A
+adzuna,5804800128,Financial Data Analyst,sql,False,N/A
+adzuna,5804800128,Financial Data Analyst,python,False,N/A
+adzuna,5804800128,Financial Data Analyst,excel,False,N/A
+adzuna,5804800128,Financial Data Analyst,tableau,False,N/A
+adzuna,5804800128,Financial Data Analyst,power_bi,True,Y
+adzuna,5804800128,Financial Data Analyst,degree,none,N/A
+adzuna,5804800128,Financial Data Analyst,years_experience,,N/A
+reed,57147509,Data Analyst Trainee,sql,False,N/A
+reed,57147509,Data Analyst Trainee,python,False,N/A
+reed,57147509,Data Analyst Trainee,excel,False,N/A
+reed,57147509,Data Analyst Trainee,tableau,False,N/A
+reed,57147509,Data Analyst Trainee,power_bi,False,N/A
+reed,57147509,Data Analyst Trainee,degree,none,N/A
+reed,57147509,Data Analyst Trainee,years_experience,,N/A
+adzuna,5790938419,Data Analyst Trainee,sql,False,N/A
+adzuna,5790938419,Data Analyst Trainee,python,False,N/A
+adzuna,5790938419,Data Analyst Trainee,excel,False,N/A
+adzuna,5790938419,Data Analyst Trainee,tableau,False,N/A
+adzuna,5790938419,Data Analyst Trainee,power_bi,False,N/A
+adzuna,5790938419,Data Analyst Trainee,degree,none,N/A
+adzuna,5790938419,Data Analyst Trainee,years_experience,,N/A
+reed,56870728,Data Analyst,sql,False,N/A
+reed,56870728,Data Analyst,python,False,N/A
+reed,56870728,Data Analyst,excel,False,N/A
+reed,56870728,Data Analyst,tableau,False,N/A
+reed,56870728,Data Analyst,power_bi,True,Y
+reed,56870728,Data Analyst,degree,none,N/A
+reed,56870728,Data Analyst,years_experience,,N/A
+reed,57169827,Business Analyst,sql,False,N/A
+reed,57169827,Business Analyst,python,False,N/A
+reed,57169827,Business Analyst,excel,False,N/A
+reed,57169827,Business Analyst,tableau,False,N/A
+reed,57169827,Business Analyst,power_bi,False,N/A
+reed,57169827,Business Analyst,degree,none,N/A
+reed,57169827,Business Analyst,years_experience,,N/A
