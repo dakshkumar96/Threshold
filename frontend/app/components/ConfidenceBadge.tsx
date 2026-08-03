@@ -1,10 +1,26 @@
 "use client";
 
 import type { ReactNode } from "react";
-import InfoTip from "./InfoTip";
-import { VISA_CONTENT } from "@/lib/visa-content";
+import { useEffect, useRef, useState } from "react";
 
 type Confidence = "verified" | "likely" | "possible" | string;
+
+function tipFor(
+  confidence?: Confidence | null,
+  matchScore?: number | null,
+): string {
+  if (confidence === "verified") {
+    return "Fetched from the company's own careers page via Greenhouse, Ashby, Workable or Recruitee. Employer identity is certain.";
+  }
+  if (confidence === "possible") {
+    return "Weak name match or recruitment agency posting. The true employer identity is not confirmed.";
+  }
+  const score =
+    matchScore != null && Number.isFinite(matchScore)
+      ? `${Math.round(matchScore)}`
+      : "high";
+  return `Employer name matched to the sponsor register at ${score}% confidence. Accurate in about 59 of 100 cases in manual tests.`;
+}
 
 export default function ConfidenceBadge({
   confidence,
@@ -17,49 +33,77 @@ export default function ConfidenceBadge({
   source?: string;
   showTip?: boolean;
 }) {
-  const tip = VISA_CONTENT.confidenceTiers;
+  const [open, setOpen] = useState(false);
+  const hideTimer = useRef<number | null>(null);
   const scoreLabel =
     matchScore != null && confidence !== "verified"
       ? ` · ${matchScore}% name match`
       : "";
 
+  useEffect(() => {
+    return () => {
+      if (hideTimer.current) window.clearTimeout(hideTimer.current);
+    };
+  }, []);
+
+  function show() {
+    if (hideTimer.current) {
+      window.clearTimeout(hideTimer.current);
+      hideTimer.current = null;
+    }
+    setOpen(true);
+  }
+
+  function hide() {
+    if (hideTimer.current) window.clearTimeout(hideTimer.current);
+    hideTimer.current = window.setTimeout(() => setOpen(false), 100);
+  }
+
   let chip: ReactNode;
   if (confidence === "verified") {
     chip = (
-      <span className="inline-flex items-center gap-1 rounded-full border border-[rgba(29,184,116,0.3)] bg-signal-soft px-2.5 py-1 text-[11px] font-medium text-signal">
+      <span className="badge-glass badge-verified conf-badge-pill inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium">
         ✓ Verified sponsor
       </span>
     );
   } else if (confidence === "possible") {
     chip = (
-      <span className="inline-flex items-center rounded-full border border-dashed border-[rgba(146,97,10,0.4)] bg-warning-soft px-2.5 py-1 text-[11px] font-medium text-warning">
+      <span className="badge-glass badge-possible conf-badge-pill inline-flex items-center rounded-full border-dashed px-2.5 py-1 text-[11px] font-medium">
         Possible sponsor{scoreLabel}
       </span>
     );
   } else {
     chip = (
-      <span className="inline-flex items-center rounded-full border border-[rgba(245,166,35,0.3)] bg-gold-pale px-2.5 py-1 text-[11px] font-medium text-gold-dark">
+      <span className="badge-glass badge-likely conf-badge-pill inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium">
         Likely sponsor{scoreLabel}
       </span>
     );
   }
 
+  if (!showTip) {
+    return <span className="inline-flex items-center gap-1.5">{chip}</span>;
+  }
+
   return (
-    <span className="inline-flex items-center gap-1.5">
+    <span
+      className="conf-badge"
+      onMouseEnter={show}
+      onMouseLeave={hide}
+      onFocus={show}
+      onBlur={hide}
+    >
       {chip}
-      {showTip ? (
-        <InfoTip label={tip.label}>
-          <span className="block">{tip.body}</span>
-          {confidence === "verified" && source ? (
-            <span className="mt-2 block text-[0.8rem] opacity-85">
-              This role came from the company&apos;s {source} board.
-            </span>
-          ) : null}
-          <span className="mt-2 block">
-            <a href={tip.href}>{tip.linkLabel}</a>
-          </span>
-        </InfoTip>
-      ) : null}
+      <span
+        className="conf-badge__tip"
+        data-open={open ? "true" : "false"}
+        role="tooltip"
+      >
+        {tipFor(confidence, matchScore)}
+        {confidence === "verified" && source
+          ? ` This role came from the company's ${source} board.`
+          : ""}
+        <i className="conf-badge__arrow" aria-hidden />
+      </span>
     </span>
   );
 }

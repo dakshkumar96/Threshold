@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import ConfidenceBadge from "./ConfidenceBadge";
 import InfoTip from "./InfoTip";
+import AgencyWarningChip from "./results/AgencyWarningChip";
 import { VISA_CONTENT } from "@/lib/visa-content";
 
 export type SponsorItem = {
@@ -42,18 +43,24 @@ export default function SponsorCard({ sponsor }: { sponsor: SponsorItem }) {
       data-confidence={sponsor.sponsor_confidence ?? ""}
       style={{
         padding: "1.25rem",
-        borderColor: isVerified ? "rgba(29,184,116,0.3)" : undefined,
+        borderColor: isVerified ? "rgba(16,185,129,0.3)" : undefined,
         background: isVerified
-          ? "linear-gradient(180deg,rgba(29,184,116,0.04) 0%,transparent 32%),var(--color-paper)"
+          ? "linear-gradient(180deg,rgba(16,185,129,0.06) 0%,transparent 32%),rgba(255,255,255,0.55)"
           : undefined,
       }}
     >
       <div className="flex flex-wrap items-center gap-2">
-        <ConfidenceBadge
-          confidence={sponsor.sponsor_confidence}
-          matchScore={sponsor.match_score}
-          source={sponsor.source}
-        />
+        <div>
+          <ConfidenceBadge
+            confidence={sponsor.sponsor_confidence}
+            matchScore={sponsor.match_score}
+            source={sponsor.source}
+          />
+          <AgencyWarningChip
+            companyRaw={sponsor.company}
+            confidence={sponsor.sponsor_confidence}
+          />
+        </div>
         {sponsor.stability_band ? (
           <span className="inline-flex items-center gap-1 rounded-full border border-line px-2.5 py-1 text-[11px] font-medium text-ink-soft">
             {sponsor.stability_band}
