@@ -35,7 +35,13 @@ from cv_feedback import (  # noqa: E402
     skills_to_learn_from_gaps,
     where_you_are_from_match,
 )
-from dynamic_skills import match_cv_to_skills, skill_frequencies  # noqa: E402
+from dynamic_skills import (  # noqa: E402
+    extract_skills_from_text,
+    match_cv_to_skills,
+    skill_frequencies,
+    _essential_flag,
+    _job_description_text,
+)
 from experience_level import filter_jobs_by_experience  # noqa: E402
 from job_schema import load_env, utc_now_iso  # noqa: E402
 from match_sponsors import match_jobs_to_sponsors  # noqa: E402
@@ -45,7 +51,7 @@ from run_jobs_pipeline import JobFetchError, fetch_all_jobs  # noqa: E402
 
 load_env()
 
-MAX_PER_SOURCE = int(os.getenv("ANALYZE_MAX_PER_SOURCE", "40"))
+MAX_PER_SOURCE = int(os.getenv("ANALYZE_MAX_PER_SOURCE", "100"))
 MAX_REED_ENRICH = int(os.getenv("ANALYZE_MAX_REED_ENRICH", "30"))
 MAX_ATS_BOARDS = int(os.getenv("ANALYZE_MAX_ATS_BOARDS", "12"))
 MAX_CV_BYTES = 5 * 1024 * 1024  # 5 MB
@@ -60,6 +66,83 @@ TENURE_CAVEAT = (
     "Licence tenure from our register archive (left-truncated) - "
     "not a guarantee of active hiring"
 )
+SKILLED_WORKER_GENERAL_MIN = 41_700.0
+SKILLED_WORKER_NEW_ENTRANT_MIN = 33_400.0
+
+
+def _salary_vs_threshold(
+    smin: float | None,
+    smax: float | None,
+    threshold: float = SKILLED_WORKER_GENERAL_MIN,
+) -> str:
+    """Classify stated pay vs the applicable Skilled Worker floor."""
+    if smin is None and smax is None:
+        return "unknown"
+    if (smax is not None and smax >= threshold) or (
+        smin is not None and smin >= threshold
+    ):
+        return "above"
+    # Known stated top of range below floor (or only-max / only-min below)
+    hi = smax if smax is not None else smin
+    if hi is not None and hi < threshold:
+        return "below"
+    return "unknown"
+
+
+def _cv_skill_set(cv_text: str) -> set[str]:
+    return {s.lower() for s in extract_skills_from_text(cv_text or "")}
+
+
+def _jd_skill_payload(
+    row: Any, cv_skills: set[str] | None
+) -> dict[str, Any]:
+    """Per-role skill extract + optional CV overlap for one sponsor row."""
+    try:
+        text = _job_description_text(row)
+    except Exception:
+        text = str(row.get("description") or row.get("title") or "")
+    cleaned = (text or "").strip()
+    if len(cleaned) < 40:
+        return {
+            "jd_skills": [],
+            "jd_text_limited": True,
+            "cv_overlap_count": None,
+            "cv_overlap_total": None,
+            "cv_matched_skills": [],
+            "cv_missing_skills": [],
+            "description_excerpt": cleaned[:400] if cleaned else None,
+        }
+
+    skills = extract_skills_from_text(cleaned)[:15]
+    jd_skills: list[dict[str, Any]] = []
+    for s in skills:
+        flag = _essential_flag(cleaned, s)
+        jd_skills.append(
+            {
+                "skill": s,
+                "essential": flag == "essential",
+            }
+        )
+
+    matched: list[str] = []
+    missing: list[str] = []
+    if cv_skills is not None and jd_skills:
+        for item in jd_skills:
+            name = str(item["skill"])
+            if name.lower() in cv_skills:
+                matched.append(name)
+            else:
+                missing.append(name)
+
+    return {
+        "jd_skills": jd_skills,
+        "jd_text_limited": False,
+        "cv_overlap_count": len(matched) if cv_skills is not None else None,
+        "cv_overlap_total": len(jd_skills) if cv_skills is not None else None,
+        "cv_matched_skills": matched,
+        "cv_missing_skills": missing,
+        "description_excerpt": cleaned[:1200],
+    }
 DAYS_PER_YEAR = 365
 ESTABLISHED_DAYS = 5 * DAYS_PER_YEAR
 MODERATE_DAYS = 2 * DAYS_PER_YEAR
@@ -243,18 +326,17 @@ def _require_analyze_user(
     authorization: str | None,
     x_analyze_key: str | None,
 ) -> None:
-    """Prefer X-Analyze-Key when configured; otherwise require a Clerk Bearer JWT."""
+    """Optional auth: enforce X-Analyze-Key when set; otherwise allow guest search."""
     expected = os.getenv("ANALYZE_API_KEY", "").strip()
     if expected:
         _check_analyze_key(x_analyze_key)
         return
-    if not authorization or not authorization.lower().startswith("bearer "):
-        raise HTTPException(
-            status_code=401,
-            detail="Sign in required to run a search.",
-        )
-    token = authorization.split(" ", 1)[1].strip()
-    user_routes._verify_clerk_jwt(token)
+    # Guests can search. If a Bearer token is present, validate it so signed-in
+    # clients fail closed on bad tokens rather than silently proceeding.
+    if authorization and authorization.lower().startswith("bearer "):
+        token = authorization.split(" ", 1)[1].strip()
+        if token:
+            user_routes._verify_clerk_jwt(token)
 
 
 @app.get("/health")
@@ -453,6 +535,7 @@ async def analyze(
     cv_text: str = Form(""),
     min_salary: str = Form(""),
     experience_level: str = Form(""),
+    is_new_entrant: str = Form(""),
     x_analyze_key: str | None = Header(default=None, alias="X-Analyze-Key"),
     authorization: str | None = Header(default=None),
 ) -> dict[str, Any]:
@@ -462,6 +545,14 @@ async def analyze(
     role = (role or "").strip()
     if len(role) < 2:
         raise HTTPException(status_code=400, detail="Role is required.")
+
+    new_entrant_raw = (is_new_entrant or "").strip().lower()
+    new_entrant = new_entrant_raw in {"1", "true", "yes", "on"}
+    salary_threshold = (
+        SKILLED_WORKER_NEW_ENTRANT_MIN
+        if new_entrant
+        else SKILLED_WORKER_GENERAL_MIN
+    )
 
     exp_raw = (experience_level or "").strip().lower()
     if exp_raw in {"", "any", "all"}:
@@ -599,8 +690,19 @@ async def analyze(
     top_from_sponsors = not sponsor_rows.empty
     company_source = sponsor_rows if top_from_sponsors else matched
 
-    sponsors_out = _build_sponsor_list(sponsor_rows, retention)
-    possible_out = _build_sponsor_list(possible_rows, retention, possible=True)
+    sponsors_out = _build_sponsor_list(
+        sponsor_rows,
+        retention,
+        cv_text=text if has_cv else None,
+        salary_threshold=salary_threshold,
+    )
+    possible_out = _build_sponsor_list(
+        possible_rows,
+        retention,
+        possible=True,
+        cv_text=text if has_cv else None,
+        salary_threshold=salary_threshold,
+    )
     sponsors_out.extend(possible_out)
 
     top_companies = _top_hiring_companies(company_source, retention)
@@ -616,7 +718,7 @@ async def analyze(
     ]
 
     cv_feedback = None
-    llm_message = "Upload a CV to unlock match score, skill gaps, and recruiter review."
+    llm_message = "Upload a CV to get a match score, skill gaps, and recruiter review."
     skills_to_learn: list[dict[str, Any]] = []
     where_you_are: str | None = None
     if has_cv and scored is not None:
@@ -698,12 +800,14 @@ async def analyze(
         "skills_to_learn": skills_to_learn,
         "llm_message": llm_message,
         "stability_caveat": TENURE_CAVEAT,
+        "skilled_worker_salary_threshold": salary_threshold,
+        "is_new_entrant": new_entrant,
         "accuracy_note": (
-            f"Skills counted primarily from Reed full-text JDs ({n_full} in this batch; "
-            "Adzuna snippets are truncated by their API). "
-            "ATS board roles = verified employer identity; "
-            "name match >=90 = likely, 80-89 = possible (~59% precision, n=100). "
-            "See ACCURACY.md."
+            "Verified jobs are from company careers pages and identity is certain. "
+            "Likely and Possible jobs are name-matched to the register and accurate "
+            "in about 59 of 100 cases in our tests. Skills are counted from Reed "
+            "full-text job descriptions where available. See ACCURACY.md for the "
+            "full methodology."
         ),
         "chart": {
             "top_companies": top_companies,
@@ -771,9 +875,13 @@ def _build_sponsor_list(
     *,
     possible: bool = False,
     limit: int = 40,
+    cv_text: str | None = None,
+    salary_threshold: float = SKILLED_WORKER_GENERAL_MIN,
 ) -> list[dict[str, Any]]:
     if df.empty:
         return []
+
+    cv_skills = _cv_skill_set(cv_text) if cv_text else None
 
     rows = df.copy()
     bands: list[str] = []
@@ -822,10 +930,13 @@ def _build_sponsor_list(
         smin = _as_float(row.get("salary_min"))
         smax = _as_float(row.get("salary_max"))
         matched_sponsor = row.get("matched_company_key") or row.get("company_key")
+        jd = _jd_skill_payload(row, cv_skills)
+        company_raw = row.get("company_raw")
         out.append(
             {
                 "title": row.get("title"),
-                "company": row.get("company_raw"),
+                "company": company_raw,
+                "company_raw": company_raw,
                 "matched_sponsor": matched_sponsor,
                 "match_score": None
                 if ms is None or (isinstance(ms, float) and pd.isna(ms))
@@ -840,8 +951,18 @@ def _build_sponsor_list(
                 "salary_min": smin,
                 "salary_max": smax,
                 "salary_display": _format_salary(smin, smax),
+                "salary_vs_threshold": _salary_vs_threshold(
+                    smin, smax, salary_threshold
+                ),
                 "url": row.get("url"),
                 "source": row.get("source"),
+                "jd_skills": jd["jd_skills"],
+                "jd_text_limited": jd["jd_text_limited"],
+                "cv_overlap_count": jd["cv_overlap_count"],
+                "cv_overlap_total": jd["cv_overlap_total"],
+                "cv_matched_skills": jd["cv_matched_skills"],
+                "cv_missing_skills": jd["cv_missing_skills"],
+                "description_excerpt": jd["description_excerpt"],
             }
         )
     return out
