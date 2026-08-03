@@ -26,7 +26,7 @@ export const VISA_CONTENT = {
   },
   confidenceTiers: {
     label: "Confidence tiers",
-    body: "Verified means the role came from the company's own supported job board, so employer identity is certain. Likely means a strong name match to the Home Office register (not certain). Possible means a weaker match or agency listing - treat it as a lead to check, not proof of sponsorship.",
+    body: "Name-matched sponsors are correct in approximately 59 of 100 cases in manual tests. ATS-verified sponsors are identity-certain.",
     href: "/methodology",
     linkLabel: "How we score confidence",
   },

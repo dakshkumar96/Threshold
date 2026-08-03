@@ -56,6 +56,7 @@ export type AnalyzeResponse = {
   sponsors: {
     title: string;
     company: string;
+    company_raw?: string | null;
     matched_sponsor: string;
     match_score: number | null;
     stability_band: string | null;
@@ -69,8 +70,16 @@ export type AnalyzeResponse = {
     salary_min?: number | null;
     salary_max?: number | null;
     salary_display?: string | null;
+    salary_vs_threshold?: "above" | "below" | "unknown" | string | null;
     url: string;
     source: string;
+    jd_skills?: { skill: string; essential?: boolean }[];
+    jd_text_limited?: boolean;
+    cv_overlap_count?: number | null;
+    cv_overlap_total?: number | null;
+    cv_matched_skills?: string[];
+    cv_missing_skills?: string[];
+    description_excerpt?: string | null;
   }[];
   top_companies: {
     company: string;
@@ -81,6 +90,8 @@ export type AnalyzeResponse = {
     stability_tooltip?: string | null;
     long_standing_licence?: boolean;
   }[];
+  skilled_worker_salary_threshold?: number;
+  is_new_entrant?: boolean;
   cv_text_chars: number;
   cv_feedback: {
     first_impression?: string | null;
@@ -159,6 +170,7 @@ export async function analyzeRole(
   file?: File | null,
   minSalary?: number | null,
   experienceLevel?: ExperienceLevel | string | null,
+  isNewEntrant?: boolean | null,
 ): Promise<AnalyzeResponse> {
   const form = new FormData();
   form.append("role", role);
@@ -173,6 +185,7 @@ export async function analyzeRole(
   } else {
     form.append("experience_level", "any");
   }
+  form.append("is_new_entrant", isNewEntrant ? "true" : "false");
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), ANALYZE_TIMEOUT_MS);

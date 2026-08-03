@@ -19,6 +19,7 @@ export type UserPreferences = {
   locations: string | null;
   email_alerts: boolean;
   cv_filename: string | null;
+  is_new_entrant?: boolean;
   updated_at?: string | null;
 };
 
@@ -131,6 +132,7 @@ export function useUserApi() {
         locations: "",
         email_alerts: false,
         cv_filename: null,
+        is_new_entrant: false,
       };
     }
     return res.json();
