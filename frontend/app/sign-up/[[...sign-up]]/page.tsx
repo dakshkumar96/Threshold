@@ -1,22 +1,17 @@
 import { SignUp } from "@clerk/nextjs";
-import SiteNav from "@/app/components/SiteNav";
+import AuthShell, { clerkAuthAppearance } from "@/app/components/AuthShell";
 
 export default function SignUpPage() {
   return (
-    <>
-      <SiteNav />
-      <main className="shell shell--pad-top flex min-h-[70dvh] items-center justify-center px-4 py-12">
-        <SignUp
-          fallbackRedirectUrl="/search"
-          signInUrl="/sign-in"
-          appearance={{
-            elements: {
-              rootBox: "mx-auto",
-              card: "shadow-none border border-[var(--color-line)]",
-            },
-          }}
-        />
-      </main>
-    </>
+    <AuthShell
+      title="Create account"
+      subtitle="Create your account in under a minute."
+    >
+      <SignUp
+        fallbackRedirectUrl="/search"
+        signInUrl="/sign-in"
+        appearance={clerkAuthAppearance}
+      />
+    </AuthShell>
   );
 }
