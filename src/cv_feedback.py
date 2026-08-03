@@ -27,8 +27,9 @@ LABEL = (
     "structured recruiter feedback — subjective narrative, not a hiring prediction"
 )
 
-# Keep prompt + max_tokens well under Groq free TPM (~12k for llama-3.3-70b).
-_MAX_COMPLETION_TOKENS = 2200
+# Keep prompt + max_tokens under Groq free TPM (~12k for llama-3.3-70b).
+# Higher completion budget so detailed scorecard + rewrites are not truncated.
+_MAX_COMPLETION_TOKENS = 3200
 _PROMPT_CHAR_SOFT_LIMIT = 18000
 
 
@@ -151,16 +152,18 @@ def _strip_summary_block(content: str) -> str:
 
 
 def _to_plain_text(report: str) -> str:
-    """Strip markdown so the UI shows readable plain text."""
+    """Normalise LLM output while keeping SECTION headers and '- ' bullets."""
     text = report or ""
     text = re.sub(r"```.*?```", "", text, flags=re.S)
     text = re.sub(r"^#{1,6}\s*", "", text, flags=re.M)
     text = re.sub(r"\*\*(.+?)\*\*", r"\1", text)
-    text = re.sub(r"\*(.+?)\*", r"\1", text)
+    text = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"\1", text)
     text = re.sub(r"`([^`]+)`", r"\1", text)
+    # Drop markdown tables; keep SECTION / bullet structure for the UI parser.
     text = re.sub(r"^\|.*\|$", "", text, flags=re.M)
-    text = re.sub(r"^[-*•]\s+", "", text, flags=re.M)
     text = re.sub(r"^---+\s*$", "", text, flags=re.M)
+    # Normalise bullet markers to "- "
+    text = re.sub(r"^[\*•]\s+", "- ", text, flags=re.M)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 
@@ -214,9 +217,12 @@ def generate_cv_feedback(
     )
     system_content = (
         built["system_prompt"]
-        + "\n\nIMPORTANT: Your visible report must be PLAIN TEXT only. "
-        "No markdown formatting. Lead with WHERE YOU ARE NOW and "
-        "SKILLS TO LEARN FOR SPONSORED ROLES."
+        + "\n\nIMPORTANT: Your visible report must be PLAIN TEXT only "
+        "(SECTION: Title headers and '- ' bullets). No markdown. "
+        "Lead with WHERE YOU ARE NOW and SKILLS TO LEARN FOR SPONSORED ROLES. "
+        "SECTION: Scores must list all five rubric categories as "
+        "'Label: NN/20 — reason' with a concrete CV-based explanation "
+        "on every line, then Total: NN/100. Be detailed — quote CV lines."
     )
     # Last-resort shrink if somehow still over soft budget.
     if len(system_content) + len(user_prompt) > _PROMPT_CHAR_SOFT_LIMIT:
