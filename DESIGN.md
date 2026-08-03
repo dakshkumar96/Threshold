@@ -2,29 +2,23 @@
 
 ## Verdict
 
-**Ship.** Public landing plus signed-in SaaS shell: home dashboard, search/results, insights charts from register archive + last search, solutions guides and sponsorship checker, profile with saved searches. Warm paper theme; amber CTA; green for verified evidence. Clerk auth when keys are configured.
+**Ship.** Public landing plus signed-in SaaS shell: home dashboard, search/results, insights charts from register archive + last search, solutions guides and sponsorship checker, profile with saved searches. Soft indigo–lavender glass theme; indigo CTA; green for verified evidence. Clerk auth when keys are configured.
 
 ## Direction
 
 - **Thesis:** Sponsor evidence as a calm signal desk; refuses the noisy job-board dashboard.
-- **Own-world:** Warm off-white paper, near-black type, amber action, green only for confirmed evidence.
-- **Story:** Landing for guests; home + search for members; guides and checker for the journey around search.
-- **Stack:** Next 15 App Router, Clerk, Tailwind v4, Phosphor, Recharts on Insights only.
+- **Own-world:** Soft blue-to-lavender page gradient, frosted glass cards, deep indigo type, indigo action, green only for confirmed evidence. Landing mirrors a SaaS reference composition: floating hero dashboard mockup, icon feature grid, chart “metric moment”, bento demos, integrations hub — all fed by existing copy and `insights.json`, never invented testimonials/pricing/partners.
+- **Story:** Landing for guests; signed-in app shell with glass sidebar + top bar; home + search for members; guides and checker for the journey around search.
+- **Stack:** Next 15 App Router, Clerk, Tailwind v4, Phosphor, Recharts, Framer Motion.
 
 
 ## Colour system
 
-Tokens live in the `@theme` block of `frontend/app/globals.css`. Canvas `#f8f7f4`, cards `#ffffff`, ink `#0f1117`, body `#3d4152`. Amber (`#f5a623` and family) is the only action colour; green (`#0a6640` on `#d4f5e6`) means confirmed; yellow means uncertain; red is reserved for a genuine legal blocker.
+Tokens live in the `@theme` block of `frontend/app/globals.css`. Page canvas is a fixed full-scroll gradient (`#EEF2FF` → `#E8F4FD` → `#F0EEFF` → `#EDF5FF` → `#F5F0FF`). Cards use frosted glass (`rgba(255,255,255,0.55)` + `backdrop-filter: blur(16px)`). Ink `#1E1B4B`, body `#374151`, muted `#6B7280`. Indigo (`#4F6EF7` and family) is the action colour — legacy token names `gold*` still alias to indigo so call sites remapped without a rename sweep. Green (`#065F46` on `#D1FAE5`) means confirmed; yellow means uncertain; red is reserved for a genuine legal blocker.
 
-Three spec values were adjusted to clear WCAG AA, since the amber family is too light to carry white or mid-grey text:
+Secondary accent violet `#7C3AED` is used for hover highlights and the comparison-column gradient edge. CTA labels ship as white on the indigo gradient (AA on the deep stop).
 
-| Role | Spec | Shipped | Reason |
-|---|---|---|---|
-| Button label on amber | `#ffffff` | `#3a2400` | White on `#f5a623` computes to 2.0:1; no amber can carry white at AA |
-| Inline link | `#d4860a` | `#8c5500` | 2.7:1 on the canvas, versus 5.8:1 shipped |
-| Muted metadata | `#7a7f94` | `#6b7085` | 3.7:1 at the sizes it is used, versus 4.6:1 shipped |
-
-Verified sponsor cards carry a 3px gradient left strip, painted into a transparent left border so the card radius clips it without `overflow: hidden` (which would clip InfoTip panels). Possible-tier badges add a dashed border so they separate from Likely without relying on two neighbouring yellows.
+Verified sponsor cards carry a 3px green gradient left strip, painted into a transparent left border so the card radius clips it without `overflow: hidden` on `.sponsor-card` (which would clip InfoTip panels). Glass shimmer `::after` is therefore limited to non-sponsor cards. Possible-tier badges keep a dashed border; all confidence badges use a light glass treatment (0.80 opacity + 4px blur).
 
 ## Surfaces
 
@@ -32,7 +26,7 @@ Verified sponsor cards carry a 3px gradient left strip, painted into a transpare
 Asymmetric first viewport: brand + role question left, focused composer right (stacked on mobile). Experience select defaults to mid with Any level available. Salary under progressive disclosure; CV upload is crafted with a third-party LLM note. Loading cycles concrete copy instead of a spinner.
 
 ### Results (`/results`)
-Header states how many licensed sponsors are hiring for the role. Sponsor cards lead; confidence tiers differ by treatment (green tint plus gradient strip / amber pill / dashed yellow pill). Skill roadmap is a numbered editorial sequence. CV feedback splits “Where you are now” and “What to build next”, with full report disclosed. Empty and missing-session states always offer a next action. Top companies and market skills sit below opportunities and roadmap. Recharts removed from the default results view.
+Header states how many licensed sponsors are hiring for the role. Sponsor cards lead; confidence tiers differ by treatment (green tint plus gradient strip / indigo likely pill / dashed yellow possible pill). Skill roadmap is a numbered editorial sequence. CV feedback splits “Where you are now” and “What to build next”, with full report disclosed. Empty and missing-session states always offer a next action. Top companies and market skills sit below opportunities and roadmap. Recharts removed from the default results view.
 
 ## API
 
@@ -44,4 +38,4 @@ Header states how many licensed sponsors are hiring for the role. Sponsor cards 
 
 ## Finish notes
 
-All five surfaces pass an automated AA text-contrast sweep against their computed backgrounds. The search page splits into two columns at `lg` rather than `md`, so the composer is never squeezed at tablet width.
+Landing adds soft colour orbs with light scroll parallax behind major sections; marquee and footer use deep indigo gradients. The search page splits into two columns at `lg` rather than `md`, so the composer is never squeezed at tablet width.
