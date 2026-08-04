@@ -30,6 +30,7 @@ import {
   parseFullReport,
   parsePutForward,
   putForwardFromSummary,
+  resolveOverallScore,
   scoreTone,
   sectionTone,
   splitLeadBold,
@@ -475,22 +476,25 @@ export default function CvFullReview({
 }
 
 function ScoreRows({ scores }: { scores: ScoreLine[] }) {
-  const total = scores.reduce((a, s) => a + s.score, 0);
-  const maxTotal = scores.reduce((a, s) => a + s.max, 0);
+  const { criteria, overall, note } = resolveOverallScore(scores);
+  if (criteria.length === 0 && overall == null) return null;
 
   return (
     <div className="cv-score-rows">
-      {maxTotal > 0 ? (
+      {overall != null ? (
         <div className="cv-score-rows__total">
-          <span>Total</span>
+          <span>
+            Total
+            {note ? <em className="cv-score-rows__total-note"> · {note}</em> : null}
+          </span>
           <strong>
-            {total}
-            <em>/{maxTotal}</em>
+            {overall}
+            <em>/100</em>
           </strong>
         </div>
       ) : null}
       <ul>
-        {scores.map((s) => {
+        {criteria.map((s) => {
           const pct = s.max > 0 ? Math.round((s.score / s.max) * 100) : 0;
           return (
             <li key={s.label} data-tone={scoreTone(s.score, s.max)}>

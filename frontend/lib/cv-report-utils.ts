@@ -252,6 +252,61 @@ export function extractScoreLines(section: ReportSection): {
   return { scores, leftoverBullets, leftoverParagraphs };
 }
 
+/** LLM overall lines like "Total: 70/100 — solid maybe" (not criterion scores). */
+export function isOverallScoreLine(line: ScoreLine): boolean {
+  return /^(total|overall|grand\s+total|score\s+total)$/i.test(line.label.trim());
+}
+
+export type ResolvedOverallScore = {
+  /** Criterion rows only (excludes Total / Overall). */
+  criteria: ScoreLine[];
+  /** Single overall score always out of 100 when present. */
+  overall: number | null;
+  note?: string;
+};
+
+/**
+ * One overall score out of 100: prefer explicit Total NN/100, else sum of criteria
+ * (typically 5×/20 → /100). Never sums Total into the criteria total (avoids /200).
+ */
+export function resolveOverallScore(scores: ScoreLine[]): ResolvedOverallScore {
+  const criteria = scores.filter((s) => !isOverallScoreLine(s));
+  const overallLines = scores.filter(isOverallScoreLine);
+
+  const explicit100 = overallLines.find((s) => s.max === 100);
+  if (explicit100) {
+    return {
+      criteria,
+      overall: Math.round(explicit100.score),
+      note: explicit100.note,
+    };
+  }
+
+  if (overallLines.length > 0) {
+    const o = overallLines[0];
+    if (o.max > 0) {
+      return {
+        criteria,
+        overall: Math.round((o.score / o.max) * 100),
+        note: o.note,
+      };
+    }
+  }
+
+  if (criteria.length === 0) {
+    return { criteria, overall: null };
+  }
+
+  const sum = criteria.reduce((a, s) => a + s.score, 0);
+  const maxSum = criteria.reduce((a, s) => a + s.max, 0);
+  if (maxSum <= 0) return { criteria, overall: null };
+  // 5×20 (or any rubric that already totals 100) → keep integer sum; otherwise normalize.
+  if (maxSum === 100) {
+    return { criteria, overall: Math.round(sum) };
+  }
+  return { criteria, overall: Math.round((sum / maxSum) * 100) };
+}
+
 export function scoreTone(score: number, max: number): "high" | "mid" | "low" {
   const pct = max > 0 ? score / max : 0;
   if (pct >= 0.8) return "high";
