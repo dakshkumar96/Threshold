@@ -602,8 +602,8 @@ export default function InsightsPage() {
               <HiddenFact sourceLabel="GOV.UK Appendix Skilled Occupations" sourceUrl="https://www.gov.uk/guidance/immigration-rules/immigration-rules-appendix-skilled-occupations">
                 Ask your employer which SOC code they plan to assign before you accept an offer. If the salary meets £41,700 but not the going rate for that code, your application will be refused.
               </HiddenFact>
-            </div>
-          </div>
+        </div>
+      </div>
 
           {/* Right: lookup table */}
           <div className="surface-card" style={{ padding: 0, overflow: "auto" }}>
@@ -691,28 +691,28 @@ export default function InsightsPage() {
             const active = clFilter === f;
             const meta = f !== "all" ? LIGHT_META[f as TrafficLight] : null;
             const labels: Record<ChangelogFilter, string> = { all: "All", green: "Good news", amber: "Watch", red: "Bad for students" };
-            return (
-              <button
+              return (
+                <button
                 key={f}
-                type="button"
+                  type="button"
                 onClick={() => setClFilter(f)}
                 aria-pressed={active}
-                style={{
+                  style={{
                   minHeight: 36, padding: "0 0.875rem", borderRadius: 999,
                   border: active ? `1px solid ${meta?.dot ?? "var(--color-gold)"}44` : "1px solid var(--color-line)",
                   background: active ? (meta ? `${meta.dot}18` : "var(--color-gold-pale)") : "transparent",
                   color: active ? (meta?.dot ?? "var(--color-gold)") : "var(--color-ink-soft)",
                   fontSize: "0.8125rem", fontWeight: active ? 500 : 400,
-                  cursor: "pointer", transition: "all 120ms",
+                    cursor: "pointer", transition: "all 120ms",
                   display: "inline-flex", alignItems: "center", gap: "0.4rem",
-                }}
-              >
+                  }}
+                >
                 {meta && <span style={{ width: 7, height: 7, borderRadius: "50%", background: meta.dot }} aria-hidden />}
                 {labels[f]}
-              </button>
-            );
-          })}
-        </div>
+                </button>
+              );
+            })}
+          </div>
 
         <div style={{ position: "relative", paddingLeft: "1.75rem" }}>
           <div style={{ position: "absolute", left: 8, top: 8, bottom: 8, width: 2, background: "var(--color-line-hover)", borderRadius: 999 }} aria-hidden />
@@ -850,8 +850,8 @@ export default function InsightsPage() {
                     </p>
                   </li>
                 </ul>
-              </div>
-            </div>
+                </div>
+                </div>
 
             {/* Right: market flags */}
             <div style={{ borderRadius: "var(--radius-card)", overflow: "hidden", border: "1px solid var(--color-line)" }}>
@@ -889,7 +889,7 @@ export default function InsightsPage() {
             <a href="/search" className="cta-primary" style={{ display: "inline-flex", alignItems: "center", minHeight: 40, padding: "0 1.25rem", fontSize: "0.9375rem", fontWeight: 500, textDecoration: "none" }}>
               Search a role
             </a>
-          </div>
+        </div>
         )}
 
         <p style={{ margin: "1.25rem 0 0", fontSize: "0.75rem", color: "var(--color-muted)", lineHeight: 1.6 }}>

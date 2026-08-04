@@ -36,7 +36,8 @@ function SkillBar({ pct, delay }: { pct: number; delay: number }) {
   return (
     <div ref={ref} className="skill-bar" style={{ marginTop: "0.5rem" }}>
       <motion.div
-        className="skill-bar__fill"
+        className={`skill-bar__fill${inView ? " skill-bar__fill--shimmer" : ""}`}
+        style={{ "--skill-delay": `${delay}s` } as React.CSSProperties}
         initial={{ width: 0 }}
         animate={inView ? { width: `${pct}%` } : {}}
         transition={{ duration: 1, ease: "easeOut", delay }}

@@ -1,8 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import type { AnalyzeResponse } from "@/lib/api";
 import { estimatedMatchLift, weeksEstimate } from "@/lib/results-utils";
+
+const NODE_DELAYS = [0.1, 0.22, 0.36, 0.52, 0.7, 0.9];
 
 type Tab = "have" | "need" | "plan";
 
@@ -203,42 +206,69 @@ export default function GapRoadmap({ data }: { data: AnalyzeResponse }) {
         plan.length === 0 ? (
           <p className="skill-strip__empty">No plan from this run.</p>
         ) : (
-          <ol className="skill-strip__plan">
-            {plan.map((s) => (
-              <li key={s.skill}>
-                <span className="skill-strip__wk">
-                  W{s.start}
-                  {s.end > s.start ? `–${s.end}` : ""}
-                </span>
-                <div className="skill-strip__plan-main">
-                  <div className="skill-strip__plan-top">
-                    <strong>{s.skill}</strong>
-                    <span>
-                      {s.frequency_pct != null
-                        ? `${Math.round(s.frequency_pct)}% of ads`
-                        : ""}
-                      {s.span != null ? ` · ${s.span}w` : ""}
-                    </span>
-                  </div>
-                  <div className="skill-strip__plan-track" aria-hidden>
-                    <i
-                      style={{
-                        width: planTotalWeeks
-                          ? `${Math.max(12, (s.span! / planTotalWeeks) * 100)}%`
-                          : "40%",
-                        marginLeft: planTotalWeeks
-                          ? `${((s.start! - 1) / planTotalWeeks) * 100}%`
-                          : "0%",
-                      }}
-                    />
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ol>
+          <PlanTimeline plan={plan} planTotalWeeks={planTotalWeeks} />
         )
       ) : null}
     </section>
+  );
+}
+
+function PlanTimeline({
+  plan,
+  planTotalWeeks,
+}: {
+  plan: SkillRow[];
+  planTotalWeeks: number | null;
+}) {
+  const ref = useRef<HTMLOListElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.2 });
+
+  return (
+    <ol
+      ref={ref}
+      className={`skill-strip__plan${inView ? " skill-strip__plan--visible" : ""}`}
+    >
+      {plan.map((s, i) => (
+        <motion.li
+          key={s.skill}
+          initial={{ opacity: 0, x: -8 }}
+          animate={inView ? { opacity: 1, x: 0 } : {}}
+          transition={{
+            duration: 0.35,
+            ease: [0.16, 1, 0.3, 1],
+            delay: NODE_DELAYS[Math.min(i, NODE_DELAYS.length - 1)],
+          }}
+        >
+          <span className="skill-strip__wk">
+            W{s.start}
+            {s.end! > s.start! ? `–${s.end}` : ""}
+          </span>
+          <div className="skill-strip__plan-main">
+            <div className="skill-strip__plan-top">
+              <strong>{s.skill}</strong>
+              <span>
+                {s.frequency_pct != null
+                  ? `${Math.round(s.frequency_pct)}% of ads`
+                  : ""}
+                {s.span != null ? ` · ${s.span}w` : ""}
+              </span>
+            </div>
+            <div className="skill-strip__plan-track" aria-hidden>
+              <i
+                style={{
+                  width: planTotalWeeks
+                    ? `${Math.max(12, (s.span! / planTotalWeeks) * 100)}%`
+                    : "40%",
+                  marginLeft: planTotalWeeks
+                    ? `${((s.start! - 1) / planTotalWeeks) * 100}%`
+                    : "0%",
+                }}
+              />
+            </div>
+          </div>
+        </motion.li>
+      ))}
+    </ol>
   );
 }
 
