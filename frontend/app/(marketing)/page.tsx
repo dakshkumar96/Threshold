@@ -1,8 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
+import {
+  motion,
+  useInView,
+} from "framer-motion";
 import {
   ChartLineUp,
   CheckCircle,
@@ -16,6 +20,42 @@ import insights from "@/data/insights.json";
 import HeroDashboard from "@/app/components/landing/HeroDashboard";
 import LandingChart from "@/app/components/landing/LandingChart";
 import IntegrationsHub from "@/app/components/landing/IntegrationsHub";
+
+/* ─── Scroll-reveal wrapper: fades/slides content in once as it enters view ── */
+function Reveal({
+  children,
+  className = "",
+  direction = "up",
+}: {
+  children: ReactNode;
+  className?: string;
+  direction?: "up" | "left" | "right";
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.15, margin: "-40px" });
+  const dirClass = direction === "left" ? "reveal-left" : direction === "right" ? "reveal-right" : "";
+  return (
+    <div
+      ref={ref}
+      className={`reveal ${dirClass} ${inView ? "is-visible" : ""} ${className}`.trim()}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ─── Hero headline: words materialise in, key phrase gets a drawn underline ─*/
+function HeroHeadline() {
+  return (
+    <h1 className="hero-headline">
+      You&apos;ve been applying
+      <br />
+      to jobs that can&apos;t
+      <br />
+      <span className="headline-accent">sponsor you.</span>
+    </h1>
+  );
+}
 
 function SectionOrb({
   variant,
@@ -50,6 +90,14 @@ function SectionOrb({
       }}
     />
   );
+}
+
+function handleShineMove(e: React.MouseEvent<HTMLElement>) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  e.currentTarget.style.setProperty("--shine-x", `${x}%`);
+  e.currentTarget.style.setProperty("--shine-y", `${y}%`);
 }
 
 const FEATURES = [
@@ -166,7 +214,6 @@ const SOLUTIONS = [
 
 export default function LandingPage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
-  const sponsors = insights.headline.sponsors_tracked;
 
   return (
     <main className="pb-0">
@@ -185,219 +232,111 @@ export default function LandingPage() {
           }}
         />
 
-        <div className="hero-bento__top">
-          <div className="hero-bento__copy">
-            <h1
-              className="motion-enter"
-              style={{
-                margin: 0,
-                maxWidth: "16ch",
-                fontSize: "clamp(2.15rem, 4.2vw, 3.25rem)",
-                fontWeight: 500,
-                lineHeight: 1.08,
-                letterSpacing: "-0.03em",
-                color: "var(--color-ink)",
-              }}
-            >
-              You&apos;ve been applying to jobs that can&apos;t sponsor you.
-            </h1>
+        <div className="hero-bento__scale">
+          <div className="hero-bento__top">
+            <div className="hero-bento__copy" style={{ position: "relative" }}>
+              <div className="hero-text-glow" aria-hidden />
+              <HeroHeadline />
 
-            <p
-              style={{
-                margin: "1.1rem 0 0",
-                maxWidth: "40ch",
-                fontSize: "clamp(0.95rem, 1.3vw, 1.0625rem)",
-                lineHeight: 1.55,
-                color: "var(--color-ink-soft)",
-              }}
-            >
-              Type a role. We check sponsors, map skill gaps, and give you a clear next step.
-            </p>
-
-            <div
-              style={{
-                marginTop: "1.35rem",
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "0.65rem",
-                alignItems: "center",
-              }}
-            >
-              <Link
-                href="/search"
-                className="cta-primary"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  minHeight: 46,
-                  padding: "0 1.35rem",
-                  fontWeight: 500,
-                  fontSize: "0.9375rem",
-                  textDecoration: "none",
-                  borderRadius: 999,
-                }}
-              >
-                Search without signing up
-              </Link>
-              <a
-                href="#how-it-works"
-                className="cta-secondary"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  minHeight: 46,
-                  padding: "0 1.2rem",
-                  fontWeight: 500,
-                  fontSize: "0.9375rem",
-                  textDecoration: "none",
-                  borderRadius: 999,
-                }}
-              >
-                See how it works
-              </a>
-            </div>
-          </div>
-
-          <div className="hero-bento__visual">
-            <HeroDashboard />
-          </div>
-        </div>
-
-        <div className="hero-bento__bottom">
-          <div
-            className="hero-stat hero-stat--wide"
-            style={{
-              background:
-                "radial-gradient(ellipse 80% 90% at 90% 40%, rgba(79,110,247,0.5) 0%, transparent 55%), linear-gradient(135deg, #1E1B4B 0%, #312E81 100%)",
-              color: "#fff",
-            }}
-          >
-            <div style={{ flex: 1, minWidth: 0 }}>
               <p
                 style={{
-                  margin: 0,
-                  fontSize: "0.75rem",
-                  fontWeight: 500,
-                  color: "rgba(255,255,255,0.7)",
-                  lineHeight: 1.4,
+                  margin: "1.1rem 0 0",
+                  maxWidth: "40ch",
+                  fontSize: "clamp(0.95rem, 1.3vw, 1.0625rem)",
+                  lineHeight: 1.55,
+                  color: "var(--color-ink-soft)",
                 }}
               >
-                Register data updated 28 July 2026 · {sponsors.toLocaleString()} sponsors checked
+                Type a role. We check sponsors, map skill gaps, and give you a clear next step.
               </p>
-              <p
+
+              <div
                 style={{
-                  margin: "0.55rem 0 0",
-                  fontSize: "clamp(1.75rem, 3vw, 2.35rem)",
-                  fontWeight: 500,
-                  letterSpacing: "-0.03em",
-                  lineHeight: 1,
+                  marginTop: "1.35rem",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: "0.65rem",
+                  alignItems: "center",
                 }}
               >
-                {sponsors.toLocaleString()}
-              </p>
-              <p style={{ margin: "0.35rem 0 0", fontSize: "0.8125rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.3 }}>
-                Sponsor licences checked per search
-              </p>
+                <div className="cta-primary-wrapper" style={{ borderRadius: 999 }}>
+                  <Link
+                    href="/search"
+                    className="cta-primary"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      minHeight: 44,
+                      padding: "0 1.3rem",
+                      fontWeight: 500,
+                      fontSize: "0.9375rem",
+                      textDecoration: "none",
+                      borderRadius: 999,
+                    }}
+                  >
+                    Search without signing up
+                  </Link>
+                </div>
+                <a
+                  href="#how-it-works"
+                  className="cta-secondary"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    minHeight: 46,
+                    padding: "0 1.2rem",
+                    fontWeight: 500,
+                    fontSize: "0.9375rem",
+                    textDecoration: "none",
+                    borderRadius: 999,
+                  }}
+                >
+                  See how it works
+                </a>
+              </div>
             </div>
-          </div>
 
-          <div
-            className="hero-stat"
-            style={{
-              background: "rgba(238,242,255,0.95)",
-              border: "1px solid rgba(199,210,254,0.9)",
-              backdropFilter: "blur(12px)",
-              alignItems: "flex-start",
-              justifyContent: "center",
-            }}
-          >
-            <p
-              style={{
-                margin: 0,
-                fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
-                fontWeight: 500,
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-                color: "var(--color-gold)",
-              }}
+            <motion.div
+              className="hero-bento__visual"
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
-              59%
-            </p>
-            <p style={{ margin: "0.4rem 0 0", fontSize: "0.8125rem", color: "var(--color-ink-soft)", lineHeight: 1.3 }}>
-              Name-match precision, tested on 100 samples
-            </p>
-          </div>
-
-          <div
-            className="hero-stat"
-            style={{
-              background: "var(--gradient-cta)",
-              color: "#fff",
-              boxShadow: "0 8px 28px rgba(79,110,247,0.28)",
-              alignItems: "flex-start",
-              justifyContent: "center",
-            }}
-          >
-            <p
-              style={{
-                margin: 0,
-                fontSize: "clamp(1.75rem, 3vw, 2.25rem)",
-                fontWeight: 500,
-                letterSpacing: "-0.03em",
-                lineHeight: 1,
-              }}
-            >
-              200
-            </p>
-            <p style={{ margin: "0.4rem 0 0", fontSize: "0.8125rem", color: "rgba(255,255,255,0.88)", lineHeight: 1.3 }}>
-              Live job descriptions analysed per search
-            </p>
+              <HeroDashboard />
+            </motion.div>
           </div>
         </div>
       </section>
 
-      <div className="marquee-wrap full-bleed" style={{ padding: "0.85rem 0", background: "var(--gradient-marquee)" }}>
-        <div
-          className="marquee-track"
-          style={{
-            display: "flex",
-            gap: "3rem",
-            whiteSpace: "nowrap",
-            fontSize: "0.85rem",
-            color: "rgba(255,255,255,0.65)",
-          }}
-        >
-          {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i}>Built for international students.</span>
-          ))}
-        </div>
-      </div>
+      <div className="section-divider" />
 
       <section className="section-orb" style={{ padding: "4.5rem 0 2rem" }} aria-labelledby="what-it-does">
         <SectionOrb variant="blue" side="right" />
-        <h2
-          id="what-it-does"
-          style={{
-            margin: 0,
-            fontSize: "clamp(1.85rem, 3.4vw, 2.5rem)",
-            fontWeight: 500,
-            letterSpacing: "-0.03em",
-            color: "var(--color-ink)",
-          }}
-        >
-          What you get
-        </h2>
-        <p
-          style={{
-            margin: "0.65rem 0 0",
-            maxWidth: "36ch",
-            fontSize: "1rem",
-            lineHeight: 1.5,
-            color: "var(--color-ink-soft)",
-          }}
-        >
-          Four signals. No job-board noise.
-        </p>
+        <Reveal className="section-header">
+          <h2
+            id="what-it-does"
+            style={{
+              margin: 0,
+              fontSize: "clamp(1.85rem, 3.4vw, 2.5rem)",
+              fontWeight: 500,
+              letterSpacing: "-0.03em",
+              color: "var(--color-ink)",
+            }}
+          >
+            What you get
+          </h2>
+          <p
+            style={{
+              margin: "0.65rem 0 0",
+              maxWidth: "36ch",
+              fontSize: "1rem",
+              lineHeight: 1.5,
+              color: "var(--color-ink-soft)",
+            }}
+          >
+            Four signals. No job-board noise.
+          </p>
+        </Reveal>
 
         <div className="feature-bento" style={{ marginTop: "1.85rem" }}>
           {FEATURES.map((f, i) => {
@@ -405,7 +344,8 @@ export default function LandingPage() {
             return (
               <motion.article
                 key={f.t}
-                className={`feature-tile feature-tile--${f.tone}`}
+                className={`feature-tile feature-tile--${f.tone} shine-card`}
+                onMouseMove={handleShineMove}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
@@ -543,34 +483,39 @@ export default function LandingPage() {
 
       <LandingChart />
 
+      <div className="section-divider" />
+
       <section className="section-orb" style={{ padding: "3rem 0" }} aria-labelledby="see-working">
         <SectionOrb variant="violet" side="left" />
-        <h2
-          id="see-working"
-          style={{
-            margin: 0,
-            fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
-            fontWeight: 500,
-            letterSpacing: "-0.03em",
-            color: "var(--color-ink)",
-          }}
-        >
-          See it working
-        </h2>
-        <p
-          style={{
-            margin: "0.75rem 0 0",
-            maxWidth: "40ch",
-            fontSize: "1.0625rem",
-            lineHeight: 1.55,
-            color: "var(--color-ink-soft)",
-          }}
-        >
-          Data Analyst search, condensed.
-        </p>
+        <Reveal className="section-header">
+          <h2
+            id="see-working"
+            style={{
+              margin: 0,
+              fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
+              fontWeight: 500,
+              letterSpacing: "-0.03em",
+              color: "var(--color-ink)",
+            }}
+          >
+            See it working
+          </h2>
+          <p
+            style={{
+              margin: "0.75rem 0 0",
+              maxWidth: "40ch",
+              fontSize: "1.0625rem",
+              lineHeight: 1.55,
+              color: "var(--color-ink-soft)",
+            }}
+          >
+            Data Analyst search, condensed.
+          </p>
+        </Reveal>
 
-        <div className="demo-grid" style={{ marginTop: "1.75rem" }}>
-          <article className="dash-card">
+        <div className="demo-grid demo-grid--glass" style={{ marginTop: "1.75rem" }}>
+          <Reveal className="reveal-delay-1">
+          <article className="dash-card dash-card--texture">
             <div className="dash-card__head">
               <span className="dash-card-icon dash-card-icon--mint" aria-hidden>
                 <SealCheck size={16} color="#065F46" weight="fill" />
@@ -592,7 +537,7 @@ export default function LandingPage() {
                 <p className="dash-label">Ads scanned</p>
               </div>
             </div>
-            <div style={{ display: "grid", gap: "0.5rem", marginTop: "1rem" }}>
+            <div className="dash-card__rows">
               {[
                 { label: "Verified", detail: "Monzo · Data Analyst", tone: "mint" },
                 { label: "Likely", detail: "SQL gap · 71% of ads", tone: "indigo" },
@@ -605,8 +550,10 @@ export default function LandingPage() {
               ))}
             </div>
           </article>
+          </Reveal>
 
-          <article className="dash-card">
+          <Reveal className="reveal-delay-2">
+          <article className="dash-card dash-card--texture">
             <div className="dash-card__head">
               <span className="dash-card-icon" aria-hidden>
                 <MagnifyingGlass size={16} color="#4F6EF7" weight="duotone" />
@@ -614,7 +561,7 @@ export default function LandingPage() {
               <h3>Skills</h3>
               <span className="dash-card__menu" aria-hidden>· · ·</span>
             </div>
-            <div className="dash-card__metrics">
+            <div className="dash-card__metrics dash-card__metrics--two">
               <div>
                 <p className="dash-metric">71%</p>
                 <p className="dash-label">SQL</p>
@@ -624,14 +571,16 @@ export default function LandingPage() {
                 <p className="dash-label">Power BI</p>
               </div>
             </div>
-            <div className="mini-bars mini-bars--tall" aria-hidden style={{ marginTop: "1.1rem" }}>
+            <div className="mini-bars mini-bars--tall mini-bars--glow" aria-hidden>
               {[40, 68, 32, 84, 52, 61, 45, 73].map((h, idx) => (
                 <span key={idx} className="mini-bars__bar" style={{ height: `${h}%` }} />
               ))}
             </div>
           </article>
+          </Reveal>
 
-          <article className="dash-card">
+          <Reveal className="reveal-delay-3">
+          <article className="dash-card dash-card--texture">
             <div className="dash-card__head">
               <span className="dash-card-icon dash-card-icon--violet" aria-hidden>
                 <ChartLineUp size={16} color="#5B21B6" weight="duotone" />
@@ -639,62 +588,57 @@ export default function LandingPage() {
               <h3>Tenure</h3>
               <span className="dash-card__menu" aria-hidden>· · ·</span>
             </div>
-            <div style={{ display: "grid", gap: "0.75rem", marginTop: "0.35rem" }}>
+            <div className="dash-card__rows">
               {insights.tenure_bands.map((b) => {
-                const color = b.band === "Established" ? "#10B981" : b.band === "Moderate" ? "#4F6EF7" : "#F59E0B";
+                const tone =
+                  b.band === "Established"
+                    ? "mint"
+                    : b.band === "Moderate"
+                      ? "indigo"
+                      : "amber";
                 return (
-                  <div key={b.band} className="dash-row" style={{ background: "rgba(245,243,255,0.55)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <span style={{ width: 8, height: 8, borderRadius: "50%", background: color }} aria-hidden />
-                      <span style={{ color: "var(--color-ink)", fontSize: "0.8125rem", fontWeight: 500 }}>{b.band}</span>
+                  <div key={b.band} className={`dash-row dash-row--${tone}`}>
+                    <div className="dash-row__band">
+                      <span className={`dash-row__dot dash-row__dot--${tone}`} aria-hidden />
+                      <span className="dash-row__band-label">{b.band}</span>
                     </div>
-                    <strong style={{ color: "var(--color-muted)", fontWeight: 400, fontSize: "0.75rem" }}>{b.label}</strong>
+                    <strong className="dash-row__meta">{b.label}</strong>
                   </div>
                 );
               })}
             </div>
           </article>
+          </Reveal>
         </div>
       </section>
+
+      <div className="section-divider" />
 
       <section id="how-it-works" className="section-orb" style={{ padding: "2rem 0 3.5rem" }} aria-labelledby="how-heading">
         <SectionOrb variant="sky" side="right" />
         <div className="how-steps-wrap">
-          <h2
-            id="how-heading"
-            style={{
-              margin: 0,
-              fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
-              fontWeight: 500,
-              letterSpacing: "-0.03em",
-              color: "var(--color-ink)",
-              position: "relative",
-            }}
-          >
-            How it works
-          </h2>
-          <p
-            style={{
-              margin: "0.65rem 0 0",
-              maxWidth: "36ch",
-              fontSize: "1.0625rem",
-              lineHeight: 1.5,
-              color: "var(--color-ink-soft)",
-              position: "relative",
-            }}
-          >
-            From a job title to a sponsored shortlist.
-          </p>
+          <Reveal className="how-steps-wrap__intro">
+            <h2 id="how-heading" className="how-steps-wrap__title">
+              How it works
+            </h2>
+            <p className="how-steps-wrap__body">
+              From a job title to a sponsored shortlist.
+            </p>
+          </Reveal>
 
-          <ol className="how-steps" style={{ listStyle: "none", margin: "2.25rem 0 0", padding: 0, position: "relative" }}>
-            {STEPS.map((s) => (
-              <li key={s.n} className="how-step">
-                <div className="how-step__top">
-                  <p className="how-step__num">{s.n}</p>
-                  <span className="how-step__arrow" aria-hidden />
-                </div>
-                <h3 className="how-step__label">{s.t}</h3>
-              </li>
+          <ol className="how-steps">
+            {STEPS.map((s, i) => (
+              <Reveal key={s.n} className={i > 0 ? `reveal-delay-${Math.min(i, 4)}` : ""}>
+                <li className="how-step">
+                  <div className="how-step__top">
+                    <p className="how-step__num">{s.n}</p>
+                    {i < STEPS.length - 1 ? (
+                      <span className="how-step__arrow" aria-hidden />
+                    ) : null}
+                  </div>
+                  <h3 className="how-step__label">{s.t}</h3>
+                </li>
+              </Reveal>
             ))}
           </ol>
         </div>
@@ -702,51 +646,46 @@ export default function LandingPage() {
 
       <IntegrationsHub />
 
-      <section id="solutions" style={{ padding: "3.5rem 0" }} aria-labelledby="solutions-heading">
-        <h2
-          id="solutions-heading"
-          style={{
-            margin: 0,
-            fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
-            fontWeight: 500,
-            letterSpacing: "-0.03em",
-            color: "var(--color-ink)",
-          }}
-        >
-          Solutions
-        </h2>
-        <p
-          style={{
-            margin: "0.75rem 0 0",
-            maxWidth: "42ch",
-            fontSize: "1.0625rem",
-            lineHeight: 1.55,
-            color: "var(--color-ink-soft)",
-          }}
-        >
-          Guides around the search.
-        </p>
-        <ul className="solutions-row">
-          {SOLUTIONS.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} className={`solution-tile solution-tile--${item.tone}`}>
-                <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 500, color: "var(--color-ink)" }}>
-                  {item.title}
-                </h3>
-                <p style={{ margin: "0.7rem 0 0", fontSize: "0.875rem", lineHeight: 1.55, color: "var(--color-ink-soft)", flex: 1 }}>
-                  {item.body}
-                </p>
-                <span style={{ marginTop: "1.15rem", fontSize: "0.8125rem", fontWeight: 500, color: "#4F6EF7" }}>
-                  Open →
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <div className="section-divider" />
+
+      <section id="solutions" className="section-glass-bg" aria-labelledby="solutions-heading">
+        <div className="section-inner">
+          <Reveal className="section-header">
+            <h2
+              id="solutions-heading"
+              className="section-glass-bg__title"
+            >
+              Solutions
+            </h2>
+            <p className="section-glass-bg__body">
+              Guides around the search.
+            </p>
+          </Reveal>
+          <ul className="solutions-row">
+            {SOLUTIONS.map((item, i) => (
+              <Reveal key={item.href} className={i > 0 ? `reveal-delay-${Math.min(i, 4)}` : ""}>
+                <li>
+                  <Link href={item.href} className={`solution-tile solution-tile--${item.tone}`}>
+                    <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 500, color: "var(--color-ink)" }}>
+                      {item.title}
+                    </h3>
+                    <p style={{ margin: "0.7rem 0 0", fontSize: "0.875rem", lineHeight: 1.55, color: "var(--color-ink-soft)", flex: 1 }}>
+                      {item.body}
+                    </p>
+                    <span style={{ marginTop: "1.15rem", fontSize: "0.8125rem", fontWeight: 500, color: "#4F6EF7" }}>
+                      Open →
+                    </span>
+                  </Link>
+                </li>
+              </Reveal>
+            ))}
+          </ul>
+        </div>
       </section>
 
       <section className="section-orb compare-section" style={{ padding: "0 0 4rem" }} aria-labelledby="difference">
         <SectionOrb variant="violet" side="right" />
+        <Reveal className="section-header">
         <h2
           id="difference"
           style={{
@@ -759,7 +698,9 @@ export default function LandingPage() {
         >
           The difference
         </h2>
+        </Reveal>
         <div className="compare-grid">
+          <Reveal direction="left">
           <div className="compare-other">
             <div className="compare-head">
               <span className="compare-badge compare-badge--muted">Before</span>
@@ -774,6 +715,8 @@ export default function LandingPage() {
               ))}
             </ul>
           </div>
+          </Reveal>
+          <Reveal direction="right">
           <div className="compare-ours">
             <div className="compare-head">
               <span className="compare-badge compare-badge--brand">After</span>
@@ -788,10 +731,14 @@ export default function LandingPage() {
               ))}
             </ul>
           </div>
+          </Reveal>
         </div>
       </section>
 
+      <div className="section-divider" />
+
       <section style={{ padding: "0 0 4rem" }} aria-labelledby="stories">
+        <Reveal>
         <div
           className="demo-panel"
           style={{
@@ -830,32 +777,37 @@ export default function LandingPage() {
             </a>
           </p>
         </div>
+        </Reveal>
       </section>
 
+      <div className="section-divider" />
+
       <section style={{ padding: "0 0 4rem" }} aria-labelledby="faq">
-        <h2
-          id="faq"
-          style={{
-            margin: 0,
-            fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
-            fontWeight: 500,
-            letterSpacing: "-0.03em",
-            color: "var(--color-ink)",
-          }}
-        >
-          Things people ask
-        </h2>
+        <Reveal className="section-header">
+          <h2
+            id="faq"
+            style={{
+              margin: 0,
+              fontSize: "clamp(1.75rem, 3.2vw, 2.35rem)",
+              fontWeight: 500,
+              letterSpacing: "-0.03em",
+              color: "var(--color-ink)",
+            }}
+          >
+            Things people ask
+          </h2>
+        </Reveal>
         <div style={{ marginTop: "1.35rem", display: "flex", flexDirection: "column", gap: "0.65rem" }}>
           {FAQ_ITEMS.map((item, i) => {
             const open = faqOpen === i;
             return (
-              <motion.div
-                key={item.q}
-                layout
-                className="demo-panel"
+              <Reveal key={item.q} className={`reveal-delay-${Math.min(i % 4, 4)}`}>
+              <div
+                className={`demo-panel faq-item${open ? " demo-panel--open faq-item--open" : ""}`}
                 style={{
                   padding: "0.35rem 1.15rem",
                   boxShadow: open ? "0 12px 32px rgba(79,110,247,0.1)" : "0 6px 20px rgba(79,110,247,0.05)",
+                  transition: "box-shadow 0.2s ease",
                 }}
               >
                 <button
@@ -880,57 +832,42 @@ export default function LandingPage() {
                   }}
                 >
                   {item.q}
-                  <motion.span
+                  <span
                     aria-hidden
-                    animate={{ rotate: open ? 90 : 0 }}
-                    style={{ color: "#4F6EF7", display: "inline-block", fontSize: "1.1rem" }}
+                    style={{
+                      color: "#4F6EF7",
+                      display: "inline-block",
+                      fontSize: "1.1rem",
+                      transform: open ? "rotate(90deg)" : "rotate(0deg)",
+                      transition: "transform 0.3s cubic-bezier(0.16,1,0.3,1)",
+                    }}
                   >
                     ›
-                  </motion.span>
+                  </span>
                 </button>
-                <AnimatePresence initial={false}>
-                  {open ? (
-                    <motion.p
-                      key="a"
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.22 }}
+                <div className="faq-body">
+                  <div>
+                    <p
                       style={{
                         margin: "0 0 1rem",
                         maxWidth: "62ch",
                         fontSize: "0.9rem",
                         lineHeight: 1.6,
                         color: "var(--color-ink-soft)",
-                        overflow: "hidden",
                       }}
                     >
                       {item.a}
-                    </motion.p>
-                  ) : null}
-                </AnimatePresence>
-              </motion.div>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              </Reveal>
             );
           })}
         </div>
       </section>
 
       <footer className="full-bleed site-footer">
-        <Link
-          href="/"
-          className="site-footer__logo"
-          aria-label="Sponsor Signal home"
-        >
-          <svg width="28" height="28" viewBox="0 0 18 18" fill="none" aria-hidden>
-            <path
-              d="M9 1v16M1 9h16M3.1 3.1l11.8 11.8M14.9 3.1L3.1 14.9"
-              stroke="#A5B4FC"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
-        </Link>
-
         <div style={{ maxWidth: 1120, margin: "0 auto" }}>
           {/* Top CTA row: headline left, actions right */}
           <div

@@ -53,20 +53,10 @@ function GlassTip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div
-      style={{
-        background: "rgba(255,255,255,0.85)",
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(79,110,247,0.25)",
-        borderRadius: 10,
-        padding: "0.5rem 0.75rem",
-        fontSize: "0.75rem",
-        color: "var(--color-ink)",
-      }}
-    >
-      <p style={{ margin: 0, fontWeight: 500 }}>{label}</p>
+    <div className="section-dark-chart-tip">
+      <p className="section-dark-chart-tip__label">{label}</p>
       {payload.map((p) => (
-        <p key={p.name} style={{ margin: "0.2rem 0 0", color: "var(--color-ink-soft)" }}>
+        <p key={p.name} className="section-dark-chart-tip__row">
           {p.name}: {typeof p.value === "number" ? p.value.toLocaleString() : p.value}
         </p>
       ))}
@@ -85,89 +75,97 @@ export default function LandingChart() {
   }));
 
   return (
-    <section className="section-orb landing-numbers" style={{ padding: "4rem 0" }} aria-labelledby="numbers">
-      <div
-        aria-hidden
-        className="orb orb-indigo"
-        style={{ width: 700, height: 700, top: -80, right: -240, filter: "blur(60px)" }}
-      />
-      <div className="landing-chart-split">
-        <div className="landing-chart-copy">
-          <h2 id="numbers" className="landing-chart-copy__title">
-            The numbers behind this
-          </h2>
-          <p className="landing-chart-copy__body">
-            Documented figures from the register archive.
-          </p>
-          <Link href="/methodology" className="landing-chart-copy__link">
-            Read the methodology
-          </Link>
-        </div>
+    <section
+      className="section-dark-bg landing-numbers"
+      aria-labelledby="numbers"
+    >
+      <div className="section-dark-orb-left" aria-hidden />
+      <div className="section-dark-orb-right" aria-hidden />
+      <div className="section-dark-dots" aria-hidden />
 
-        <div className="landing-chart-panel glass-elevated">
-          <div className="landing-chart-panel__head">
-            <div className="landing-chart-panel__kpi">
-              <strong className="landing-chart-panel__value">
-                <CountUp to={h.sponsors_tracked} />
-              </strong>
-              <span className="landing-chart-panel__desc">
-                Sponsor licences checked per search
-              </span>
+      <div className="section-inner">
+        <div className="landing-chart-split">
+          <div className="landing-chart-copy">
+            <h2 id="numbers" className="landing-chart-copy__title">
+              The numbers
+              <br />
+              behind this
+            </h2>
+            <p className="landing-chart-copy__body">
+              Documented figures from the register archive.
+            </p>
+            <Link href="/methodology" className="landing-chart-copy__link">
+              Read the methodology
+            </Link>
+          </div>
+
+          <div className="landing-chart-panel chart-card-dark">
+            <div className="landing-chart-panel__head">
+              <div className="landing-chart-panel__kpi">
+                <strong className="landing-chart-panel__value chart-headline">
+                  <CountUp to={h.sponsors_tracked} />
+                </strong>
+                <span className="landing-chart-panel__desc chart-sublabel">
+                  Sponsor licences checked per search
+                </span>
+              </div>
+              <p className="landing-chart-panel__caption chart-section-label">
+                Sponsors by region
+              </p>
             </div>
-            <p className="landing-chart-panel__caption">Sponsors by region</p>
-          </div>
-          <div className="landing-chart-panel__plot">
-            <ResponsiveContainer>
-              <AreaChart data={chartData} margin={{ top: 4, right: 8, left: 0, bottom: 2 }}>
-                <defs>
-                  <linearGradient id="fillSponsors" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#4F6EF7" stopOpacity={0.18} />
-                    <stop offset="100%" stopColor="#4F6EF7" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid
-                  vertical={false}
-                  stroke="rgba(99,102,241,0.045)"
-                  strokeDasharray="4 6"
-                />
-                <XAxis
-                  dataKey="name"
-                  tick={{ fill: "#64748B", fontSize: 12.5, fontWeight: 500 }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickMargin={8}
-                />
-                <Tooltip content={<GlassTip />} />
-                <Area
-                  type="monotone"
-                  dataKey="Sponsors"
-                  stroke="#4F6EF7"
-                  fill="url(#fillSponsors)"
-                  strokeWidth={3.25}
-                  animationBegin={200}
-                  animationDuration={1200}
-                  animationEasing="ease-out"
-                  dot={false}
-                  activeDot={{ r: 5, fill: "#4F6EF7" }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
+            <div className="landing-chart-panel__plot">
+              <ResponsiveContainer>
+                <AreaChart data={chartData} margin={{ top: 4, right: 8, left: 0, bottom: 2 }}>
+                  <defs>
+                    <linearGradient id="fillSponsorsDark" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgba(165,180,252,0.90)" stopOpacity={0.28} />
+                      <stop offset="100%" stopColor="rgba(165,180,252,0.90)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    vertical={false}
+                    stroke="rgba(165,180,252,0.08)"
+                    strokeDasharray="4 6"
+                  />
+                  <XAxis
+                    dataKey="name"
+                    tick={{ fill: "rgba(255,255,255,0.40)", fontSize: 12.5, fontWeight: 500 }}
+                    axisLine={false}
+                    tickLine={false}
+                    tickMargin={8}
+                  />
+                  <Tooltip content={<GlassTip />} />
+                  <Area
+                    type="monotone"
+                    dataKey="Sponsors"
+                    stroke="rgba(165,180,252,0.90)"
+                    fill="url(#fillSponsorsDark)"
+                    strokeWidth={3.25}
+                    animationBegin={200}
+                    animationDuration={1200}
+                    animationEasing="ease-out"
+                    dot={false}
+                    activeDot={{ r: 5, fill: "rgba(165,180,252,0.95)" }}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="metric-chip-row landing-numbers__chips">
-        {[
-          { n: String(h.snapshots), l: "Register snapshots since 2023" },
-          { n: h.still_active.toLocaleString(), l: "Still active at latest snapshot" },
-          { n: "200", l: "Live ads analysed per search" },
-          { n: "59%", l: "Name-match precision (100 samples)" },
-        ].map((s) => (
-          <div key={s.l} className="metric-chip">
-            <p className="metric-chip__value">{s.n}</p>
-            <p className="metric-chip__label">{s.l}</p>
-          </div>
-        ))}
+        <div className="metric-chip-row landing-numbers__chips">
+          {[
+            { n: String(h.snapshots), l: "Register snapshots since 2023" },
+            { n: h.still_active.toLocaleString(), l: "Still active at latest snapshot" },
+            { n: "200", l: "Live ads analysed per search" },
+            { n: "59%", l: "Name-match precision (100 samples)" },
+          ].map((s) => (
+            <div key={s.l} className="metric-chip stat-card-dark">
+              <p className="metric-chip__value stat-number">{s.n}</p>
+              <p className="metric-chip__label stat-label">{s.l}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
