@@ -10,8 +10,26 @@ import {
   UserCircle,
 } from "@phosphor-icons/react";
 import { UserButton, useAuth } from "@clerk/nextjs";
+import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import SiteNav from "@/app/components/SiteNav";
+
+function RouteTransition({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={pathname}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+      >
+        {children}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
 
 const LINKS = [
   { href: "/home", label: "Home", Icon: House },
@@ -40,7 +58,9 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
     return (
       <>
         <SiteNav />
-        <div className="shell shell--pad-top">{children}</div>
+        <div className="shell shell--pad-top">
+          <RouteTransition>{children}</RouteTransition>
+        </div>
       </>
     );
   }
@@ -126,7 +146,9 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
               <UserButton />
             </div>
           </header>
-          <div className="dash-main">{children}</div>
+          <div className="dash-main">
+            <RouteTransition>{children}</RouteTransition>
+          </div>
         </div>
       </div>
     </>

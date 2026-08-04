@@ -202,6 +202,7 @@ export default function SiteNav() {
                 href={l.href}
                 prefetch
                 style={{
+                  position: "relative",
                   padding: "0.4375rem 0.875rem",
                   borderRadius: 999,
                   fontSize: "0.875rem",
@@ -214,6 +215,14 @@ export default function SiteNav() {
                 }}
               >
                 {l.label}
+                {active ? (
+                  <motion.div
+                    layoutId="nav-active-line"
+                    className="nav-active-underline"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                ) : null}
               </Link>
             );
           })}
@@ -230,6 +239,7 @@ export default function SiteNav() {
               aria-controls={solutionsId}
               onClick={() => setSolutionsOpen((o) => !o)}
               style={{
+                position: "relative",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "0.3rem",
@@ -259,6 +269,14 @@ export default function SiteNav() {
               >
                 <CaretDown size={12} weight="bold" />
               </motion.span>
+              {solutionsActive ? (
+                <motion.div
+                  layoutId="nav-active-line"
+                  className="nav-active-underline"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                />
+              ) : null}
             </button>
 
             <AnimatePresence>
@@ -306,6 +324,7 @@ export default function SiteNav() {
                 href={l.href}
                 prefetch
                 style={{
+                  position: "relative",
                   padding: "0.4375rem 0.875rem",
                   borderRadius: 999,
                   fontSize: "0.875rem",
@@ -318,6 +337,14 @@ export default function SiteNav() {
                 }}
               >
                 {l.label}
+                {active ? (
+                  <motion.div
+                    layoutId="nav-active-line"
+                    className="nav-active-underline"
+                    initial={false}
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                ) : null}
               </Link>
             );
           })}
