@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
+import type { ReactNode } from "react";
+import { motion, useInView, useSpring, useTransform } from "framer-motion";
 import {
   useUserApi,
   type LastMatch,
@@ -13,6 +14,65 @@ import insights from "@/data/insights.json";
 import ClerkWelcomeName from "@/app/components/ClerkWelcomeName";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
+
+/* ─── Scroll-triggered reveal wrapper for dashboard home sections/cards ─────*/
+function HomeReveal({
+  children,
+  className = "",
+  direction = "up",
+}: {
+  children: ReactNode;
+  className?: string;
+  direction?: "up" | "left" | "right" | "scale";
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.1, margin: "0px 0px -60px 0px" });
+  const dirClass =
+    direction === "left"
+      ? "home-reveal-left"
+      : direction === "right"
+        ? "home-reveal-right"
+        : direction === "scale"
+          ? "home-reveal-scale"
+          : "home-reveal";
+  return (
+    <div ref={ref} className={`${dirClass} ${inView ? "is-visible" : ""} ${className}`.trim()}>
+      {children}
+    </div>
+  );
+}
+
+/* ─── Spring count-up for on-page metrics ───────────────────────────────────*/
+function AnimatedNumber({
+  value,
+  format = "integer",
+}: {
+  value: number;
+  format?: "integer" | "percentage" | "decimal";
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true, margin: "-60px" });
+  const spring = useSpring(0, { stiffness: 50, damping: 14 });
+  const display = useTransform(spring, (v) => {
+    if (format === "percentage") return `${Math.round(v)}%`;
+    if (format === "decimal") return v.toFixed(1);
+    return Math.round(v).toLocaleString();
+  });
+
+  useEffect(() => {
+    if (isInView) spring.set(value);
+  }, [isInView, spring, value]);
+
+  return <motion.span ref={ref}>{display}</motion.span>;
+}
+
+function handleShineMove(e: React.MouseEvent<HTMLElement>) {
+  const rect = e.currentTarget.getBoundingClientRect();
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+  e.currentTarget.style.setProperty("--shine-x", `${x}%`);
+  e.currentTarget.style.setProperty("--shine-y", `${y}%`);
+}
 
 /* Animated score ring */
 function ScoreRing({ score }: { score: number }) {
@@ -86,43 +146,50 @@ export default function HomePage() {
   const score = lastMatch?.score != null ? Math.round(lastMatch.score) : null;
 
   return (
-    <main style={{ paddingBottom: "5rem" }}>
+    <div className="dashboard-home">
+      <div className="home-orb home-orb-1" aria-hidden />
+      <div className="home-orb home-orb-2" aria-hidden />
+      <div className="home-orb home-orb-3" aria-hidden />
+      <div className="dashboard-home__content">
+        <main style={{ paddingBottom: "5rem" }}>
+          <div className="dashboard-home__sections">
       {/* Header */}
       <motion.header
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: EASE }}
-        style={{ paddingBottom: "1.5rem", borderBottom: "1px solid var(--color-line)", marginBottom: "2rem" }}
+        className="home-section-a"
+        style={{ position: "relative" }}
       >
-        <h1 style={{ margin: 0, fontSize: "clamp(1.4rem,3vw,1.875rem)", fontWeight: 500, letterSpacing: "-0.03em", color: "var(--color-ink)" }}>
-          Welcome back, <ClerkWelcomeName />
+        <div className="home-welcome-glow" aria-hidden />
+        <h1 className="home-welcome-heading">
+          Welcome back, <span className="home-welcome-name"><ClerkWelcomeName /></span>
         </h1>
-        <div style={{ marginTop: "0.625rem", display: "flex", flexWrap: "wrap", gap: "1rem", fontSize: "0.875rem", color: "var(--color-muted)" }}>
+        <div style={{ position: "relative", zIndex: 1, marginTop: "0.625rem", display: "flex", flexWrap: "wrap", gap: "1rem", fontSize: "0.875rem", color: "var(--color-muted)" }}>
           <span>
             Match score:{" "}
             <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>
-              {score != null ? `${score}%` : "N/A"}
+              {score != null ? <AnimatedNumber value={score} format="percentage" /> : "N/A"}
             </strong>
             {lastMatch?.role ? ` for ${lastMatch.role}` : ""}
           </span>
           <span>
-            Saved searches: <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>{saved.length}</strong>
+            Saved searches: <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}><AnimatedNumber value={saved.length} /></strong>
           </span>
           <span style={{ color: "var(--color-muted)" }}>Email alerts: not sending yet</span>
         </div>
       </motion.header>
 
+      <div className="home-divider" />
+
       {/* Search card */}
-      <motion.section
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.07, ease: EASE }}
-        aria-labelledby="search-mod"
-        style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.5rem", marginBottom: "2rem" }}
-      >
+      <HomeReveal className="home-section-b">
+      <section aria-labelledby="search-mod">
+        <HomeReveal className="home-reveal-d2">
         <h2 id="search-mod" style={{ margin: 0, fontSize: "1.0625rem", fontWeight: 500, color: "var(--color-ink)" }}>
           Search licensed sponsors
         </h2>
+        </HomeReveal>
         <form onSubmit={onSearch} style={{ marginTop: "1rem", display: "flex", flexDirection: "column", gap: "0.625rem" }} className="sm:flex-row">
           <input
             value={role}
@@ -164,19 +231,25 @@ export default function HomePage() {
             </Link>
           </p>
         ) : null}
-      </motion.section>
+      </section>
+      </HomeReveal>
+
+      <div className="home-divider" />
 
       {/* Match overview */}
-      <section style={{ marginBottom: "2rem" }} aria-labelledby="match-overview">
+      <HomeReveal className="home-section-a">
+      <section aria-labelledby="match-overview">
+        <HomeReveal className="home-reveal-d2">
         <h2 id="match-overview" style={{ margin: "0 0 1rem", fontSize: "1.0625rem", fontWeight: 500, color: "var(--color-ink)" }}>
           {lastMatch?.score != null && lastMatch.role
             ? `You match ${Math.round(lastMatch.score)}% of requirements for ${lastMatch.role}`
             : "Your match overview"}
         </h2>
+        </HomeReveal>
         {loading ? (
           <p style={{ color: "var(--color-muted)", fontSize: "0.9375rem" }}>Loading your last search…</p>
         ) : !lastMatch ? (
-          <div style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "2rem", textAlign: "center" }}>
+          <div className="home-card home-card--welcome shine-card" onMouseMove={handleShineMove} style={{ padding: "2rem", textAlign: "center" }}>
             <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--color-gold-pale)", margin: "0 auto 1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden>
                 <circle cx="13" cy="13" r="9" stroke="#4F6EF7" strokeWidth="1.75"/>
@@ -194,7 +267,8 @@ export default function HomePage() {
         ) : (
           <div style={{ display: "grid", gap: "0.875rem", gridTemplateColumns: "1fr" }} className="md:grid-cols-[auto_1fr]">
             {/* Score ring card */}
-            <div style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.75rem", minWidth: 200 }}>
+            <HomeReveal direction="scale">
+            <div className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.75rem", minWidth: 200 }}>
               <ScoreRing score={score ?? 0} />
               {lastMatch.role && (
                 <p style={{ margin: 0, fontSize: "0.8125rem", color: "var(--color-muted)", textAlign: "center" }}>for {lastMatch.role}</p>
@@ -203,11 +277,13 @@ export default function HomePage() {
                 Open full results â†’
               </Link>
             </div>
+            </HomeReveal>
 
             {/* Gap + sponsors */}
             <div style={{ display: "grid", gap: "0.875rem", gridTemplateColumns: "1fr" }} className="sm:grid-cols-2">
               {/* Missing skills */}
-              <div style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
+              <HomeReveal direction="left">
+              <div className="home-card home-card--skills shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
                 <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-muted)" }}>
                   Missing skills
                 </p>
@@ -229,8 +305,10 @@ export default function HomePage() {
                   )}
                 </ul>
               </div>
+              </HomeReveal>
               {/* Top sponsors */}
-              <div style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
+              <HomeReveal direction="right">
+              <div className="home-card home-card--activity shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
                 <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-muted)" }}>
                   Top sponsors
                 </p>
@@ -249,21 +327,29 @@ export default function HomePage() {
                   )}
                 </ul>
               </div>
+              </HomeReveal>
             </div>
           </div>
         )}
       </section>
+      </HomeReveal>
+
+      <div className="home-divider" />
 
       {/* Insights strip */}
-      <section style={{ marginBottom: "2rem", paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }} aria-labelledby="insights-strip">
+      <HomeReveal className="home-section-b">
+      <section aria-labelledby="insights-strip">
+        <HomeReveal className="home-reveal-d2">
         <h2 id="insights-strip" style={{ margin: "0 0 1rem", fontSize: "1.0625rem", fontWeight: 500, color: "var(--color-ink)" }}>
           Insights & data
         </h2>
+        </HomeReveal>
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.875rem", gridTemplateColumns: "1fr" }} className="md:grid-cols-3">
-          <li style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
+          <HomeReveal direction="left" className="home-reveal-d1">
+          <li className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
             {topSkill ? (
               <>
-                <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, color: "var(--color-gold-dark)", letterSpacing: "-0.02em" }}>{topSkill.share_pct}%</p>
+                <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, color: "var(--color-gold-dark)", letterSpacing: "-0.02em" }}><AnimatedNumber value={topSkill.share_pct} format="percentage" /></p>
                 <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-ink-soft)", lineHeight: 1.5 }}>
                   of ads in your last search required <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>{topSkill.skill}</strong>
                 </p>
@@ -274,17 +360,21 @@ export default function HomePage() {
               </p>
             )}
           </li>
-          <li style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
+          </HomeReveal>
+          <HomeReveal className="home-reveal-d2">
+          <li className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
             <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.02em" }}>
-              {london?.exit_rate_pct}% <span style={{ fontSize: "0.75rem", color: "var(--color-muted)", fontWeight: 400 }}>vs {scotland?.exit_rate_pct}%</span>
+              {london?.exit_rate_pct != null ? <AnimatedNumber value={london.exit_rate_pct} format="percentage" /> : "N/A"} <span style={{ fontSize: "0.75rem", color: "var(--color-muted)", fontWeight: 400 }}>vs {scotland?.exit_rate_pct}%</span>
             </p>
             <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-ink-soft)", lineHeight: 1.5 }}>
               London vs Scotland register exit rates. Tenure is a tiebreaker, not a veto.
             </p>
           </li>
-          <li style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
+          </HomeReveal>
+          <HomeReveal direction="right" className="home-reveal-d3">
+          <li className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
             <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.02em" }}>
-              {insights.headline.pct_2023_cohort_exited}%
+              <AnimatedNumber value={insights.headline.pct_2023_cohort_exited} format="percentage" />
             </p>
             <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-ink-soft)", lineHeight: 1.5 }}>
               of 2023-first-seen sponsors later left the register.
@@ -293,20 +383,28 @@ export default function HomePage() {
               Open insights â†’
             </Link>
           </li>
+          </HomeReveal>
         </ul>
       </section>
+      </HomeReveal>
+
+      <div className="home-divider" />
 
       {/* Saved searches */}
-      <section style={{ paddingTop: "2rem", borderTop: "1px solid var(--color-line)", marginBottom: "2rem" }} aria-labelledby="saved">
+      <HomeReveal className="home-section-a">
+      <section aria-labelledby="saved">
+        <HomeReveal className="home-reveal-d2">
         <h2 id="saved" style={{ margin: "0 0 0.875rem", fontSize: "1.0625rem", fontWeight: 500, color: "var(--color-ink)" }}>
           Saved searches
         </h2>
+        </HomeReveal>
         {saved.length === 0 ? (
           <p style={{ color: "var(--color-ink-soft)", fontSize: "0.9375rem" }}>
             Save a search from your results page to re-run it here.
           </p>
         ) : (
-          <div style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", overflow: "hidden" }}>
+          <HomeReveal className="home-reveal-d3">
+          <div className="home-card home-card--activity shine-card" onMouseMove={handleShineMove} style={{ overflow: "hidden" }}>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {saved.map((s, i) => (
                 <li
@@ -325,14 +423,21 @@ export default function HomePage() {
               ))}
             </ul>
           </div>
+          </HomeReveal>
         )}
       </section>
+      </HomeReveal>
+
+      <div className="home-divider" />
 
       {/* Quick actions */}
-      <section style={{ paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }} aria-labelledby="quick">
+      <HomeReveal className="home-section-b">
+      <section aria-labelledby="quick">
+        <HomeReveal className="home-reveal-d2">
         <h2 id="quick" style={{ margin: "0 0 1rem", fontSize: "1.0625rem", fontWeight: 500, color: "var(--color-ink)" }}>
           Quick actions
         </h2>
+        </HomeReveal>
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.875rem", gridTemplateColumns: "1fr" }} className="sm:grid-cols-3">
           {[
             {
@@ -340,22 +445,26 @@ export default function HomePage() {
               title: "Improve your CV",
               sub: "CV guide",
               icon: <path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1ZM7 7h6M7 10h6M7 13h4" stroke="#4F6EF7" strokeWidth="1.25" strokeLinecap="round"/>,
+              dir: "left" as const,
             },
             {
               href: "/solutions/sponsorship-checker",
               title: "Check a company",
               sub: "Sponsorship checker",
               icon: <><circle cx="9" cy="9" r="6" stroke="#4F6EF7" strokeWidth="1.25"/><path d="M13.5 13.5L17 17" stroke="#4F6EF7" strokeWidth="1.5" strokeLinecap="round"/></>,
+              dir: "up" as const,
             },
             {
               href: "/solutions/immigration-guide",
               title: "Visa routes",
               sub: "Immigration guide",
               icon: <><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2Z" stroke="#4F6EF7" strokeWidth="1.25"/><path d="M2 10h16M10 2c-2 2.5-3 5-3 8s1 5.5 3 8" stroke="#4F6EF7" strokeWidth="1" strokeLinecap="round"/></>,
+              dir: "right" as const,
             },
-          ].map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} style={{ display: "block", background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem", textDecoration: "none", transition: "border-color 150ms" }}>
+          ].map((item, i) => (
+            <HomeReveal key={item.href} direction={item.dir} className={i === 1 ? "home-reveal-d2" : "home-reveal-d3"}>
+            <li>
+              <Link href={item.href} className="home-card home-card--welcome shine-card" onMouseMove={handleShineMove} style={{ display: "block", padding: "1.25rem", textDecoration: "none" }}>
                 <div style={{ width: 36, height: 36, borderRadius: 8, background: "var(--color-gold-pale)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>{item.icon}</svg>
                 </div>
@@ -363,9 +472,14 @@ export default function HomePage() {
                 <span style={{ display: "block", marginTop: "0.25rem", fontSize: "0.8125rem", color: "var(--color-muted)" }}>{item.sub}</span>
               </Link>
             </li>
+            </HomeReveal>
           ))}
         </ul>
       </section>
-    </main>
+      </HomeReveal>
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }
