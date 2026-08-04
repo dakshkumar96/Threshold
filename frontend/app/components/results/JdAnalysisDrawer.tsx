@@ -60,15 +60,9 @@ export default function JdAnalysisDrawer({
         </div>
 
         <div
-          className="mt-4 rounded-xl p-3 text-sm"
-          style={{
-            background:
-              verdict.kind === "now"
-                ? "var(--color-signal-soft)"
-                : verdict.kind === "later"
-                  ? "var(--color-warning-soft)"
-                  : "rgba(220, 50, 50, 0.08)",
-          }}
+          className={`jd-drawer__verdict mt-4 rounded-xl p-3 text-sm jd-drawer__verdict--${
+            verdict.kind === "now" ? "now" : verdict.kind === "later" ? "later" : "no"
+          }`}
         >
           <p className="m-0 text-xs font-medium uppercase tracking-wider text-muted">
             Apply verdict
