@@ -87,21 +87,27 @@ export default function LeanSponsorCard({
               ? "above"
               : sponsor.salary_vs_threshold === "below"
                 ? "below"
-                : "na"
+                : sponsor.salary_vs_threshold === "borderline"
+                  ? "borderline"
+                  : "na"
           }
           title={
             sponsor.salary_vs_threshold === "above"
               ? thresholdClearsLabel(salaryThreshold, isNewEntrant)
               : sponsor.salary_vs_threshold === "below"
                 ? "Below Skilled Worker salary threshold"
-                : "Salary vs threshold unknown"
+                : sponsor.salary_vs_threshold === "borderline"
+                  ? "Stated range spans the threshold. Could land either side."
+                  : "Salary vs threshold unknown"
           }
         >
           {sponsor.salary_vs_threshold === "above"
             ? "Above"
             : sponsor.salary_vs_threshold === "below"
               ? "Below"
-              : "—"}
+              : sponsor.salary_vs_threshold === "borderline"
+                ? "Borderline"
+                : "N/A"}
         </span>
       </div>
 

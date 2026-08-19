@@ -28,10 +28,10 @@ export default function ResultsPage() {
 
   useEffect(() => {
     try {
-      const raw = sessionStorage.getItem("sponsor_signal_results");
+      const raw = sessionStorage.getItem("threshold_results");
       if (!raw) {
         if (process.env.NODE_ENV === "development") {
-          sessionStorage.setItem("sponsor_signal_results", JSON.stringify(RESULTS_DEMO));
+          sessionStorage.setItem("threshold_results", JSON.stringify(RESULTS_DEMO));
           setData(RESULTS_DEMO);
         }
         return;
@@ -39,7 +39,7 @@ export default function ResultsPage() {
       setData(JSON.parse(raw) as AnalyzeResponse);
     } catch {
       setLoadError("Saved results were corrupted. Please run a new search.");
-      sessionStorage.removeItem("sponsor_signal_results");
+      sessionStorage.removeItem("threshold_results");
     }
   }, []);
 

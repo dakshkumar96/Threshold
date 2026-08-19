@@ -33,7 +33,7 @@ export default function ScoreRing({
   const circumference = 2 * Math.PI * radius;
   const pct = score == null ? 0 : Math.round(Math.min(Math.max(score, 0), 100));
   const offset = circumference - (pct / 100) * circumference;
-  // Font tracks design size only — not the 1.25 ring scale
+  // Font tracks design size only, not the 1.25 ring scale
   const fontSize = Math.max(12, Math.round(size * 0.25));
 
   const label = score == null ? "N/A" : `${pct}%`;
@@ -52,7 +52,7 @@ export default function ScoreRing({
         viewBox={`0 0 ${ringSize} ${ringSize}`}
         className="ss-score-ring__svg"
       >
-        {/* Only the arc rotates — text stays upright and centered */}
+        {/* Only the arc rotates; text stays upright and centered */}
         <g transform={`rotate(-90 ${cx} ${cy})`}>
           <circle
             cx={cx}

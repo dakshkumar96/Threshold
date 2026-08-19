@@ -5,9 +5,9 @@ export type Sponsor = AnalyzeResponse["sponsors"][number];
 export const SW_THRESHOLD = 41_700;
 export const SW_NEW_ENTRANT_THRESHOLD = 33_400;
 export const MATCH_TARGET = 75;
-export const BOOKMARKS_KEY = "sponsor_signal_bookmarks";
-export const HISTORY_KEY = "sponsor_signal_match_history";
-export const NEW_ENTRANT_KEY = "sponsor_signal_new_entrant";
+export const BOOKMARKS_KEY = "threshold_bookmarks";
+export const HISTORY_KEY = "threshold_match_history";
+export const NEW_ENTRANT_KEY = "threshold_new_entrant";
 
 /** Mirrors backend AGENCY_KEYWORDS in match_sponsors.py (+ hiring). */
 export const AGENCY_KEYWORDS = [
@@ -214,8 +214,8 @@ export function pushHistory(role: string, score: number | null | undefined) {
   if (score == null || typeof window === "undefined") return;
   const fingerprint = `${role.toLowerCase()}|${Math.round(score)}`;
   try {
-    if (sessionStorage.getItem("sponsor_signal_hist_fp") === fingerprint) return;
-    sessionStorage.setItem("sponsor_signal_hist_fp", fingerprint);
+    if (sessionStorage.getItem("threshold_hist_fp") === fingerprint) return;
+    sessionStorage.setItem("threshold_hist_fp", fingerprint);
   } catch {
     /* ignore */
   }
@@ -230,6 +230,7 @@ export function pushHistory(role: string, score: number | null | undefined) {
 export function salaryClass(t?: string | null): string {
   if (t === "above") return "salary-above";
   if (t === "below") return "salary-below";
+  if (t === "borderline") return "salary-borderline";
   return "salary-unknown";
 }
 

@@ -149,6 +149,13 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
         {data.accuracy_note ? (
           <p className="data-overview__accuracy">{data.accuracy_note}</p>
         ) : null}
+        {data.opportunities_experience_filter_applied === false &&
+        data.opportunities_experience_filter_note ? (
+          <p className="data-overview__exp-note">
+            <Warning size={13} weight="fill" aria-hidden />
+            {data.opportunities_experience_filter_note}
+          </p>
+        ) : null}
         {!data.has_cv ? (
           <a href="/search" className="data-overview__link">
             Upload CV for a match score →

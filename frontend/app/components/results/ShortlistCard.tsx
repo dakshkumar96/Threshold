@@ -102,6 +102,10 @@ export default function ShortlistCard({
             <span className="salary-threshold-chip">
               {thresholdClearsLabel(salaryThreshold, isNewEntrant)}
             </span>
+          ) : sponsor.salary_vs_threshold === "borderline" ? (
+            <span className="salary-threshold-chip">
+              Range spans the threshold. Could land either side.
+            </span>
           ) : null}
           <InfoTip label={salary.label}>
             <span className="block">{salary.body}</span>

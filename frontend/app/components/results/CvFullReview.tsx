@@ -8,8 +8,8 @@ import {
   ChartBar,
   Lightning,
   Path,
-  Sparkle,
   Target,
+  TrendUp,
   X,
 } from "@phosphor-icons/react";
 import {
@@ -281,7 +281,7 @@ export default function CvFullReview({
 
         <section className="cv-full__tri">
           <InsightCard
-            icon={Sparkle}
+            icon={TrendUp}
             title="Strengths"
             tone="good"
             items={strengths}
@@ -525,7 +525,7 @@ function InsightCard({
   text,
   empty,
 }: {
-  icon: typeof Sparkle;
+  icon: typeof TrendUp;
   title: string;
   tone: "good" | "gap" | "fix";
   items?: string[];
