@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
+import { creato } from "./fonts";
 import "./globals.css";
 
 const inter = Inter({
@@ -10,10 +11,12 @@ const inter = Inter({
   display: "swap",
 });
 
+const fontVariables = `${inter.variable} ${creato.variable}`;
+
 export const metadata: Metadata = {
   title: {
-    default: "Sponsor Signal",
-    template: "%s | Sponsor Signal",
+    default: "Threshold",
+    template: "%s | Threshold",
   },
   description:
     "Find UK licensed sponsors hiring for your role, with honest confidence and a skill roadmap.",
@@ -30,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <ClerkProvider>
       <html
         lang="en"
-        className={inter.variable}
+        className={fontVariables}
         suppressHydrationWarning
       >
         <body
