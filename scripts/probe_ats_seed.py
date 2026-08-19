@@ -10,7 +10,7 @@ import requests
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "data" / "ats_seed.json"
-UA = {"User-Agent": "SponsorSignal/1.0 (+https://sponsorsignal.local)"}
+UA = {"User-Agent": "Threshold/1.0 (+https://threshold.local)"}
 TIMEOUT = 8
 
 # (company_key, published_name, [slug candidates])

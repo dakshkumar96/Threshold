@@ -78,6 +78,11 @@ def _salary_vs_threshold(
     """Classify stated pay vs the applicable Skilled Worker floor."""
     if smin is None and smax is None:
         return "unknown"
+    # A stated range that spans the floor (min below, max at/above) isn't confidently
+    # "above" — the actual offer could land either side. Flag it honestly instead of
+    # forcing a binary that's wrong whenever the role pays toward the bottom of range.
+    if smin is not None and smax is not None and smin < threshold <= smax:
+        return "borderline"
     if (smax is not None and smax >= threshold) or (
         smin is not None and smin >= threshold
     ):
@@ -685,8 +690,18 @@ async def analyze(
     if has_cv:
         scored = match_cv_to_skills(text, freq)
 
-    sponsor_rows = matched[matched["is_sponsor"]].copy()
-    possible_rows = matched[matched["is_possible_sponsor"]].copy()
+    # Experience filter also applies to the opportunity list itself (previously it only
+    # scoped skill frequencies / CV scoring / LLM context, leaving sponsor cards showing
+    # every level regardless of what was requested). Same helper, same honest fallback
+    # (filter_jobs_by_experience keeps the full list and reports why when too few rows
+    # classify into the requested level) — filtered once over the combined sponsor +
+    # possible universe so there's a single note for the list the user actually sees.
+    opportunity_rows = matched[matched["is_sponsor"] | matched["is_possible_sponsor"]].copy()
+    opportunity_rows, opp_exp_applied, opp_exp_count, opp_exp_note = (
+        filter_jobs_by_experience(opportunity_rows, exp_requested, context="Sponsor list")
+    )
+    sponsor_rows = opportunity_rows[opportunity_rows["is_sponsor"]].copy()
+    possible_rows = opportunity_rows[opportunity_rows["is_possible_sponsor"]].copy()
     top_from_sponsors = not sponsor_rows.empty
     company_source = sponsor_rows if top_from_sponsors else matched
 
@@ -791,6 +806,9 @@ async def analyze(
         "experience_filter_applied": bool(exp_applied),
         "experience_jobs_count": int(exp_jobs_count),
         "experience_filter_note": exp_note or None,
+        "opportunities_experience_filter_applied": bool(opp_exp_applied),
+        "opportunities_experience_jobs_count": int(opp_exp_count),
+        "opportunities_experience_filter_note": opp_exp_note or None,
         "requirement_frequencies": freq_list,
         "sponsors": sponsors_out,
         "top_companies": top_companies,

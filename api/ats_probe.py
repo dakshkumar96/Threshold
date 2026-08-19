@@ -9,7 +9,7 @@ from typing import Any
 import requests
 
 TIMEOUT = 8
-UA = "SponsorSignal/1.0 (+https://sponsorsignal.local)"
+UA = "Threshold/1.0 (+https://threshold.local)"
 HEADERS = {"User-Agent": UA}
 
 # Greenhouse/Ashby skew tech; Workable/Recruitee cover SMBs and non-tech.

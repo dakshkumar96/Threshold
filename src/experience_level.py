@@ -161,6 +161,7 @@ def filter_jobs_by_experience(
     level: ExperienceLevel | str | None,
     *,
     min_matches: int = 8,
+    context: str = "Skill analysis",
 ):
     """
     Filter a jobs DataFrame to the requested experience level.
@@ -168,6 +169,11 @@ def filter_jobs_by_experience(
     Returns (filtered_or_original_df, applied: bool, match_count: int, note: str).
     Empty / 'any' level means no filter. If fewer than min_matches rows classify
     into the requested level, falls back to the full set.
+
+    `context` is a short subject phrase ("Skill analysis", "Sponsor list", ...) used
+    in the returned note so the same helper reads correctly for different callers —
+    this filter is applied both to the skills/CV/LLM job pool and to the sponsor
+    opportunity list.
     """
     import pandas as pd
 
@@ -203,15 +209,12 @@ def filter_jobs_by_experience(
 
     if match_count >= min_matches:
         out = matched.drop(columns=["_exp_level"]).reset_index(drop=True)
-        note = (
-            f"Skill analysis limited to {match_count} ads classified as "
-            f"{requested}."
-        )
+        note = f"{context} limited to {match_count} ads classified as {requested}."
         return out, True, match_count, note
 
     out = df.drop(columns=["_exp_level"]).reset_index(drop=True)
     note = (
         f"Only {match_count} ads matched the {requested} level "
-        f"(need {min_matches}); using all {len(out)} ads for skills."
+        f"(need {min_matches}); showing all {len(out)} ads instead."
     )
     return out, False, match_count, note
