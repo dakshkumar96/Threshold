@@ -21,7 +21,7 @@ const NODES = [
   { name: "Home Office Register", short: "Home Office", Icon: House, angle: 210 },
 ] as const;
 
-/** Shared viewBox + layout radii — one coordinate system for arrows + boxes. */
+/** Shared viewBox + layout radii: one coordinate system for arrows + boxes. */
 const SIZE = 460;
 const CX = SIZE / 2;
 const CY = SIZE / 2;

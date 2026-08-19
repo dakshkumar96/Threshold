@@ -236,6 +236,10 @@ export default function LandingPage() {
           <div className="hero-bento__top">
             <div className="hero-bento__copy" style={{ position: "relative" }}>
               <div className="hero-text-glow" aria-hidden />
+              <span className="hero-eyebrow">
+                <span className="hero-eyebrow__dot" aria-hidden />
+                Home Office sponsor register, live
+              </span>
               <HeroHeadline />
 
               <p
@@ -294,6 +298,10 @@ export default function LandingPage() {
                   See how it works
                 </a>
               </div>
+
+              <p className="hero-trust-line">
+                No sign-up needed · Live UK data · CV never stored
+              </p>
             </div>
 
             <motion.div
@@ -720,7 +728,7 @@ export default function LandingPage() {
           <div className="compare-ours">
             <div className="compare-head">
               <span className="compare-badge compare-badge--brand">After</span>
-              <p className="compare-title compare-title--brand">With Sponsor Signal</p>
+              <p className="compare-title compare-title--brand">With Threshold</p>
             </div>
             <ul className="compare-list">
               {WITH_US.map((line) => (
@@ -973,7 +981,7 @@ export default function LandingPage() {
                   color: "rgba(255,255,255,0.9)",
                 }}
               >
-                Sponsor Signal
+                Threshold
               </p>
               <p style={{ margin: 0, fontSize: "0.85rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.55 }}>
                 For international students trying to find work in the UK.
@@ -1059,17 +1067,29 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <p
+          <div
             style={{
               margin: "2.5rem 0 0",
               paddingTop: "1.25rem",
               borderTop: "1px solid rgba(255,255,255,0.08)",
-              fontSize: "0.8rem",
-              color: "rgba(255,255,255,0.45)",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "space-between",
+              gap: "0.75rem 1.5rem",
             }}
           >
-            Built by an international student, for international students.
-          </p>
+            <p style={{ margin: 0, fontSize: "0.8rem", color: "rgba(255,255,255,0.45)" }}>
+              Built by an international student, for international students.
+            </p>
+            <p style={{ margin: 0, display: "flex", gap: "1.25rem", fontSize: "0.8rem" }}>
+              <Link href="/terms" className="footer-link" style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+                Terms
+              </Link>
+              <Link href="/privacy" className="footer-link" style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+                Privacy
+              </Link>
+            </p>
+          </div>
         </div>
       </footer>
     </main>

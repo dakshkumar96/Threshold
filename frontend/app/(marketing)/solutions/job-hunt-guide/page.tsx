@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     t: "Pick a realistic target role",
-    d: "Use a title employers actually advertise. Check Insights or run a Sponsor Signal search before rewriting your entire CV around a vague ambition.",
+    d: "Use a title employers actually advertise. Check Insights or run a Threshold search before rewriting your entire CV around a vague ambition.",
   },
   {
     t: "Separate sponsored leads from noise",

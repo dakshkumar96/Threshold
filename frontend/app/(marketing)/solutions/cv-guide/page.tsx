@@ -25,7 +25,7 @@ export default function CvGuidePage() {
         <ul style={{ margin: 0, paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.625rem" }}>
           <li>Lead with a role title and stack that match the ads you want.</li>
           <li>
-            Put high-frequency skills from your Sponsor Signal roadmap into project
+            Put high-frequency skills from your Threshold roadmap into project
             bullets with a result, not a buzzword list.
           </li>
           <li>

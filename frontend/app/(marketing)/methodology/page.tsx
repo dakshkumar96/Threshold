@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Methodology | Sponsor Signal",
+  title: "Methodology | Threshold",
   description:
-    "How Sponsor Signal finds UK licensed sponsors, how confident each match is, and what the numbers do not mean.",
+    "How Threshold finds UK licensed sponsors, how confident each match is, and what the numbers do not mean.",
 };
 
 const PIPELINE = [
@@ -78,7 +78,7 @@ export default function MethodologyPage() {
           Methodology, and what the numbers do not mean
         </h1>
         <p style={{ margin: "1rem 0 0", maxWidth: "58ch", fontSize: "0.9375rem", lineHeight: 1.6, color: "var(--color-muted)" }}>
-          Sponsor Signal shows evidence, not decisions. Nothing here tells you whether a
+          Threshold shows evidence, not decisions. Nothing here tells you whether a
           company will sponsor you. It tells you who holds a licence, who is advertising,
           and how sure we are that the two are the same company.
         </p>

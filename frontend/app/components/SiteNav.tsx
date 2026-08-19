@@ -181,7 +181,7 @@ export default function SiteNav() {
               letterSpacing: "-0.01em",
             }}
           >
-            Sponsor Signal
+            Threshold
           </span>
         </Link>
 

@@ -14,7 +14,7 @@ import {
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Why Sponsor Signal exists, how sponsor checks work, and what the product does and does not claim.",
+    "Why Threshold exists, how sponsor checks work, and what the product does and does not claim.",
 };
 
 const STATS = [
@@ -128,7 +128,7 @@ export default function AboutPage() {
             Built after the HR conversation that ends the offer.
           </h1>
           <p>
-            Sponsor Signal helps international students find UK roles that can actually
+            Threshold helps international students find UK roles that can actually
             sponsor a Skilled Worker visa, understand how strong each sponsor match is,
             and see what to improve next. It exists because guessing is expensive when
             your visa clock is already running.
@@ -181,7 +181,7 @@ export default function AboutPage() {
             impossible to search by role. You gave up and started again.
           </p>
           <p className="about-story__pull">
-            I built Sponsor Signal because I was that person. I&apos;m on the Graduate
+            I built Threshold because I was that person. I&apos;m on the Graduate
             visa. I&apos;ve had the HR conversation. I know what it feels like to spend
             weeks on an application that was never going to work out.
           </p>
@@ -271,7 +271,7 @@ export default function AboutPage() {
         <div className="about-section__intro">
           <h2 id="promises-heading">What you can expect</h2>
           <p>
-            Sponsor Signal is a signal desk, not another noisy board. These are the
+            Threshold is a signal desk, not another noisy board. These are the
             product principles behind every page.
           </p>
         </div>
