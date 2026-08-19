@@ -43,7 +43,7 @@ export type LastMatch = {
 
 function lastMatchFromSession(): LastMatch | null {
   try {
-    const raw = sessionStorage.getItem("sponsor_signal_results");
+    const raw = sessionStorage.getItem("threshold_results");
     if (!raw) return null;
     const data = JSON.parse(raw) as {
       role?: string;

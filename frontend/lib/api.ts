@@ -25,6 +25,9 @@ export type AnalyzeResponse = {
   experience_filter_applied?: boolean;
   experience_jobs_count?: number;
   experience_filter_note?: string | null;
+  opportunities_experience_filter_applied?: boolean;
+  opportunities_experience_jobs_count?: number;
+  opportunities_experience_filter_note?: string | null;
   score: number | null;
   score_label: string | null;
   matched_count: number | null;

@@ -249,7 +249,7 @@ function SearchPageInner() {
       setLoadTransitionMs(50);
       setLoadProgress(100);
       setLoadBarDone(true);
-      sessionStorage.setItem("sponsor_signal_results", JSON.stringify(data));
+      sessionStorage.setItem("threshold_results", JSON.stringify(data));
       router.push("/results");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Request failed";

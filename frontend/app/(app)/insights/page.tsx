@@ -508,7 +508,7 @@ export default function InsightsPage() {
                 <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "#065f46" }}>This is why licence tenure data matters</p>
               </div>
               <p style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.65, color: "#065f46" }}>
-                Sponsor Signal&apos;s <strong style={{ fontWeight: 500 }}>Established</strong> tier = 5+ years continuously on the register. That is not a guarantee, but it is a meaningful signal that the employer has been meeting compliance requirements over time.
+                Threshold&apos;s <strong style={{ fontWeight: 500 }}>Established</strong> tier = 5+ years continuously on the register. That is not a guarantee, but it is a meaningful signal that the employer has been meeting compliance requirements over time.
               </p>
             </div>
           </div>
@@ -828,7 +828,11 @@ export default function InsightsPage() {
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#4f6ef7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </span>
                     <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
-                      The CV match score from your last search was <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>{lastMatch.match_score ?? "N/A"}%</strong>. Typical successful sponsored hire match scores exceed 70%.
+                      Your CV&apos;s match score against current market requirements for that search was{" "}
+                      <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>
+                        {lastMatch.score != null ? Math.round(lastMatch.score) : "N/A"}%
+                      </strong>
+                      . This measures skill overlap with live ads, not a prediction of hiring outcome. We don&apos;t have confirmed sponsorship-hire data to benchmark against.
                     </p>
                   </li>
                   {topSkills.length > 0 && (

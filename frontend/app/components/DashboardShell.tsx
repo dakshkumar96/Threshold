@@ -46,7 +46,7 @@ function titleFor(pathname: string) {
   if (pathname.startsWith("/profile")) return "Profile";
   if (pathname.startsWith("/home")) return "Home";
   if (pathname.startsWith("/solutions")) return "Solutions";
-  return "Sponsor Signal";
+  return "Threshold";
 }
 
 export default function DashboardShell({ children }: { children: ReactNode }) {
@@ -94,7 +94,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
                 }}
                 aria-hidden
               />
-              Sponsor Signal
+              Threshold
             </Link>
           </div>
           <nav

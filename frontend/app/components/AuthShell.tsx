@@ -19,7 +19,7 @@ function BrandMark({ light = false }: { light?: boolean }) {
           strokeLinecap="round"
         />
       </svg>
-      <span>Sponsor Signal</span>
+      <span>Threshold</span>
     </Link>
   );
 }
