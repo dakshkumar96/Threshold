@@ -57,6 +57,8 @@ User-facing bands use **observed register tenure** (`duration_days` in the reten
 
 Common failure modes: recruitment agencies, short brand names, shared generic tokens. Larger samples surface more of those hard cases — treat ~60% as the more cautious product figure. Matches below 80 are not listed as sponsors.
 
+**Methodology caveat:** the 68%/59% figures above are labeled by `qa_match_sample.py`'s own `label_match()` heuristic, not by a person — they're a consistent proxy, not verified ground truth, and they cover one role (`data analyst`) only. `src/qa_match_sample_multi.py` pulls a fresh sample across 5 roles (including a sector ATS coverage is weakest in — see above) into `data/processed/match_qa_sample_multi.csv` with an empty `human_label` column for real review; `src/qa_tier_calibration.py` computes actual precision per `sponsor_confidence` tier once that column is filled in. Numbers here should be replaced once that human-labeled pass is done.
+
 ## Requirement / skill extraction
 
 ### Legacy static checklist sample

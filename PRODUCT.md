@@ -12,11 +12,11 @@ International students and recent graduates in the UK, typically 21-24, who need
 
 ## Product Purpose
 
-Sponsor Signal combines live UK job ads, the Home Office Skilled Worker sponsor register, employer licence history, market skill demand, and optional CV feedback. It helps users answer three questions: which licensed employers are hiring, how trustworthy each sponsor match is, and what they should improve next.
+Threshold combines live UK job ads, the Home Office Skilled Worker sponsor register, employer licence history, market skill demand, and optional CV feedback. It helps users answer three questions: which licensed employers are hiring, how trustworthy each sponsor match is, and what they should improve next.
 
 ## Positioning
 
-Unlike a generic job board, Sponsor Signal verifies or qualifies employer sponsor identity, keeps results UK-only, adds licence-tenure context, and turns skills from current adverts into a personal roadmap.
+Unlike a generic job board, Threshold verifies or qualifies employer sponsor identity, keeps results UK-only, adds licence-tenure context, and turns skills from current adverts into a personal roadmap.
 
 ## Operating Context
 
@@ -33,7 +33,7 @@ Guests see a marketing landing, public guides, Insights, and can run a search wi
 
 ## Brand Commitments
 
-- Product name: Sponsor Signal.
+- Product name: Threshold.
 - Voice: calm, candid, precise, supportive, and never patronising.
 - Visual references explicitly named by the user: Linear, Raycast, Clerk, Notion, and Monzo for restraint, trust, editorial whitespace, and humane financial-product clarity.
 - Avoid corporate job-board styling, LinkedIn blue-and-white energy, AI gradients, cartoon illustrations, and anxiety-inducing urgency.

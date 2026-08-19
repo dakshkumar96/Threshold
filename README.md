@@ -1,6 +1,6 @@
 # uk-sponsor-analysis
 
-**Sponsor Signal** — UK visa sponsor jobs, CV gaps, and licence retention signals.
+**Threshold** — UK visa sponsor jobs, CV gaps, and licence retention signals.
 
 Pick any role, optionally upload a CV PDF, fetch live Reed + Adzuna jobs, match employers to Skilled Worker sponsors, score skills against that role's ads, and rank sponsors by licence stability band.
 
