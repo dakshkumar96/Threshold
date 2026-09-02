@@ -161,7 +161,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Why does salary matter?",
-    a: "Skilled Worker needs £38,700 or the going rate, whichever is higher.",
+    a: "Skilled Worker needs £41,700 or the going rate, whichever is higher.",
   },
   {
     q: "Do I need to upload a CV?",

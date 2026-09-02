@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Methodology | Threshold",
+  title: "Methodology",
   description:
     "How Threshold finds UK licensed sponsors, how confident each match is, and what the numbers do not mean.",
 };

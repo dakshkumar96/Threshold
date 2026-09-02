@@ -45,9 +45,9 @@ export default function ImmigrationGuidePage() {
           <h2 style={{ margin: 0, fontSize: "1.125rem", fontWeight: 500, color: "var(--color-ink)" }}>Skilled Worker</h2>
           <p style={{ margin: "0.625rem 0 0", maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
             You need a job offer from a licensed sponsor, a Certificate of
-            Sponsorship, and to meet skill and salary rules for the role. Sponsor
-            Signal helps you find licensed employers who are advertising. It does
-            not guarantee a CoS or visa approval.
+            Sponsorship, and to meet skill and salary rules for the role.
+            Threshold helps you find licensed employers who are advertising. It
+            does not guarantee a CoS or visa approval.
           </p>
         </div>
       </section>

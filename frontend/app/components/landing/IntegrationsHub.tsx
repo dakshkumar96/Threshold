@@ -158,11 +158,7 @@ export default function IntegrationsHub() {
             })}
 
             <div className="integration-hub-dark">
-              <span>
-                Sponsor
-                <br />
-                Signal
-              </span>
+              <span>Threshold</span>
             </div>
           </div>
         </div>
