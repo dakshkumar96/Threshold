@@ -11,3 +11,8 @@ uvicorn
 python-multipart
 pdfplumber
 PyJWT
+
+# Lets pydantic evaluate Python 3.10+ union syntax ("str | None") on older
+# interpreters — needed on Ubuntu 20.04's default Python 3.8 (the Oracle
+# deploy target); harmless no-op on newer Python.
+eval_type_backport
