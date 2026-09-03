@@ -1,0 +1,5 @@
+# Force LF for anything destined to run on the Linux deploy target, regardless
+# of the OS/editor that checks it out or commits it (Windows dev machine here).
+# Without this, Windows' core.autocrlf can silently turn these into CRLF, which
+# breaks the shebang line and heredocs in setup.sh on the actual server.
+deploy/** text eol=lf

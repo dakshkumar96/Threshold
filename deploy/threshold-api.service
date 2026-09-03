@@ -1,0 +1,30 @@
+# systemd unit for the Threshold API (FastAPI/uvicorn).
+# Install: sudo cp deploy/threshold-api.service /etc/systemd/system/
+#          sudo systemctl daemon-reload
+#          sudo systemctl enable --now threshold-api
+#
+# Assumes the repo is cloned to /home/ubuntu/Threshold and the venv lives at
+# /home/ubuntu/Threshold/.venv (see deploy/setup.sh). Adjust User/WorkingDirectory/
+# paths if your instance uses a different username or clone location.
+#
+# Binds to 127.0.0.1 only — nginx (deploy/nginx-threshold-api.conf) is the public
+# reverse proxy in front of it. Do not expose uvicorn directly on 0.0.0.0 here.
+
+[Unit]
+Description=Threshold API (FastAPI/uvicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/Threshold
+EnvironmentFile=/home/ubuntu/Threshold/.env
+ExecStart=/home/ubuntu/Threshold/.venv/bin/uvicorn api.main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=always
+RestartSec=5
+# Give in-flight /analyze requests (up to ~210s per the frontend timeout) room to
+# finish on a restart/deploy instead of being killed mid-request.
+TimeoutStopSec=220
+
+[Install]
+WantedBy=multi-user.target
