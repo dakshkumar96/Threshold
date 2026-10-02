@@ -16,7 +16,18 @@ type SkillRow = {
   start?: number;
   end?: number;
   span?: number;
+  /** Short label from the review's judgement, e.g. "Blocking". */
+  tag?: string | null;
+  tagTone?: "warn" | "good" | "muted";
+  /** One-sentence reason behind the tag. */
+  why?: string | null;
 };
+
+function haveTag(s: AnalyzeResponse["matched_skills"][number]): Pick<SkillRow, "tag" | "tagTone"> {
+  if (s.found_by === "review") return { tag: "Found in your work", tagTone: "good" };
+  if (s.depth === "listed") return { tag: "Named, not shown in work", tagTone: "muted" };
+  return {};
+}
 
 export default function GapRoadmap({ data }: { data: AnalyzeResponse }) {
   const [tab, setTab] = useState<Tab>("have");
@@ -29,6 +40,8 @@ export default function GapRoadmap({ data }: { data: AnalyzeResponse }) {
         frequency_pct: g.frequency_pct,
         ease_weeks: g.ease_weeks,
         note: null as string | null,
+        blocking: g.blocking,
+        why: g.why,
       }));
 
   const plan = useMemo(() => {
@@ -165,6 +178,13 @@ export default function GapRoadmap({ data }: { data: AnalyzeResponse }) {
           rows={have.slice(0, 10).map((s) => ({
             skill: s.skill,
             frequency_pct: s.frequency_pct,
+            ...haveTag(s),
+            why:
+              s.found_by === "review" && s.evidence
+                ? `“${s.evidence}”`
+                : s.depth === "listed"
+                  ? s.why
+                  : null,
           }))}
         />
       ) : null}
@@ -197,6 +217,14 @@ export default function GapRoadmap({ data }: { data: AnalyzeResponse }) {
               skill: s.skill,
               frequency_pct: s.frequency_pct,
               ease_weeks: s.ease_weeks,
+              tag:
+                s.blocking === true
+                  ? "Blocking"
+                  : s.blocking === false
+                    ? "Nice to have"
+                    : null,
+              tagTone: s.blocking === true ? "warn" : "muted",
+              why: s.why,
             }))}
           />
         )
@@ -295,7 +323,14 @@ function SkillAnalyticsList({
         return (
           <li key={s.skill}>
             <div className="skill-strip__row-top">
-              <strong>{s.skill}</strong>
+              <strong>
+                {s.skill}
+                {s.tag ? (
+                  <span className="skill-strip__tag" data-tone={s.tagTone ?? "muted"}>
+                    {s.tag}
+                  </span>
+                ) : null}
+              </strong>
               <span className="skill-strip__row-meta">
                 {pct != null ? `${pct}% of ads` : "N/A"}
                 {s.ease_weeks != null ? ` · ~${s.ease_weeks}w` : ""}
@@ -304,6 +339,7 @@ function SkillAnalyticsList({
             <div className="skill-strip__row-bar" aria-hidden>
               <i style={{ width: `${bar}%` }} />
             </div>
+            {s.why ? <p className="skill-strip__row-why">{s.why}</p> : null}
           </li>
         );
       })}

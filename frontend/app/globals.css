@@ -5700,6 +5700,10 @@ select:focus {
   grid-template-columns: 1fr 1fr;
 }
 
+.search-wizard__pill[data-wide="true"] {
+  grid-column: 1 / -1;
+}
+
 @media (min-width: 560px) {
   .search-wizard__pills--compact {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -6136,6 +6140,27 @@ select:focus {
   font-size: 0.75rem;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.62);
+}
+
+.data-overview__level-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin: 0.6rem 0 0;
+  max-width: 72ch;
+  padding: 0.45rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(147, 197, 253, 0.28);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: #dbeafe;
+}
+
+.data-overview__level-note svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: #93c5fd;
 }
 
 .data-overview__exp-note {
@@ -7229,6 +7254,37 @@ select:focus {
   text-align: right;
 }
 
+.skill-strip__tag {
+  display: inline-block;
+  margin-left: 0.45rem;
+  padding: 0.05rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  vertical-align: 1px;
+  white-space: nowrap;
+  color: var(--color-muted);
+  background: rgba(29, 78, 216, 0.07);
+}
+
+.skill-strip__tag[data-tone="warn"] {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.14);
+}
+
+.skill-strip__tag[data-tone="good"] {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.13);
+}
+
+.skill-strip__row-why {
+  margin: 0;
+  font-size: 0.71875rem;
+  line-height: 1.45;
+  color: var(--color-muted);
+}
+
 .skill-strip__row-bar {
   height: 6px;
   border-radius: 999px;
@@ -7480,6 +7536,24 @@ select:focus {
   flex-wrap: wrap;
   gap: 0.35rem;
   margin-bottom: 0.4rem;
+}
+
+.short-card__level {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  vertical-align: middle;
+  color: var(--color-muted);
+  background: rgba(29, 78, 216, 0.07);
+}
+
+.short-card__level[data-fit="true"] {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.12);
 }
 
 .short-card__title {

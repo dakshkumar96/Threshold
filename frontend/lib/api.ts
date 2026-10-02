@@ -1,4 +1,5 @@
 export type ExperienceLevel =
+  | "auto"
   | "any"
   | "graduate"
   | "junior"
@@ -22,6 +23,16 @@ export type AnalyzeResponse = {
   match_rate_pct: number;
   min_salary_filter?: number | null;
   experience_level_requested?: string | null;
+  /** Level actually used for filtering: the one picked, or the one read from the CV. */
+  experience_level_used?: string | null;
+  experience_level_source?: "cv" | "you" | null;
+  experience_level_reason?: string | null;
+  /** Job levels shown for that candidate level, e.g. ["graduate", "junior"]. */
+  experience_level_band?: string[] | null;
+  opportunities_hidden_by_level?: number;
+  /** Extra level-specific search run alongside the role search, e.g. "graduate software engineer". */
+  level_search_term?: string | null;
+  level_search_jobs?: number;
   experience_filter_applied?: boolean;
   experience_jobs_count?: number;
   experience_filter_note?: string | null;
@@ -29,17 +40,30 @@ export type AnalyzeResponse = {
   opportunities_experience_jobs_count?: number;
   opportunities_experience_filter_note?: string | null;
   score: number | null;
+  /** Literal keyword-match score, before the review's evidence-checked judgement. */
+  keyword_score?: number | null;
   score_label: string | null;
   matched_count: number | null;
   top_n: number | null;
   readiness_pct: number | null;
-  matched_skills: { skill: string; frequency_pct: number }[];
+  matched_skills: {
+    skill: string;
+    frequency_pct: number;
+    /** "demonstrated" = shown in described work; "listed" = named only. */
+    depth?: "demonstrated" | "listed" | null;
+    evidence?: string | null;
+    why?: string | null;
+    /** "review" = the keyword scan missed it; the review found it in the CV. */
+    found_by?: "review" | null;
+  }[];
   gaps: {
     skill: string;
     frequency_pct: number;
     essential_share_pct?: number;
     ease_weeks?: number;
     priority_score?: number;
+    blocking?: boolean | null;
+    why?: string | null;
   }[];
   gap_suggestion?: string | null;
   where_you_are?: string | null;
@@ -49,6 +73,8 @@ export type AnalyzeResponse = {
     ease_weeks?: number | null;
     priority_score?: number | null;
     note?: string | null;
+    blocking?: boolean | null;
+    why?: string | null;
   }[];
   requirement_frequencies: {
     skill: string;
@@ -58,6 +84,9 @@ export type AnalyzeResponse = {
   }[];
   sponsors: {
     title: string;
+    /** Level the ad states (title or years asked for); null when it doesn't say. */
+    experience_level?: string | null;
+    level_fit?: "fits" | "unstated" | "outside" | null;
     company: string;
     company_raw?: string | null;
     matched_sponsor: string;
@@ -111,6 +140,16 @@ export type AnalyzeResponse = {
       frequency_pct?: number | null;
       ease_weeks?: number | null;
       note?: string | null;
+      blocking?: boolean | null;
+      why?: string | null;
+    }[];
+    skill_judgements?: {
+      skill: string;
+      status: "demonstrated" | "listed" | "missing";
+      evidence?: string | null;
+      evidence_found?: boolean;
+      blocking?: boolean;
+      why?: string | null;
     }[];
     jobs_reviewed?: number | null;
     jobs_in_skill_analysis?: number | null;

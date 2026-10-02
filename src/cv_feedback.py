@@ -23,6 +23,7 @@ import requests
 
 from job_schema import load_env
 from llm_prompt_builder import (
+    JUDGED_SKILLS,
     build_system_prompt,
     build_user_prompt,
     pack_jobs_for_llm,
@@ -65,9 +66,162 @@ def skills_to_learn_from_gaps(
                 "ease_weeks": weeks,
                 "priority_score": g.get("priority_score"),
                 "note": "; ".join(note_parts) if note_parts else None,
+                "blocking": g.get("blocking"),
+                "why": g.get("why"),
             }
         )
     return out
+
+
+_JUDGEMENT_STATUSES = ("demonstrated", "listed", "missing")
+
+
+def _evidence_words(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9+#]+", (text or "").lower())
+
+
+def _evidence_in_cv(evidence: str, cv_joined: str) -> bool:
+    """True when a quote the model gave as evidence really comes from the CV.
+
+    The prompt asks for evidence copied exactly from the CV, which makes a
+    "the CV shows this skill" claim checkable: the whole quote must appear,
+    or at least a 4-word run of it (models trim or re-join quotes a little).
+    Single words are refused - one word is a keyword, not evidence of use.
+    """
+    words = _evidence_words(evidence)
+    if len(words) < 2:
+        return False
+    if f" {' '.join(words)} " in cv_joined:
+        return True
+    return any(
+        f" {' '.join(words[i : i + 4])} " in cv_joined
+        for i in range(len(words) - 3)
+    )
+
+
+def apply_skill_judgements(
+    match_summary: dict[str, Any], raw: Any, cv_text: str
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Fold the model's per-skill judgement into the keyword match.
+
+    The keyword scan only sees literal words, so it misses skills the CV
+    shows in other terms and can't tell a skills-list mention from real
+    use. The model judges each top market skill from the described work;
+    this applies those calls where they can be checked:
+      - a keyword gap the model says the CV shows moves to matched, but
+        only if its quoted evidence is found in the CV text (so the score
+        can only rise on grounded evidence, never on an unsupported claim)
+      - remaining gaps get the model's blocking / nice-to-have call and
+        reason, blocking ones first
+      - matched skills get a depth label (demonstrated vs only listed);
+        this is shown to the user but never lowers the score
+    Returns (adjusted match summary, cleaned judgements). With no usable
+    judgements the match summary comes back unchanged.
+    """
+    if not isinstance(raw, list) or not raw:
+        return match_summary, []
+
+    cv_joined = f" {' '.join(_evidence_words(cv_text))} "
+    gaps = [dict(g) for g in match_summary.get("gaps") or []]
+    matched = [dict(m) for m in match_summary.get("matched") or []]
+    gap_by_key = {str(g.get("skill")).lower(): g for g in gaps}
+    matched_by_key = {str(m.get("skill")).lower(): m for m in matched}
+
+    judgements: list[dict[str, Any]] = []
+    promoted: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in raw[: JUDGED_SKILLS + 5]:
+        if not isinstance(item, dict):
+            continue
+        key = str(item.get("skill") or "").strip().lower()
+        status = str(item.get("status") or "").strip().lower()
+        if status not in _JUDGEMENT_STATUSES or key in seen:
+            continue
+        if key not in gap_by_key and key not in matched_by_key:
+            continue
+        seen.add(key)
+        evidence = re.sub(r"\s+", " ", str(item.get("evidence") or "")).strip()[:200]
+        why = re.sub(r"\s+", " ", str(item.get("why") or "")).strip()[:300] or None
+        grounded = bool(evidence) and _evidence_in_cv(evidence, cv_joined)
+        judgements.append(
+            {
+                "skill": (gap_by_key.get(key) or matched_by_key[key])["skill"],
+                "status": status,
+                "evidence": evidence or None,
+                "evidence_found": grounded,
+                "blocking": item.get("blocking") is True and status == "missing",
+                "why": why,
+            }
+        )
+
+        if key in gap_by_key:
+            gap = gap_by_key[key]
+            if status != "missing" and grounded:
+                promoted.append(gap)
+                matched.append(
+                    {
+                        "skill": gap["skill"],
+                        "frequency_pct": gap.get("frequency_pct"),
+                        "depth": status,
+                        "evidence": evidence,
+                        "why": why,
+                        "found_by": "review",
+                    }
+                )
+            elif status == "missing":
+                gap["blocking"] = item.get("blocking") is True
+                gap["why"] = why
+        else:
+            m = matched_by_key[key]
+            if status == "demonstrated":
+                # Same rule as promotion: "shown in real work" needs a quote
+                # that checks out, otherwise no depth claim is made.
+                if grounded:
+                    m["depth"] = "demonstrated"
+                    m["evidence"] = evidence
+                    m["why"] = why
+            else:
+                # "missing" for a skill the scan found usually means a
+                # passing mention ("keen to learn Kafka"); same as listed.
+                m["depth"] = "listed"
+                m["why"] = why
+
+    if not judgements:
+        return match_summary, []
+
+    promoted_ids = {id(g) for g in promoted}
+    gaps = [g for g in gaps if id(g) not in promoted_ids]
+    matched.sort(key=lambda m: float(m.get("frequency_pct") or 0), reverse=True)
+    # Stable sort: blocking gaps first, keyword priority order kept within.
+    gaps.sort(key=lambda g: g.get("blocking") is not True)
+
+    adjusted = dict(match_summary)
+    adjusted["gaps"] = gaps
+    adjusted["matched"] = matched
+    adjusted["matched_count"] = len(matched)
+    adjusted["keyword_score"] = match_summary.get("score")
+    if promoted:
+        total = sum(
+            float(s.get("frequency_pct") or 0)
+            for s in (match_summary.get("matched") or [])
+            + (match_summary.get("gaps") or [])
+        )
+        gained = sum(float(g.get("frequency_pct") or 0) for g in promoted)
+        base = float(match_summary.get("score") or 0)
+        if total > 0:
+            score = round(min(100.0, base + 100 * gained / total), 1)
+            adjusted["score"] = score
+            adjusted["readiness_pct"] = score
+    if gaps:
+        top = gaps[0]
+        weeks = top.get("ease_weeks")
+        adjusted["gap_suggestion"] = (
+            f"Learn {top['skill']} first — ~{top.get('frequency_pct')}% of ads"
+            + (f", ~{weeks} weeks." if weeks is not None else ".")
+        )
+    else:
+        adjusted["gap_suggestion"] = None
+    return adjusted, judgements
 
 
 def where_you_are_from_match(match_summary: dict[str, Any]) -> str:
@@ -187,6 +341,7 @@ def _skill_key(text: str) -> str:
     Strips leading punctuation and trailing "— ..." commentary so
     "SQL — in ~62% of ads" and "Strong SQL skills" both key on "sql".
     """
+    text = re.sub(r"^\s*(blocking|nice[ -]to[ -]have)\s*[:—\-–]\s*", "", text, flags=re.I)
     head = re.split(r"[—\-–:]", text, maxsplit=1)[0]
     return re.sub(r"[^a-z0-9 ]", "", head.lower()).strip()
 
@@ -271,13 +426,87 @@ def _reconcile_summary(
     return summary
 
 
+def _parse_skill_judgements(content: str) -> list[Any] | None:
+    m = re.search(
+        r"<<<SKILL_JUDGEMENTS>>>\s*(\[.*?\])\s*<<<END_SKILL_JUDGEMENTS>>>",
+        content,
+        flags=re.S,
+    )
+    if not m:
+        return None
+    try:
+        parsed = json.loads(m.group(1))
+    except json.JSONDecodeError:
+        return None
+    return parsed if isinstance(parsed, list) else None
+
+
 def _strip_summary_block(content: str) -> str:
+    content = re.sub(
+        r"\n*<<<SKILL_JUDGEMENTS>>>.*?<<<END_SKILL_JUDGEMENTS>>>\s*"
+        r"(?:One entry for each[^\n]*\n)?",
+        "\n",
+        content,
+        flags=re.S,
+    )
     return re.sub(
         r"\n*<<<SUMMARY_JSON>>>.*?<<<END_SUMMARY_JSON>>>\s*",
         "\n",
         content,
         flags=re.S,
     ).strip()
+
+
+def _is_about(text: str, skill_keys: set[str]) -> bool:
+    """Whether a gap phrase leads with one of the skills ("REST API design
+    — ..." is about "rest api"; "Google Cloud" is not about "go")."""
+    key = _skill_key(text)
+    return bool(key) and any(key == k or key.startswith(k + " ") for k in skill_keys)
+
+
+_GAP_PREFIX_RE = re.compile(r"^(blocking|nice[ -]to[ -]have)\s*[:—\-–]\s*", re.I)
+
+
+def _align_gap_bullets(
+    report: str, confirmed: set[str], blocking_by_key: dict[str, bool]
+) -> str:
+    """Make the prose Gaps / Skills-to-learn bullets agree with the skill
+    judgement block, which drives the skill list shown next to the report.
+    The prose is told to agree with it but doesn't always, so:
+      - bullets about a skill the review confirmed the CV shows (evidence
+        checked against the CV text) are dropped
+      - "Blocking:" / "Nice to have:" labels are set from the judgement
+    """
+    if not confirmed and not blocking_by_key:
+        return report
+
+    def flag_for(text: str) -> bool | None:
+        key = _skill_key(text)
+        for k, flag in blocking_by_key.items():
+            if key and (key == k or key.startswith(k + " ")):
+                return flag
+        return None
+
+    out: list[str] = []
+    section = ""
+    for line in report.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("SECTION:"):
+            section = stripped[len("SECTION:") :].strip().lower()
+        elif stripped.startswith("- ") and section in (
+            "gaps",
+            "skills to learn for sponsored roles",
+        ):
+            body = stripped[2:]
+            if _is_about(body, confirmed):
+                continue
+            m = _GAP_PREFIX_RE.match(body) if section == "gaps" else None
+            flag = flag_for(body) if m else None
+            if m and flag is not None:
+                label = "Blocking" if flag else "Nice to have"
+                line = f"- {label}: {body[m.end():]}"
+        out.append(line)
+    return "\n".join(out)
 
 
 # Canonical titles for the sections the prompt asks for. The model doesn't
@@ -339,6 +568,8 @@ def generate_cv_feedback(
     match_summary: dict[str, Any],
     jobs=None,
     jobs_analyzed_for_skills: int | None = None,
+    candidate_level: str | None = None,
+    candidate_level_reason: str | None = None,
 ) -> dict[str, Any] | None:
     """
     Returns recruiter-style feedback grounded in market skills + excerpts,
@@ -365,43 +596,50 @@ def generate_cv_feedback(
     skills_to_learn = skills_to_learn_from_gaps(match_summary.get("gaps"))
     where_py = where_you_are_from_match(match_summary)
 
-    jobs_blob, excerpts_count, jobs_truncated = pack_jobs_for_llm(
-        jobs, max_chars=4500, max_jobs=20
-    )
     built = build_system_prompt(role, cv_text, match_summary)
-    user_prompt = build_user_prompt(
-        role,
-        cv_text,
-        skill_frequencies,
-        match_summary,
-        jobs_blob=jobs_blob,
-        jobs_count=excerpts_count,
-        jobs_truncated=jobs_truncated,
-        jobs_analyzed_for_skills=jobs_analyzed,
-    )
     system_content = (
         built["system_prompt"]
         + "\n\nIMPORTANT: Your visible report must be PLAIN TEXT only "
         "(SECTION: Title headers and '- ' bullets). No markdown. "
-        "Lead with WHERE YOU ARE NOW and SKILLS TO LEARN FOR SPONSORED ROLES. "
-        "SECTION: Scores must list all five rubric categories as "
-        "'Label: NN/20 — reason' with a concrete CV-based explanation "
-        "on every line, then Total: NN/100. Be detailed — quote CV lines."
+        "Be detailed — quote CV lines."
     )
-    # Last-resort shrink if somehow still over soft budget.
-    if len(system_content) + len(user_prompt) > _PROMPT_CHAR_SOFT_LIMIT:
-        jobs_blob, excerpts_count, jobs_truncated = pack_jobs_for_llm(
-            jobs, max_chars=2800, max_jobs=12
+    # Fit the prompt under the soft budget by shrinking the job-ad excerpts
+    # first - they're colour only, market frequencies already cover every ad
+    # - and only then the CV, which the whole review depends on.
+    attempts = [(4500, 20), (3000, 14), (1800, 8), (0, 0)]
+    for i, (max_chars, max_jobs) in enumerate(attempts):
+        if max_jobs:
+            jobs_blob, excerpts_count, jobs_truncated = pack_jobs_for_llm(
+                jobs, max_chars=max_chars, max_jobs=max_jobs
+            )
+        else:
+            jobs_blob, excerpts_count, jobs_truncated = "", 0, True
+        user_prompt = build_user_prompt(
+            role,
+            cv_text,
+            skill_frequencies,
+            match_summary,
+            jobs_blob=jobs_blob,
+            jobs_count=excerpts_count,
+            jobs_truncated=jobs_truncated or i > 0,
+            jobs_analyzed_for_skills=jobs_analyzed,
+            candidate_level=candidate_level,
+            candidate_level_reason=candidate_level_reason,
         )
+        if len(system_content) + len(user_prompt) <= _PROMPT_CHAR_SOFT_LIMIT:
+            break
+    else:
         user_prompt = build_user_prompt(
             role,
             (cv_text or "")[:2800],
             skill_frequencies,
             match_summary,
-            jobs_blob=jobs_blob,
-            jobs_count=excerpts_count,
+            jobs_blob="",
+            jobs_count=0,
             jobs_truncated=True,
             jobs_analyzed_for_skills=jobs_analyzed,
+            candidate_level=candidate_level,
+            candidate_level_reason=candidate_level_reason,
         )
 
     sys_chars = len(system_content)
@@ -460,7 +698,10 @@ def generate_cv_feedback(
                     {"role": "system", "content": system_content},
                     {"role": "user", "content": user_prompt},
                 ],
-                "temperature": 0.35,
+                # Low: per-skill verdicts move the score and gap list, and at
+                # 0.35 the same CV flipped skills between "demonstrated" and
+                # "missing" across identical runs (seed alone doesn't pin it).
+                "temperature": 0.15,
                 "seed": seed,
                 "max_tokens": _MAX_COMPLETION_TOKENS,
             },
@@ -469,6 +710,13 @@ def generate_cv_feedback(
             return _fail(_http_error_message(r))
         payload = r.json()
         finish_reason = payload["choices"][0].get("finish_reason")
+        usage = payload.get("usage") or {}
+        print(
+            f"[llm] usage prompt={usage.get('prompt_tokens')} "
+            f"completion={usage.get('completion_tokens')} "
+            f"finish={finish_reason}",
+            flush=True,
+        )
         truncated = finish_reason == "length"
         if truncated:
             print(
@@ -512,8 +760,34 @@ def generate_cv_feedback(
             if fallback:
                 summary["would_put_forward"] = fallback
 
+        adjusted_match, judgements = apply_skill_judgements(
+            match_summary,
+            _parse_skill_judgements(content) or summary.get("skill_judgements"),
+            cv_text,
+        )
+        # Skills the review showed in the CV with a quote that checked out.
+        confirmed = {
+            _skill_key(m["skill"])
+            for m in adjusted_match.get("matched") or []
+            if m.get("found_by") == "review" or m.get("depth") == "demonstrated"
+        }
+        confirmed.discard("")
+        if confirmed and summary.get("top_3_gaps"):
+            summary["top_3_gaps"] = [
+                g
+                for g in summary["top_3_gaps"]
+                if not (isinstance(g, str) and _is_about(g, confirmed))
+            ]
+        blocking_by_key = {
+            _skill_key(j["skill"]): bool(j["blocking"])
+            for j in judgements
+            if j["status"] == "missing"
+        }
+        blocking_by_key.pop("", None)
+        report = _align_gap_bullets(report, confirmed, blocking_by_key)
+
         summary = _reconcile_summary(
-            summary, deterministic_score=match_summary.get("score")
+            summary, deterministic_score=adjusted_match.get("score")
         )
 
         where_llm = summary.get("where_you_are") or summary.get("first_impression")
@@ -528,8 +802,11 @@ def generate_cv_feedback(
             would_put_forward=summary.get("would_put_forward"),
             full_report=report,
             where_you_are=where_llm or where_py,
-            # Keep Python gap list deterministic; LLM narrates in full_report.
-            skills_to_learn=skills_to_learn,
+            # Python gap list, minus skills the review showed with evidence
+            # found in the CV, blocking gaps first.
+            skills_to_learn=skills_to_learn_from_gaps(adjusted_match.get("gaps")),
+            skill_judgements=judgements,
+            adjusted_match=adjusted_match if judgements else None,
             role_family=built["role_family"],
             role_family_name=built["role_family_name"],
             calibration_band=built["calibration_band"],
