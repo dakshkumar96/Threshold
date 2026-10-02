@@ -22,7 +22,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from dynamic_skills import SKILL_ALIASES, extract_skills_from_text
+from dynamic_skills import ALIAS_ALSO, SKILL_ALIASES, extract_skills_from_text
 from fetch_reed import enrich_reed_full_descriptions
 
 JOBS_PATH = ROOT / "data" / "processed" / "jobs_matched_data_analyst.parquet"
@@ -83,6 +83,7 @@ def main() -> None:
 
         for skill in predicted:
             aliases = [a for a, c in SKILL_ALIASES.items() if c == skill]
+            aliases += [a for a, c in ALIAS_ALSO.items() if c == skill]
             ok = any(
                 re.search(r"(?<![a-z0-9])" + re.escape(a) + r"(?![a-z0-9])", low)
                 for a in aliases

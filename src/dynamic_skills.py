@@ -109,6 +109,68 @@ SKILL_ALIASES: dict[str, str] = {
     "ab testing": "A/B Testing",
     "nlp": "NLP",
     "r programming": "R",
+    # Specific tools that are unambiguously an instance of a broader skill,
+    # so a CV (or ad) naming the tool counts for the skill too. Kept to
+    # cases where the tool can't be used without doing the skill.
+    "github actions": "CI/CD",
+    "gitlab ci": "CI/CD",
+    "jenkins": "CI/CD",
+    "circleci": "CI/CD",
+    "continuous integration": "CI/CD",
+    "continuous delivery": "CI/CD",
+    "continuous deployment": "CI/CD",
+    "eks": "Kubernetes",
+    "aks": "Kubernetes",
+    "gke": "Kubernetes",
+    "amazon web services": "AWS",
+    "ec2": "AWS",
+    "github": "Git",
+    "gitlab": "Git",
+    "bitbucket": "Git",
+    "rest apis": "REST API",
+    "restful": "REST API",
+    "a/b test": "A/B Testing",
+    "a/b tests": "A/B Testing",
+    "split testing": "A/B Testing",
+    "regression analysis": "Statistics",
+    "hypothesis testing": "Statistics",
+    "pivot tables": "Excel",
+    "pivot table": "Excel",
+    "vlookup": "Excel",
+    "xlookup": "Excel",
+}
+
+# Aliases that name a product of a broader platform: matching the alias also
+# counts the platform (an EKS cluster runs on AWS).
+ALIAS_ALSO: dict[str, str] = {
+    "eks": "AWS",
+    "aks": "Azure",
+    "gke": "GCP",
+}
+
+# Having the key skill on a CV shows the listed skills as well (PostgreSQL
+# work is SQL work). Applied to the CV side only: an ad asking for
+# PostgreSQL still asks for PostgreSQL, but a candidate who uses it has
+# plainly shown SQL.
+SKILL_IMPLIES: dict[str, tuple[str, ...]] = {
+    "PostgreSQL": ("SQL",),
+    "MySQL": ("SQL",),
+    "BigQuery": ("SQL",),
+    "Snowflake": ("SQL",),
+    "Redshift": ("SQL",),
+    "dbt": ("SQL",),
+    "PySpark": ("Spark", "Python"),
+    "pandas": ("Python",),
+    "NumPy": ("Python",),
+    "scikit-learn": ("Python", "Machine Learning"),
+    "TensorFlow": ("Machine Learning", "Deep Learning"),
+    "PyTorch": ("Machine Learning", "Deep Learning"),
+    "Deep Learning": ("Machine Learning",),
+    "TypeScript": ("JavaScript",),
+    "Node.js": ("JavaScript",),
+    "React": ("JavaScript",),
+    "Scrum": ("Agile",),
+    "DAX": ("Power BI",),
 }
 
 STOP = {
@@ -184,7 +246,18 @@ def extract_skills_from_text(text: str) -> list[str]:
         pattern = r"(?<![a-z0-9])" + re.escape(alias) + r"(?![a-z0-9])"
         if re.search(pattern, low):
             found.add(SKILL_ALIASES[alias])
+            if alias in ALIAS_ALSO:
+                found.add(ALIAS_ALSO[alias])
     return sorted(found)
+
+
+def cv_skill_set(cv_text: str) -> set[str]:
+    """Lower-cased canonical skills a CV shows, including implied ones."""
+    found = extract_skills_from_text(cv_text or "")
+    out = {s.lower() for s in found}
+    for s in found:
+        out.update(x.lower() for x in SKILL_IMPLIES.get(s, ()))
+    return out
 
 
 def _job_description_text(row) -> str:
@@ -262,7 +335,7 @@ def match_cv_to_skills(cv_text: str, frequencies: pd.DataFrame) -> dict:
             "gap_suggestion": None,
         }
 
-    cv_skills = {s.lower() for s in extract_skills_from_text(cv_text)}
+    cv_skills = cv_skill_set(cv_text)
     # Word-boundary only — never raw substring (avoids git⊂digital, sap⊂whatsapp)
     cv_low = _clean_text(cv_text).lower()
 
