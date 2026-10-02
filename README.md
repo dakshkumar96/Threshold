@@ -44,7 +44,7 @@ ADZUNA_APP_KEY=...
 # Optional free LLM (OpenAI-compatible; default Groq)
 LLM_API_KEY=...
 LLM_BASE_URL=https://api.groq.com/openai/v1
-LLM_MODEL=llama-3.3-70b-versatile
+LLM_MODEL=openai/gpt-oss-120b
 
 # Optional gate for /analyze (recommended when API is public)
 # ANALYZE_API_KEY=...
@@ -54,7 +54,7 @@ LLM_MODEL=llama-3.3-70b-versatile
 
 If `LLM_API_KEY` is missing, role-only search still works (jobs, sponsors, skill frequencies). When a CV is uploaded, `LLM_API_KEY` is **required** (HTTP 503 otherwise).
 
-CV critique uses modular prompts in `prompts/` (core + one role rubric + up to 3 failure patterns + one calibration example). Assembled by `src/llm_prompt_builder.py`. Default model: `llama-3.3-70b-versatile`.
+CV critique uses modular prompts in `prompts/` (core + one role rubric + up to 3 failure patterns + one calibration example). Assembled by `src/llm_prompt_builder.py`. Default model: `openai/gpt-oss-120b`.
 
 ### 2. Survival scores (once, or after panel refresh)
 

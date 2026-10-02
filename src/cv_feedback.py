@@ -4,14 +4,19 @@ Uses modular recruiter prompts from prompts/:
   compact core + one trimmed role rubric + short patterns + band cue.
 Feeds market skill aggregates (from all ads) + compact skill-section
 excerpts into the user prompt — not a handful of full JD blobs.
-Sized for Groq free-tier TPM (~12k tokens/min including max_tokens).
+Sized for Groq free-tier TPM (~8k tokens/min for openai/gpt-oss-120b,
+confirmed via the x-ratelimit-limit-tokens response header — a single
+review call already uses ~7.1-7.2k of that, so back-to-back calls within
+the same ~60s window will 429; this is a provider limit, not a bug).
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
+import time
 from typing import Any
 
 import requests
@@ -27,10 +32,14 @@ LABEL = (
     "structured recruiter feedback — subjective narrative, not a hiring prediction"
 )
 
-# Keep prompt + max_tokens under Groq free TPM (~12k for llama-3.3-70b).
-# Higher completion budget so detailed scorecard + rewrites are not truncated.
-_MAX_COMPLETION_TOKENS = 3200
-_PROMPT_CHAR_SOFT_LIMIT = 18000
+# Keep prompt + max_tokens under Groq's free-tier TPM limit for the model in
+# use (~8k measured). Completion budget raised from 3200 -> 3800 since the
+# trailing "Experience bullets"/"Rewritten summary" sections were observed
+# cutting off mid-sentence; prompt soft-limit tightened 18000 -> 16000 to
+# make room for that within the same ~8k ceiling (est. ~4000 prompt tokens
+# + 3800 completion tokens stays under it with some margin).
+_MAX_COMPLETION_TOKENS = 3800
+_PROMPT_CHAR_SOFT_LIMIT = 16000
 
 
 def skills_to_learn_from_gaps(
@@ -120,6 +129,29 @@ def _http_error_message(response: requests.Response) -> str:
     return f"LLM HTTP {status}"
 
 
+def _post_chat_completion(
+    url: str, headers: dict[str, str], payload: dict[str, Any]
+) -> requests.Response:
+    """POST with one retry on a reset/dropped connection.
+
+    Long LLM requests over flaky networks (and Windows sockets especially)
+    occasionally get killed mid-flight with a bare ConnectionResetError —
+    not a provider error, just the TCP connection dying. A single retry
+    on a fresh connection clears the vast majority of these.
+    """
+    last_exc: requests.exceptions.ConnectionError | None = None
+    for attempt in range(2):
+        try:
+            return requests.post(url, headers=headers, json=payload, timeout=(15, 150))
+        except requests.exceptions.ConnectionError as exc:
+            last_exc = exc
+            if attempt == 0:
+                time.sleep(1.5)
+                continue
+    assert last_exc is not None
+    raise last_exc
+
+
 def _parse_summary_json(content: str) -> dict[str, Any] | None:
     m = re.search(
         r"<<<SUMMARY_JSON>>>\s*(\{.*?\})\s*<<<END_SUMMARY_JSON>>>",
@@ -142,6 +174,103 @@ def _parse_summary_json(content: str) -> dict[str, Any] | None:
     return None
 
 
+# A score this low is "not competitive / rebuild" territory per the prompt's
+# own band definitions — "would_put_forward: Yes" alongside it is a direct
+# self-contradiction, so it's enforced in code rather than trusted to the
+# model having followed the instruction.
+_PUT_FORWARD_SCORE_FLOOR = 50
+
+
+def _skill_key(text: str) -> str:
+    """Normalise a strength/gap phrase to a comparable keyword token.
+
+    Strips leading punctuation and trailing "— ..." commentary so
+    "SQL — in ~62% of ads" and "Strong SQL skills" both key on "sql".
+    """
+    head = re.split(r"[—\-–:]", text, maxsplit=1)[0]
+    return re.sub(r"[^a-z0-9 ]", "", head.lower()).strip()
+
+
+def _section_bullets(report: str, title: str, limit: int = 3) -> list[str]:
+    """Pull "- " bullet lines out of a "SECTION: <title>" block in the plain
+    text report — used as a fallback when the JSON summary is missing a
+    field the prose clearly has (e.g. the completion got cut off before
+    reaching the JSON block, or the model emitted malformed JSON).
+    """
+    m = re.search(
+        rf"SECTION:\s*{re.escape(title)}\s*\n(.*?)(?=\nSECTION:|\Z)",
+        report,
+        flags=re.S | re.I,
+    )
+    if not m:
+        return []
+    out = []
+    for line in m.group(1).splitlines():
+        line = line.strip()
+        if line.startswith("- "):
+            out.append(line[2:].strip())
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _put_forward_from_report(report: str) -> str | None:
+    m = re.search(
+        r"SECTION:\s*Put forward\s*\n(.*?)(?=\nSECTION:|\Z)",
+        report,
+        flags=re.S | re.I,
+    )
+    if not m:
+        return None
+    pf = re.search(r"\b(Not yet|Yes|No)\b", m.group(1), flags=re.I)
+    if not pf:
+        return None
+    return {"yes": "Yes", "no": "No", "not yet": "Not yet"}[pf.group(1).lower()]
+
+
+def _reconcile_summary(
+    summary: dict[str, Any], *, deterministic_score: float | None = None
+) -> dict[str, Any]:
+    """Catch-after-the-fact fixes for contradictions a single LLM pass can
+    produce even when instructed not to — code enforcement is more reliable
+    than a prompt instruction for anything checkable mechanically.
+    """
+    llm_score = summary.get("score_out_of_100")
+    candidate_scores = [
+        s for s in (llm_score, deterministic_score) if isinstance(s, (int, float))
+    ]
+    # The UI shows whichever score is available, preferring the deterministic
+    # keyword-match score over the LLM's own score_out_of_100 (CvFullReview.tsx:
+    # `data.score ?? fb.score_out_of_100`) — so "low score + Put forward: Yes"
+    # must be judged against whichever one the user actually sees, not just
+    # the LLM's own number, or the two displayed values can still visibly
+    # contradict even after this check runs.
+    if candidate_scores and min(candidate_scores) < _PUT_FORWARD_SCORE_FLOOR:
+        if str(summary.get("would_put_forward", "")).strip().lower() == "yes":
+            summary["would_put_forward"] = "No"
+
+    strengths = summary.get("top_3_strengths") or []
+    gaps = summary.get("top_3_gaps") or []
+    if strengths and gaps:
+        strength_keys = {_skill_key(s) for s in strengths if isinstance(s, str)}
+        strength_keys.discard("")
+        kept_gaps = []
+        for g in gaps:
+            if not isinstance(g, str):
+                kept_gaps.append(g)
+                continue
+            key = _skill_key(g)
+            # A listed strength directly contradicts the same thing being a
+            # gap; the strength claim is kept (narrative asks it to quote
+            # real CV evidence), the gap claim is dropped as unreliable.
+            if key and key in strength_keys:
+                continue
+            kept_gaps.append(g)
+        summary["top_3_gaps"] = kept_gaps
+
+    return summary
+
+
 def _strip_summary_block(content: str) -> str:
     return re.sub(
         r"\n*<<<SUMMARY_JSON>>>.*?<<<END_SUMMARY_JSON>>>\s*",
@@ -149,6 +278,40 @@ def _strip_summary_block(content: str) -> str:
         content,
         flags=re.S,
     ).strip()
+
+
+# Canonical titles for the sections the prompt asks for. The model doesn't
+# reliably keep the "SECTION: X" prefix — observed runs used bare "RED FLAGS",
+# "**Scores**" or "## Put forward" (the markdown is stripped below, leaving a
+# bare line). Anything that isn't "SECTION: X" breaks both the frontend's
+# section parser and the fallbacks here that look for "SECTION:".
+_KNOWN_SECTIONS = {
+    "where you are now": "Where you are now",
+    "strengths": "Strengths",
+    "gaps": "Gaps",
+    "skills to learn for sponsored roles": "Skills to learn for sponsored roles",
+    "scores": "Scores",
+    "red flags": "Red flags",
+    "what works": "What works",
+    "experience bullets": "Experience bullets",
+    "fix first": "Fix first",
+    "rewritten summary": "Rewritten summary",
+    "put forward": "Put forward",
+}
+
+
+def _normalize_section_headers(text: str) -> str:
+    out = []
+    for line in text.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("- "):
+            out.append(line)
+            continue
+        key = re.sub(r"^section:\s*", "", stripped, flags=re.I)
+        key = re.sub(r"\s+", " ", key.strip("*_ ").rstrip(":").strip()).lower()
+        canonical = _KNOWN_SECTIONS.get(key)
+        out.append(f"SECTION: {canonical}" if canonical else line)
+    return "\n".join(out)
 
 
 def _to_plain_text(report: str) -> str:
@@ -164,6 +327,7 @@ def _to_plain_text(report: str) -> str:
     text = re.sub(r"^---+\s*$", "", text, flags=re.M)
     # Normalise bullet markers to "- "
     text = re.sub(r"^[\*•]\s+", "- ", text, flags=re.M)
+    text = _normalize_section_headers(text)
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 
@@ -191,7 +355,7 @@ def generate_cv_feedback(
         return None
 
     base = os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
-    model = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
+    model = os.getenv("LLM_MODEL", "openai/gpt-oss-120b")
 
     jobs_analyzed = (
         int(jobs_analyzed_for_skills)
@@ -268,6 +432,7 @@ def generate_cv_feedback(
             "jobs_context_truncated": jobs_truncated,
             "prompt_chars": total_chars,
             "model": model,
+            "truncated": False,
         }
         payload.update(extra)
         return payload
@@ -275,27 +440,43 @@ def generate_cv_feedback(
     def _fail(msg: str) -> dict[str, Any]:
         return _base_payload(error=msg)
 
+    # Deterministic per (role, CV) seed so re-running the same CV gives a
+    # stable score/report instead of drifting between calls (best-effort —
+    # not every provider/model honours `seed`, but Groq's does for most).
+    seed = int.from_bytes(
+        hashlib.sha256(f"{role}|{cv_text}".encode("utf-8")).digest()[:4], "big"
+    )
+
     try:
-        r = requests.post(
+        r = _post_chat_completion(
             f"{base}/chat/completions",
-            headers={
+            {
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
-            json={
+            {
                 "model": model,
                 "messages": [
                     {"role": "system", "content": system_content},
                     {"role": "user", "content": user_prompt},
                 ],
                 "temperature": 0.35,
+                "seed": seed,
                 "max_tokens": _MAX_COMPLETION_TOKENS,
             },
-            timeout=(15, 150),
         )
         if not r.ok:
             return _fail(_http_error_message(r))
-        content = r.json()["choices"][0]["message"]["content"]
+        payload = r.json()
+        finish_reason = payload["choices"][0].get("finish_reason")
+        truncated = finish_reason == "length"
+        if truncated:
+            print(
+                f"[llm] WARNING: completion truncated (finish_reason=length) "
+                f"max_tokens={_MAX_COMPLETION_TOKENS}",
+                flush=True,
+            )
+        content = payload["choices"][0]["message"]["content"]
         content = (content or "").strip()
         if content.startswith("```"):
             content = re.sub(r"^```(?:markdown|md|json|text)?\s*", "", content)
@@ -309,6 +490,31 @@ def generate_cv_feedback(
             m = re.search(r"TOTAL[^\d]*(\d+)\s*/\s*100", report, flags=re.I)
             if m:
                 score = int(m.group(1))
+        summary["score_out_of_100"] = score
+
+        # Belt-and-suspenders for a truncated or malformed SUMMARY_JSON block:
+        # the prose sections above it (Strengths/Gaps/Put forward) are now
+        # emitted BEFORE the JSON (see llm_prompt_builder.py), so they should
+        # already be intact even when the trailing narrative gets cut off —
+        # but if the JSON itself is still missing a field the prose clearly
+        # has, read it from there rather than showing "none returned" next
+        # to a report that visibly contains it.
+        if not summary.get("top_3_strengths"):
+            fallback = _section_bullets(report, "Strengths")
+            if fallback:
+                summary["top_3_strengths"] = fallback
+        if not summary.get("top_3_gaps"):
+            fallback = _section_bullets(report, "Gaps")
+            if fallback:
+                summary["top_3_gaps"] = fallback
+        if not summary.get("would_put_forward"):
+            fallback = _put_forward_from_report(report)
+            if fallback:
+                summary["would_put_forward"] = fallback
+
+        summary = _reconcile_summary(
+            summary, deterministic_score=match_summary.get("score")
+        )
 
         where_llm = summary.get("where_you_are") or summary.get("first_impression")
         return _base_payload(
@@ -327,9 +533,15 @@ def generate_cv_feedback(
             role_family=built["role_family"],
             role_family_name=built["role_family_name"],
             calibration_band=built["calibration_band"],
+            truncated=truncated,
         )
     except requests.Timeout:
         return _fail("LLM timed out after 150s. Try again shortly.")
+    except requests.exceptions.ConnectionError:
+        return _fail(
+            "Connection to the LLM provider was reset after a retry. "
+            "This is usually a transient network issue — try again."
+        )
     except requests.RequestException as exc:
         return _fail(f"LLM request failed: {exc}")
     except Exception as exc:
