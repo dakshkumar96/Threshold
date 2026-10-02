@@ -84,8 +84,8 @@ export default function CvSidePanel({ data }: { data: AnalyzeResponse }) {
               }
               return (
                 <ul className="cv-verdict__list">
-                  {bullets.map((b) => (
-                    <li key={b.slice(0, 48)}>
+                  {bullets.map((b, i) => (
+                    <li key={i}>
                       <BoldLine text={b} />
                     </li>
                   ))}

@@ -19,6 +19,24 @@ export type SkillPlanItem = {
 const SECTION_HEADERS =
   /^(overall impression|first impression|strengths|gaps|weaknesses|areas to improve|fix first|priority|recommendations|next steps|summary|verdict|final verdict|where you are|skills? to learn|learning plan|timeline|would put forward|put forward|scores|red flags|what works|experience bullets|rewritten summary)/i;
 
+// Whole-line match only: the model sometimes writes headers as bare lines
+// ("RED FLAGS", "**Scores**", "Put forward:") instead of "SECTION: X". A
+// prefix match would wrongly turn sentences like "Strengths include..."
+// into headers, so these must match the entire line.
+const BARE_SECTION_TITLE =
+  /^(overall impression|first impression|strengths|gaps|weaknesses|areas to improve|fix first|priority|recommendations|next steps|summary|verdict|final verdict|where you are now|where you are|skills to learn for sponsored roles|skills? to learn|learning plan|timeline|would put forward|put forward|scores|red flags|what works|experience bullets|rewritten summary)$/i;
+
+// Labelled lines inside "Experience bullets" belong with the bullet above
+// them even when the model indents them without a leading "- ".
+const LABELLED_ITEM = /^(Original|Verdict|Rewrite)\s*:/i;
+
+function tidyTitle(title: string): string {
+  const t = title.replace(/\s+/g, " ").trim();
+  // "WHERE YOU ARE NOW" -> "Where you are now"
+  const cased = t === t.toUpperCase() ? t.toLowerCase() : t;
+  return cased.replace(/^\w/, (c) => c.toUpperCase());
+}
+
 /** Split LLM full_report text into titled sections with bullets and paragraphs. */
 export function parseFullReport(text: string): ReportSection[] {
   const raw = text.trim();
@@ -50,22 +68,23 @@ export function parseFullReport(text: string): ReportSection[] {
     const sectionLabel = trimmed.match(/^SECTION:\s*(.+)$/i);
     const hashHeader = trimmed.match(/^#{1,3}\s+(.+)$/);
     const colonHeader = trimmed.match(/^([A-Z][\w\s/&-]{2,48}):\s*$/);
+    const bare = trimmed.replace(/^\*\*|\*\*$/g, "").replace(/:\s*$/, "").trim();
+    const bareHeader =
+      !/^[-•*]\s/.test(trimmed) && BARE_SECTION_TITLE.test(bare) ? bare : undefined;
     const headerTitle =
       sectionLabel?.[1]?.trim() ||
       hashHeader?.[1]?.trim() ||
+      bareHeader ||
       colonHeader?.[1]?.trim();
 
     if (
       headerTitle &&
       (sectionLabel ||
         hashHeader ||
+        bareHeader ||
         (SECTION_HEADERS.test(headerTitle) && trimmed.length < 70 && !trimmed.startsWith("-")))
     ) {
-      ensureSection(
-        headerTitle
-          .replace(/\s+/g, " ")
-          .replace(/^\w/, (c) => c.toUpperCase()),
-      );
+      ensureSection(tidyTitle(headerTitle));
       continue;
     }
 
@@ -73,6 +92,19 @@ export function parseFullReport(text: string): ReportSection[] {
     if (bulletMatch) {
       const sec = current ?? ensureSection("Overview");
       sec.bullets.push(bulletMatch[1].trim());
+      continue;
+    }
+
+    // Indented continuation ("  Verdict: ...") or a labelled line: keep it in
+    // the bullet list so it stays next to its "Original:" line instead of
+    // being moved into paragraphs (which render above all bullets).
+    // `current` is reassigned inside closures, which TS can't follow — read it
+    // through an explicitly typed local.
+    const open = current as ReportSection | null;
+    const continuation = /^\s/.test(line) && (open?.bullets.length ?? 0) > 0;
+    if (LABELLED_ITEM.test(trimmed) || continuation) {
+      const sec = current ?? ensureSection("Overview");
+      sec.bullets.push(trimmed);
       continue;
     }
 
@@ -123,24 +155,26 @@ export function sectionTone(title: string): "good" | "gap" | "fix" | "neutral" |
   return "neutral";
 }
 
-/** Split prose into short bullets for scanability. Keeps a single sentence intact. */
+/**
+ * Split prose into one bullet per sentence for scanability.
+ * Only splits at real sentence ends (not ";", commas, dashes or "e.g."),
+ * and never drops text — every piece of the input is returned.
+ */
 export function splitVerdictBullets(text: string): string[] {
   const raw = text.replace(/\s+/g, " ").trim();
   if (!raw) return [];
-  const parts = raw
-    .split(/(?<=[.!;])\s+/)
+  return raw
+    .split(/(?<!\b(?:e\.g|i\.e|etc|vs|approx)\.)(?<=[.!?])\s+(?=[A-Z"“(])/)
     .map((s) => s.replace(/^[•\-]\s*/, "").trim())
     .filter(Boolean);
-  if (parts.length >= 2) return parts.slice(0, 5);
-  // Long single sentence: split on " and " / " but " only when long enough
-  if (raw.length > 110) {
-    const soft = raw.split(/,\s+(?=[A-Z])|\s+[-–]\s+/).map((s) => s.trim()).filter(Boolean);
-    if (soft.length >= 2) return soft.slice(0, 4);
-  }
-  return [raw];
 }
 
-/** Lead phrase to bold (skill / clause before the explanation). */
+/**
+ * Lead phrase to bold (skill / clause before the explanation).
+ * Callers render `lead + " " + rest`, so any separator (":", ",", "–")
+ * stays attached to `lead` — dropping it changed "Python, Java" into
+ * "Python Java" and "Communication – cited" into "Communication cited".
+ */
 export function splitLeadBold(text: string): { lead: string; rest: string } | null {
   const cleaned = text.trim();
   // Keep put-forward / score lines for specialised renderers
@@ -156,20 +190,20 @@ export function splitLeadBold(text: string): { lead: string; rest: string } | nu
     /^(Original|Verdict|Rewrite|Fix first|Priority)\s*:\s*(.+)$/i,
   );
   if (labeled) {
-    return { lead: labeled[1].trim(), rest: labeled[2].trim() };
+    return { lead: `${labeled[1].trim()}:`, rest: labeled[2].trim() };
   }
 
   const colon = cleaned.match(/^([^:]{2,48}):\s*(.+)$/);
   if (colon && colon[1].split(/\s+/).length <= 8 && !/put[-\s]?forward/i.test(colon[1])) {
-    return { lead: colon[1].trim(), rest: colon[2].trim() };
+    return { lead: `${colon[1].trim()}:`, rest: colon[2].trim() };
   }
-  const dash = cleaned.match(/^(.{2,40}?)\s+[–—]\s+(.+)$/);
+  const dash = cleaned.match(/^(.{2,40}?)\s+([–—])\s+(.+)$/);
   if (dash && dash[1].split(/\s+/).length <= 8) {
-    return { lead: dash[1].trim(), rest: dash[2].trim() };
+    return { lead: `${dash[1].trim()} ${dash[2]}`, rest: dash[3].trim() };
   }
   const comma = cleaned.match(/^([^,]{2,40}),\s+(.+)$/);
   if (comma && comma[1].split(/\s+/).length <= 6) {
-    return { lead: comma[1].trim(), rest: comma[2].trim() };
+    return { lead: `${comma[1].trim()},`, rest: comma[2].trim() };
   }
   const words = cleaned.split(/\s+/);
   if (words.length > 7) {
@@ -254,7 +288,9 @@ export function extractScoreLines(section: ReportSection): {
 
 /** LLM overall lines like "Total: 70/100 — solid maybe" (not criterion scores). */
 export function isOverallScoreLine(line: ScoreLine): boolean {
-  return /^(total|overall|grand\s+total|score\s+total)$/i.test(line.label.trim());
+  return /^(total|overall|grand\s+total|score\s+total|total\s+score|overall\s+score)$/i.test(
+    line.label.trim(),
+  );
 }
 
 export type ResolvedOverallScore = {

@@ -114,7 +114,7 @@ export default function CvReviewTrigger({ data }: { data: AnalyzeResponse }) {
             ) : (
               <ul className="cv-verdict__list">
                 {verdictBullets.map((b, i) => (
-                  <li key={b.slice(0, 48)} data-lead={i === 0 ? "true" : undefined}>
+                  <li key={i} data-lead={i === 0 ? "true" : undefined}>
                     <KeywordLine text={b} />
                   </li>
                 ))}

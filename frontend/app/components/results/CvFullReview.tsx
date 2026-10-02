@@ -42,7 +42,7 @@ import { estimatedMatchLift, weeksEstimate } from "@/lib/results-utils";
 import ScoreRing from "./ScoreRing";
 
 const TICK = "#6B7280";
-const GRID = "rgba(99,102,241,0.1)";
+const GRID = "rgba(29, 78, 216,0.1)";
 
 function BoldLine({ text }: { text: string }) {
   const parts = splitLeadBold(text);
@@ -142,7 +142,7 @@ export default function CvFullReview({
     {
       label: "JD depth",
       value: data.jobs_in_skill_analysis ?? data.jobs_scanned_for_skills ?? 0,
-      color: "#818CF8",
+      color: "#3b82f6",
     },
   ].filter((d) => d.value > 0);
 
@@ -215,8 +215,8 @@ export default function CvFullReview({
                   }
                   return (
                     <ul className="cv-verdict__list">
-                      {bullets.map((b) => (
-                        <li key={b.slice(0, 48)}>
+                      {bullets.map((b, i) => (
+                        <li key={i}>
                           <BoldLine text={b} />
                         </li>
                       ))}
@@ -352,7 +352,7 @@ export default function CvFullReview({
                     labelFormatter={(_, p) => (p?.[0]?.payload?.full as string) || ""}
                     contentStyle={{
                       borderRadius: 12,
-                      border: "1px solid rgba(99,102,241,0.15)",
+                      border: "1px solid rgba(29, 78, 216,0.15)",
                       fontSize: 12,
                     }}
                   />
@@ -365,7 +365,7 @@ export default function CvFullReview({
                           i === 0
                             ? "var(--color-gold)"
                             : i === 1
-                              ? "#818CF8"
+                              ? "#3b82f6"
                               : "#A78BFA"
                         }
                         fillOpacity={0.85 - i * 0.06}
@@ -431,23 +431,15 @@ export default function CvFullReview({
                       </div>
                     ) : (
                       <>
-                        {leftoverParagraphs.map((p) => {
-                          const bits = splitVerdictBullets(p);
-                          if (bits.length > 1 && !parsePutForward(p)) {
-                            return (
-                              <ul key={p.slice(0, 40)} className="cv-full__report-list">
-                                {bits.map((b) => (
-                                  <ReportBullet key={b.slice(0, 50)} text={b} />
-                                ))}
-                              </ul>
-                            );
-                          }
-                          return <ReportBodyText key={p.slice(0, 40)} text={p} />;
-                        })}
+                        {/* Paragraphs render whole: re-splitting them on
+                            dashes/semicolons chopped sentences mid-thought. */}
+                        {leftoverParagraphs.map((p, i) => (
+                          <ReportBodyText key={`p-${i}`} text={p} />
+                        ))}
                         {leftoverBullets.length > 0 ? (
                           <ul className="cv-full__report-list">
-                            {leftoverBullets.map((b) => (
-                              <ReportBullet key={b.slice(0, 50)} text={b} />
+                            {leftoverBullets.map((b, i) => (
+                              <ReportBullet key={`b-${i}`} text={b} />
                             ))}
                           </ul>
                         ) : null}
@@ -541,8 +533,8 @@ function InsightCard({
       </header>
       {hasItems ? (
         <ul>
-          {items!.map((s) => (
-            <li key={s.slice(0, 60)}>
+          {items!.map((s, i) => (
+            <li key={i}>
               <BoldLine text={s} />
             </li>
           ))}
