@@ -53,7 +53,7 @@ export default function ShortlistSection({
       <div className="shortlist-section__head">
         <div>
           <h2>Top 5 roles</h2>
-          <p>Ranked by confidence, salary floor, CV overlap, and licence tenure.</p>
+          <p>Ranked by level fit, confidence, salary floor, CV overlap, and licence tenure.</p>
         </div>
       </div>
       <div className="shortlist-scroll">

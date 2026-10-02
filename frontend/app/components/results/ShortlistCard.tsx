@@ -12,6 +12,14 @@ import {
   type Sponsor,
 } from "@/lib/results-utils";
 
+const LEVEL_LABEL: Record<string, string> = {
+  graduate: "Graduate role",
+  junior: "Junior role",
+  mid: "Mid-level role",
+  senior: "Senior role",
+  lead: "Lead role",
+};
+
 function confTone(c?: string | null): "verified" | "likely" | "possible" {
   if (c === "verified") return "verified";
   if (c === "likely") return "likely";
@@ -63,6 +71,19 @@ export default function ShortlistCard({
               companyRaw={sponsor.company_raw || sponsor.company}
               confidence={sponsor.sponsor_confidence}
             />
+            {sponsor.experience_level && LEVEL_LABEL[sponsor.experience_level] ? (
+              <span
+                className="short-card__level"
+                data-fit={sponsor.level_fit === "fits" ? "true" : undefined}
+                title={
+                  sponsor.level_fit === "fits"
+                    ? "This ad's level fits your experience"
+                    : undefined
+                }
+              >
+                {LEVEL_LABEL[sponsor.experience_level]}
+              </span>
+            ) : null}
           </div>
         </div>
         <h3 className="short-card__title">{sponsor.title}</h3>

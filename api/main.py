@@ -7,6 +7,7 @@ import re
 import sys
 import time
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -36,13 +37,21 @@ from cv_feedback import (  # noqa: E402
     where_you_are_from_match,
 )
 from dynamic_skills import (  # noqa: E402
+    cv_skill_set,
     extract_skills_from_text,
     match_cv_to_skills,
     skill_frequencies,
     _essential_flag,
     _job_description_text,
 )
-from experience_level import filter_jobs_by_experience  # noqa: E402
+from experience_level import (  # noqa: E402
+    LEVELS,
+    classify_job_level,
+    classify_row_level,
+    filter_jobs_by_experience,
+    infer_cv_level,
+    level_band,
+)
 from job_schema import load_env, utc_now_iso  # noqa: E402
 from match_sponsors import match_jobs_to_sponsors  # noqa: E402
 from name_verify import verify_identity  # noqa: E402
@@ -54,6 +63,18 @@ load_env()
 MAX_PER_SOURCE = int(os.getenv("ANALYZE_MAX_PER_SOURCE", "100"))
 MAX_REED_ENRICH = int(os.getenv("ANALYZE_MAX_REED_ENRICH", "30"))
 MAX_ATS_BOARDS = int(os.getenv("ANALYZE_MAX_ATS_BOARDS", "12"))
+# Second, smaller search run alongside the main one when the candidate's level
+# is known ("graduate software engineer"): a plain role search rarely returns
+# graduate or junior ads, so without it a graduate's list is mostly ads that
+# state no level at all.
+LEVEL_SEARCH_MAX_PER_SOURCE = int(os.getenv("ANALYZE_LEVEL_SEARCH_MAX_PER_SOURCE", "50"))
+LEVEL_SEARCH_REED_ENRICH = int(os.getenv("ANALYZE_LEVEL_SEARCH_REED_ENRICH", "10"))
+_LEVEL_SEARCH_WORD = {
+    "graduate": "graduate",
+    "junior": "junior",
+    "senior": "senior",
+    "lead": "lead",
+}
 MAX_CV_BYTES = 5 * 1024 * 1024  # 5 MB
 MAX_CV_TEXT_CHARS = 80_000
 RATE_LIMIT_PER_MIN = int(os.getenv("ANALYZE_RATE_LIMIT_PER_MIN", "6"))
@@ -108,8 +129,57 @@ def _salary_vs_threshold(
     return "unknown"
 
 
+def _level_search_term(role: str, level: str | None) -> str | None:
+    """'graduate software engineer' for a graduate searching 'software
+    engineer'; None for mid level (the plain search already covers it) or
+    when the role typed already names a level."""
+    word = _LEVEL_SEARCH_WORD.get(level or "")
+    if not word or classify_job_level(role) is not None:
+        return None
+    return f"{word} {role}"
+
+
+# Words that say what kind of job it is only together with another word
+# ("Software Engineer" is about "software", not "engineer").
+_GENERIC_ROLE_WORDS = {
+    "engineer", "engineering", "developer", "development", "analyst", "manager",
+    "consultant", "specialist", "officer", "assistant", "executive", "associate",
+    "scientist", "designer", "technician", "administrator", "coordinator",
+    "graduate", "junior", "senior", "lead", "trainee", "intern", "and", "of", "the",
+}
+
+
+def _title_fits_role(title: Any, role: str) -> bool:
+    """Whether an ad title is the same kind of job as the role searched:
+    it must contain every specific word of the role. Job boards match a
+    level search like 'graduate software engineer' loosely, returning
+    'Graduate Structural Engineer' or 'Trainee Recruitment Consultant'."""
+    words = re.findall(r"[a-z0-9+#]+", role.lower())
+    specific = [w for w in words if w not in _GENERIC_ROLE_WORDS] or words
+    low = str(title or "").lower()
+    return all(re.search(rf"(?<![a-z0-9]){re.escape(w)}", low) for w in specific)
+
+
+def _fetch_level_jobs(term: str, role: str) -> pd.DataFrame | None:
+    """Best-effort extra search; the main search's result never depends on it."""
+    try:
+        found = fetch_all_jobs(
+            term,
+            max_per_source=LEVEL_SEARCH_MAX_PER_SOURCE,
+            max_enrich_reed=LEVEL_SEARCH_REED_ENRICH,
+        )
+    except Exception as exc:
+        print(f"Level search '{term}' skipped: {exc}")
+        return None
+    if found is None or found.empty or "title" not in found.columns:
+        return found
+    kept = found[found["title"].map(lambda t: _title_fits_role(t, role))]
+    print(f"Level search '{term}': kept {len(kept)} of {len(found)} ads as the same role")
+    return kept.reset_index(drop=True)
+
+
 def _cv_skill_set(cv_text: str) -> set[str]:
-    return {s.lower() for s in extract_skills_from_text(cv_text or "")}
+    return cv_skill_set(cv_text or "")
 
 
 def _jd_skill_payload(
@@ -573,11 +643,14 @@ async def analyze(
         else SKILLED_WORKER_GENERAL_MIN
     )
 
+    # "" / "auto": read the candidate's level from their CV (all levels when
+    # there's no CV). "any": deliberately no level filter. Anything else is
+    # the level the user picked, which always wins over the CV.
     exp_raw = (experience_level or "").strip().lower()
-    if exp_raw in {"", "any", "all"}:
-        exp_requested: str | None = None
-    else:
-        exp_requested = exp_raw
+    exp_auto = exp_raw in {"", "auto", "cv"}
+    exp_requested: str | None = (
+        None if exp_auto or exp_raw in {"any", "all"} else exp_raw
+    )
 
     min_salary_val: float | None = None
     raw_min = (min_salary or "").strip()
@@ -638,12 +711,32 @@ async def analyze(
             detail="LLM is required for CV review - set LLM_API_KEY",
         )
 
+    exp_level = exp_requested
+    exp_source: str | None = "you" if exp_requested else None
+    exp_reason: str | None = None
+    if exp_auto and has_cv:
+        inferred = infer_cv_level(text)
+        if inferred:
+            exp_level = inferred["level"]
+            exp_source = "cv"
+            exp_reason = inferred["reason"]
+
+    level_term = _level_search_term(role, exp_level)
+    level_jobs: pd.DataFrame | None = None
     try:
-        jobs = fetch_all_jobs(
-            role,
-            max_per_source=MAX_PER_SOURCE,
-            max_enrich_reed=MAX_REED_ENRICH,
-        )
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            level_fut = (
+                pool.submit(_fetch_level_jobs, level_term, role) if level_term else None
+            )
+            jobs = fetch_all_jobs(
+                role,
+                max_per_source=MAX_PER_SOURCE,
+                max_enrich_reed=MAX_REED_ENRICH,
+            )
+            if level_fut is not None:
+                level_jobs = level_fut.result()
+        if level_jobs is not None and not level_jobs.empty:
+            jobs = pd.concat([jobs, level_jobs], ignore_index=True)
     except JobFetchError as exc:
         status = 503 if exc.config_error else 502
         raise HTTPException(status_code=status, detail=str(exc)) from exc
@@ -688,10 +781,11 @@ async def analyze(
     if "sponsor_confidence" not in matched.columns:
         matched["sponsor_confidence"] = None
 
-    # Experience filter applies to skill frequencies / CV scoring / LLM context only.
-    # Sponsor opportunity lists stay unfiltered.
+    # The level filter keeps ads within one step of the candidate's level
+    # (plus ads that state no level). It scopes skill frequencies / CV
+    # scoring / LLM context here, and the opportunity list further down.
     skills_jobs, exp_applied, exp_jobs_count, exp_note = filter_jobs_by_experience(
-        matched, exp_requested
+        matched, exp_level
     )
 
     freq = skill_frequencies(skills_jobs, sponsors_only=False, top_n=30)
@@ -711,16 +805,19 @@ async def analyze(
     if has_cv:
         scored = match_cv_to_skills(text, freq)
 
-    # Experience filter also applies to the opportunity list itself (previously it only
-    # scoped skill frequencies / CV scoring / LLM context, leaving sponsor cards showing
-    # every level regardless of what was requested). Same helper, same honest fallback
-    # (filter_jobs_by_experience keeps the full list and reports why when too few rows
-    # classify into the requested level) — filtered once over the combined sponsor +
-    # possible universe so there's a single note for the list the user actually sees.
+    # The level filter also applies to the opportunity list itself, filtered
+    # once over the combined sponsor + possible universe so there's a single
+    # note for the list the user actually sees. Unlike the skill pool it
+    # never falls back to every level: a short list of roles someone can get
+    # beats a full one padded with lead / principal roles they can't.
     opportunity_rows = matched[matched["is_sponsor"] | matched["is_possible_sponsor"]].copy()
+    opp_total = len(opportunity_rows)
     opportunity_rows, opp_exp_applied, opp_exp_count, opp_exp_note = (
-        filter_jobs_by_experience(opportunity_rows, exp_requested, context="Sponsor list")
+        filter_jobs_by_experience(
+            opportunity_rows, exp_level, context="Sponsor list", fallback_to_all=False
+        )
     )
+    opp_hidden = opp_total - len(opportunity_rows)
     sponsor_rows = opportunity_rows[opportunity_rows["is_sponsor"]].copy()
     possible_rows = opportunity_rows[opportunity_rows["is_possible_sponsor"]].copy()
     top_from_sponsors = not sponsor_rows.empty
@@ -731,6 +828,7 @@ async def analyze(
         retention,
         cv_text=text if has_cv else None,
         salary_threshold=salary_threshold,
+        candidate_level=exp_level,
     )
     possible_out = _build_sponsor_list(
         possible_rows,
@@ -738,6 +836,7 @@ async def analyze(
         possible=True,
         cv_text=text if has_cv else None,
         salary_threshold=salary_threshold,
+        candidate_level=exp_level,
     )
     sponsors_out.extend(possible_out)
 
@@ -767,6 +866,8 @@ async def analyze(
             scored,
             jobs=skills_jobs,
             jobs_analyzed_for_skills=jobs_for_skills,
+            candidate_level=exp_level,
+            candidate_level_reason=exp_reason,
         )
         if cv_feedback is None:
             llm_message = "LLM skipped - no LLM_API_KEY configured."
@@ -784,7 +885,13 @@ async def analyze(
             llm_message = "ok"
             if cv_feedback.get("where_you_are"):
                 where_you_are = str(cv_feedback["where_you_are"])
-            # Prefer deterministic Python learn-list; LLM narrates in full_report.
+            # The review's per-skill judgement (skills shown in other words,
+            # blocking vs nice-to-have gaps) replaces the keyword-only match
+            # wherever its evidence checked out against the CV text.
+            adjusted = cv_feedback.pop("adjusted_match", None)
+            if adjusted is not None:
+                scored = adjusted
+                skills_to_learn = cv_feedback["skills_to_learn"]
             cv_feedback["skills_to_learn"] = skills_to_learn
             cv_feedback["jobs_in_skill_analysis"] = jobs_for_skills
 
@@ -823,7 +930,15 @@ async def analyze(
         "top_companies_are_sponsors": top_from_sponsors,
         "match_rate_pct": round(100 * n_sp / n, 1) if n else 0.0,
         "min_salary_filter": min_salary_val,
-        "experience_level_requested": exp_requested or "any",
+        "experience_level_requested": exp_requested or ("auto" if exp_auto else "any"),
+        # The level actually used: the one picked, or the one read from the CV.
+        "experience_level_used": exp_level,
+        "experience_level_source": exp_source,
+        "experience_level_reason": exp_reason,
+        "experience_level_band": list(level_band(exp_level)) if exp_level in LEVELS else None,
+        "opportunities_hidden_by_level": int(opp_hidden),
+        "level_search_term": level_term if level_jobs is not None else None,
+        "level_search_jobs": 0 if level_jobs is None else int(len(level_jobs)),
         "experience_filter_applied": bool(exp_applied),
         "experience_jobs_count": int(exp_jobs_count),
         "experience_filter_note": exp_note or None,
@@ -857,6 +972,7 @@ async def analyze(
         result.update(
             {
                 "score": scored["score"],
+                "keyword_score": scored.get("keyword_score", scored["score"]),
                 "score_label": scored["label"],
                 "matched_count": scored["matched_count"],
                 "top_n": scored["top_n"],
@@ -916,18 +1032,27 @@ def _build_sponsor_list(
     limit: int = 40,
     cv_text: str | None = None,
     salary_threshold: float = SKILLED_WORKER_GENERAL_MIN,
+    candidate_level: str | None = None,
 ) -> list[dict[str, Any]]:
     if df.empty:
         return []
 
     cv_skills = _cv_skill_set(cv_text) if cv_text else None
+    fit_band = set(level_band(candidate_level)) if candidate_level in LEVELS else None
 
     rows = df.copy()
     bands: list[str] = []
     recencies: list[float] = []
     conf_ranks: list[int] = []
     stab_scores: list[float] = []
+    job_levels: list[str | None] = []
+    fit_ranks: list[int] = []
     for _, row in rows.iterrows():
+        job_level = classify_row_level(row)
+        job_levels.append(job_level)
+        # Ads that state a level in the candidate's range go first; ads with
+        # no stated level (most of them) after.
+        fit_ranks.append(0 if fit_band and job_level in fit_band else 1)
         mk = row.get("matched_company_key") or row.get("company_key")
         info = retention.get(str(mk)) if mk else None
         duration = info.get("duration_days") if info else None
@@ -947,9 +1072,11 @@ def _build_sponsor_list(
     rows["_recency"] = recencies
     rows["_conf_rank"] = conf_ranks
     rows["_stab"] = stab_scores
+    rows["_job_level"] = job_levels
+    rows["_fit_rank"] = fit_ranks
     rows = rows.sort_values(
-        ["_conf_rank", "_band_rank", "_stab", "_recency"],
-        ascending=[True, True, False, False],
+        ["_fit_rank", "_conf_rank", "_band_rank", "_stab", "_recency"],
+        ascending=[True, True, True, False, False],
         na_position="last",
     )
 
@@ -971,9 +1098,25 @@ def _build_sponsor_list(
         matched_sponsor = row.get("matched_company_key") or row.get("company_key")
         jd = _jd_skill_payload(row, cv_skills)
         company_raw = row.get("company_raw")
+        job_level = row.get("_job_level")
+        if not isinstance(job_level, str):
+            job_level = None
         out.append(
             {
                 "title": row.get("title"),
+                "experience_level": job_level,
+                # "fits": the ad states a level in the candidate's range;
+                # "unstated": it gives no level; "outside": above or below it.
+                # Null when the candidate's level isn't known.
+                "level_fit": (
+                    None
+                    if not fit_band
+                    else "fits"
+                    if job_level in fit_band
+                    else "unstated"
+                    if job_level is None
+                    else "outside"
+                ),
                 "company": company_raw,
                 "company_raw": company_raw,
                 "matched_sponsor": matched_sponsor,

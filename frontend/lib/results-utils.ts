@@ -74,10 +74,17 @@ export function overlapRatio(s: Sponsor): number {
   return (s.cv_overlap_count ?? 0) / t;
 }
 
+/** 0 when the ad states a level in the candidate's range, 1 otherwise. */
+export function levelFitRank(s: Sponsor): number {
+  return s.level_fit === "fits" ? 0 : 1;
+}
+
 export function shortlistSponsors(sponsors: Sponsor[], n = 5): Sponsor[] {
   return [...sponsors]
-    .filter((s) => s.salary_vs_threshold !== "below")
+    .filter((s) => s.salary_vs_threshold !== "below" && s.level_fit !== "outside")
     .sort((a, b) => {
+      const f = levelFitRank(a) - levelFitRank(b);
+      if (f !== 0) return f;
       const c = confRank(a.sponsor_confidence) - confRank(b.sponsor_confidence);
       if (c !== 0) return c;
       const th =

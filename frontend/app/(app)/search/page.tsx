@@ -27,6 +27,7 @@ import { useAuth } from "@clerk/nextjs";
 const TOTAL_STEPS = 4;
 
 const EXPERIENCE_OPTIONS: { value: ExperienceLevel; label: string; hint: string }[] = [
+  { value: "auto", label: "Match my CV", hint: "Read from your CV" },
   { value: "any", label: "Any level", hint: "No experience filter" },
   { value: "graduate", label: "Graduate / entry", hint: "First roles" },
   { value: "junior", label: "Junior", hint: "1–2 years" },
@@ -59,7 +60,7 @@ const STEP_META = [
   {
     title: "What experience level fits?",
     description:
-      "Filters skill analysis when enough ads match. Sponsor listings stay complete either way.",
+      "We show roles at your level and one step either side, so a graduate never gets lead or principal roles. Match my CV reads your level from the CV you add.",
   },
   {
     title: "Any salary floor?",
@@ -101,7 +102,7 @@ function SearchPageInner() {
   const [role, setRole] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [minSalary, setMinSalary] = useState("");
-  const [experience, setExperience] = useState<ExperienceLevel>("mid");
+  const [experience, setExperience] = useState<ExperienceLevel>("auto");
   const [loading, setLoading] = useState(false);
   const [loadStep, setLoadStep] = useState(0);
   const [loadProgress, setLoadProgress] = useState(0);
@@ -439,6 +440,7 @@ function SearchPageInner() {
                                   type="button"
                                   className="search-wizard__pill"
                                   data-active={active ? "true" : "false"}
+                                  data-wide={opt.value === "auto" ? "true" : undefined}
                                   aria-pressed={active}
                                   onClick={() => setExperience(opt.value)}
                                 >

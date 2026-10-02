@@ -24,12 +24,53 @@ import {
   weeksEstimate,
 } from "@/lib/results-utils";
 import ScoreRing from "./ScoreRing";
-import { CaretUp, Warning } from "@phosphor-icons/react";
+import { CaretUp, Info, UserFocus, Warning } from "@phosphor-icons/react";
 
 const TICK = "#6B7280";
 
 function matchedSkillSet(data: AnalyzeResponse): Set<string> {
   return new Set((data.matched_skills || []).map((s) => s.skill.toLowerCase()));
+}
+
+function joinLevels(levels: string[]): string {
+  if (levels.length <= 1) return levels.join("");
+  return `${levels.slice(0, -1).join(", ")} and ${levels[levels.length - 1]}`;
+}
+
+/** Which levels the role list covers, and why: read from the CV or picked. */
+function levelNote(data: AnalyzeResponse): string | null {
+  const band = data.experience_level_band;
+  const hidden = data.opportunities_hidden_by_level ?? 0;
+  const hiddenText =
+    (hidden > 0
+      ? ` ${hidden} role${hidden === 1 ? "" : "s"} outside that range hidden.`
+      : "") +
+    (data.level_search_term && data.level_search_jobs
+      ? ` Also searched "${data.level_search_term}".`
+      : "");
+  if (band?.length && data.experience_level_source === "cv") {
+    const why = data.experience_level_reason ? ` (${data.experience_level_reason})` : "";
+    return `Showing ${joinLevels(band)} roles, plus roles that don't state a level, to match your CV${why}.${hiddenText}`;
+  }
+  if (band?.length && data.experience_level_source === "you") {
+    return `Showing ${joinLevels(band)} roles, plus roles that don't state a level, for the ${data.experience_level_used} level you picked.${hiddenText}`;
+  }
+  if (data.has_cv && data.experience_level_requested === "auto") {
+    return "Couldn't read your experience level from the CV, so all levels are shown. Pick a level on a new search to narrow it.";
+  }
+  return null;
+}
+
+/** Graduate pay often sits under the general rate but over the new-entrant
+ * one; when level-fitting roles are being dropped for that, say so. */
+function newEntrantHint(data: AnalyzeResponse): string | null {
+  const level = data.experience_level_used;
+  if (data.is_new_entrant || (level !== "graduate" && level !== "junior")) return null;
+  const below = (data.sponsors || []).filter(
+    (s) => s.level_fit === "fits" && s.salary_vs_threshold === "below",
+  ).length;
+  if (!below) return null;
+  return `${below} role${below === 1 ? "" : "s"} at your level pay${below === 1 ? "s" : ""} under the £41,700 general rate. If you're under 26 or switching from a Student or Graduate visa, the lower £33,400 new-entrant rate applies: turn it on in a new search to include ${below === 1 ? "it" : "them"}.`;
 }
 
 function InsightChip({ children }: { children: ReactNode }) {
@@ -148,6 +189,18 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
         <p className="data-overview__readiness">{readinessLine(data)}</p>
         {data.accuracy_note ? (
           <p className="data-overview__accuracy">{data.accuracy_note}</p>
+        ) : null}
+        {levelNote(data) ? (
+          <p className="data-overview__level-note">
+            <UserFocus size={14} weight="bold" aria-hidden />
+            <span>{levelNote(data)}</span>
+          </p>
+        ) : null}
+        {newEntrantHint(data) ? (
+          <p className="data-overview__level-note">
+            <Info size={14} weight="bold" aria-hidden />
+            <span>{newEntrantHint(data)}</span>
+          </p>
         ) : null}
         {data.opportunities_experience_filter_applied === false &&
         data.opportunities_experience_filter_note ? (
