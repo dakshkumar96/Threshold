@@ -7,7 +7,12 @@ from pathlib import Path
 
 
 def _extract(data: bytes) -> str:
-    import pymupdf
+    try:
+        import pymupdf
+    except ImportError:
+        # Older PyMuPDF releases (the newest pip will install on Python 3.8,
+        # which the Oracle deploy target runs) only expose the legacy name.
+        import fitz as pymupdf
 
     # PyMuPDF uses the PDF's own internal word/character layout rather than
     # inferring word gaps from a tunable x-distance (pdfplumber's approach),
