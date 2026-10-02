@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ import ClerkWelcomeName from "@/app/components/ClerkWelcomeName";
 
 const EASE = [0.16, 1, 0.3, 1] as const;
 
-/* ─── Scroll-triggered reveal wrapper for dashboard home sections/cards ─────*/
+/* â”€â”€â”€ Scroll-triggered reveal wrapper for dashboard home sections/cards â”€â”€â”€â”€â”€*/
 function HomeReveal({
   children,
   className = "",
@@ -42,7 +42,7 @@ function HomeReveal({
   );
 }
 
-/* ─── Spring count-up for on-page metrics ───────────────────────────────────*/
+/* â”€â”€â”€ Spring count-up for on-page metrics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€*/
 function AnimatedNumber({
   value,
   format = "integer",
@@ -66,14 +66,6 @@ function AnimatedNumber({
   return <motion.span ref={ref}>{display}</motion.span>;
 }
 
-function handleShineMove(e: React.MouseEvent<HTMLElement>) {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const x = ((e.clientX - rect.left) / rect.width) * 100;
-  const y = ((e.clientY - rect.top) / rect.height) * 100;
-  e.currentTarget.style.setProperty("--shine-x", `${x}%`);
-  e.currentTarget.style.setProperty("--shine-y", `${y}%`);
-}
-
 /* Animated score ring */
 function ScoreRing({ score }: { score: number }) {
   const ref = useRef<SVGCircleElement>(null);
@@ -92,7 +84,7 @@ function ScoreRing({ score }: { score: number }) {
         ref={ref}
         cx="68" cy="68" r={r}
         fill="none"
-        stroke="#4F6EF7"
+        stroke="#1d4ed8"
         strokeWidth="12"
         strokeLinecap="round"
         strokeDasharray={circ}
@@ -147,9 +139,6 @@ export default function HomePage() {
 
   return (
     <div className="dashboard-home">
-      <div className="home-orb home-orb-1" aria-hidden />
-      <div className="home-orb home-orb-2" aria-hidden />
-      <div className="home-orb home-orb-3" aria-hidden />
       <div className="dashboard-home__content">
         <main style={{ paddingBottom: "5rem" }}>
           <div className="dashboard-home__sections">
@@ -161,7 +150,6 @@ export default function HomePage() {
         className="home-section-a"
         style={{ position: "relative" }}
       >
-        <div className="home-welcome-glow" aria-hidden />
         <h1 className="home-welcome-heading">
           Welcome back, <span className="home-welcome-name"><ClerkWelcomeName /></span>
         </h1>
@@ -202,7 +190,7 @@ export default function HomePage() {
               boxSizing: "border-box", outline: "none",
               transition: "border-color 150ms, box-shadow 150ms",
             }}
-            onFocus={(e) => { e.target.style.borderColor = "var(--color-gold-dark)"; e.target.style.boxShadow = "0 0 0 3px rgba(79,110,247,0.2)"; }}
+            onFocus={(e) => { e.target.style.borderColor = "var(--color-gold-dark)"; e.target.style.boxShadow = "0 0 0 3px rgba(29, 78, 216,0.2)"; }}
             onBlur={(e) => { e.target.style.borderColor = "var(--color-line-hover)"; e.target.style.boxShadow = "none"; }}
           />
           <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -247,13 +235,13 @@ export default function HomePage() {
         </h2>
         </HomeReveal>
         {loading ? (
-          <p style={{ color: "var(--color-muted)", fontSize: "0.9375rem" }}>Loading your last search…</p>
+          <p style={{ color: "var(--color-muted)", fontSize: "0.9375rem" }}>Loading your last searchâ€¦</p>
         ) : !lastMatch ? (
-          <div className="home-card home-card--welcome shine-card" onMouseMove={handleShineMove} style={{ padding: "2rem", textAlign: "center" }}>
+          <div className="home-card home-card--welcome" style={{ padding: "2rem", textAlign: "center" }}>
             <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--color-gold-pale)", margin: "0 auto 1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden>
-                <circle cx="13" cy="13" r="9" stroke="#4F6EF7" strokeWidth="1.75"/>
-                <path d="M20 20L25 25" stroke="#4F6EF7" strokeWidth="2" strokeLinecap="round"/>
+                <circle cx="13" cy="13" r="9" stroke="#1d4ed8" strokeWidth="1.75"/>
+                <path d="M20 20L25 25" stroke="#1d4ed8" strokeWidth="2" strokeLinecap="round"/>
               </svg>
             </div>
             <p style={{ margin: 0, fontWeight: 500, color: "var(--color-ink)", fontSize: "0.9375rem" }}>Run your first search</p>
@@ -268,13 +256,13 @@ export default function HomePage() {
           <div style={{ display: "grid", gap: "0.875rem", gridTemplateColumns: "1fr" }} className="md:grid-cols-[auto_1fr]">
             {/* Score ring card */}
             <HomeReveal direction="scale">
-            <div className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.75rem", minWidth: 200 }}>
+            <div className="home-card home-card--stat" style={{ padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.75rem", minWidth: 200 }}>
               <ScoreRing score={score ?? 0} />
               {lastMatch.role && (
                 <p style={{ margin: 0, fontSize: "0.8125rem", color: "var(--color-muted)", textAlign: "center" }}>for {lastMatch.role}</p>
               )}
               <Link href="/results" style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--color-link)" }}>
-                Open full results â†’
+                Open full results Ã¢â€ â€™
               </Link>
             </div>
             </HomeReveal>
@@ -283,7 +271,7 @@ export default function HomePage() {
             <div style={{ display: "grid", gap: "0.875rem", gridTemplateColumns: "1fr" }} className="sm:grid-cols-2">
               {/* Missing skills */}
               <HomeReveal direction="left">
-              <div className="home-card home-card--skills shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
+              <div className="home-card home-card--skills" style={{ padding: "1.25rem" }}>
                 <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-muted)" }}>
                   Missing skills
                 </p>
@@ -295,7 +283,7 @@ export default function HomePage() {
                         <span style={{ fontSize: "0.875rem", color: "var(--color-ink)" }}>
                           {g.skill}
                           {g.frequency_pct != null ? (
-                            <span style={{ color: "var(--color-muted)" }}> · {g.frequency_pct}%</span>
+                            <span style={{ color: "var(--color-muted)" }}> Â· {g.frequency_pct}%</span>
                           ) : null}
                         </span>
                       </li>
@@ -308,7 +296,7 @@ export default function HomePage() {
               </HomeReveal>
               {/* Top sponsors */}
               <HomeReveal direction="right">
-              <div className="home-card home-card--activity shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
+              <div className="home-card home-card--activity" style={{ padding: "1.25rem" }}>
                 <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--color-muted)" }}>
                   Top sponsors
                 </p>
@@ -318,7 +306,7 @@ export default function HomePage() {
                       <li key={`${s.company}-${i}`} style={{ fontSize: "0.875rem", color: "var(--color-ink)" }}>
                         <span style={{ fontWeight: 500 }}>{s.company}</span>
                         {s.stability_band ? (
-                          <span style={{ color: "var(--color-muted)" }}> · {s.stability_band}</span>
+                          <span style={{ color: "var(--color-muted)" }}> Â· {s.stability_band}</span>
                         ) : null}
                       </li>
                     ))
@@ -346,7 +334,7 @@ export default function HomePage() {
         </HomeReveal>
         <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "0.875rem", gridTemplateColumns: "1fr" }} className="md:grid-cols-3">
           <HomeReveal direction="left" className="home-reveal-d1">
-          <li className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
+          <li className="home-card home-card--stat" style={{ padding: "1.25rem" }}>
             {topSkill ? (
               <>
                 <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, color: "var(--color-gold-dark)", letterSpacing: "-0.02em" }}><AnimatedNumber value={topSkill.share_pct} format="percentage" /></p>
@@ -362,7 +350,7 @@ export default function HomePage() {
           </li>
           </HomeReveal>
           <HomeReveal className="home-reveal-d2">
-          <li className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
+          <li className="home-card home-card--stat" style={{ padding: "1.25rem" }}>
             <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.02em" }}>
               {london?.exit_rate_pct != null ? <AnimatedNumber value={london.exit_rate_pct} format="percentage" /> : "N/A"} <span style={{ fontSize: "0.75rem", color: "var(--color-muted)", fontWeight: 400 }}>vs {scotland?.exit_rate_pct}%</span>
             </p>
@@ -372,7 +360,7 @@ export default function HomePage() {
           </li>
           </HomeReveal>
           <HomeReveal direction="right" className="home-reveal-d3">
-          <li className="home-card home-card--stat shine-card" onMouseMove={handleShineMove} style={{ padding: "1.25rem" }}>
+          <li className="home-card home-card--stat" style={{ padding: "1.25rem" }}>
             <p style={{ margin: 0, fontSize: "1.25rem", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.02em" }}>
               <AnimatedNumber value={insights.headline.pct_2023_cohort_exited} format="percentage" />
             </p>
@@ -380,7 +368,7 @@ export default function HomePage() {
               of 2023-first-seen sponsors later left the register.
             </p>
             <Link href="/insights" style={{ display: "inline-block", marginTop: "0.625rem", fontSize: "0.8125rem", fontWeight: 500, color: "var(--color-link)" }}>
-              Open insights â†’
+              Open insights Ã¢â€ â€™
             </Link>
           </li>
           </HomeReveal>
@@ -404,7 +392,7 @@ export default function HomePage() {
           </p>
         ) : (
           <HomeReveal className="home-reveal-d3">
-          <div className="home-card home-card--activity shine-card" onMouseMove={handleShineMove} style={{ overflow: "hidden" }}>
+          <div className="home-card home-card--activity" style={{ overflow: "hidden" }}>
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {saved.map((s, i) => (
                 <li
@@ -444,27 +432,27 @@ export default function HomePage() {
               href: "/solutions/cv-guide",
               title: "Improve your CV",
               sub: "CV guide",
-              icon: <path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1ZM7 7h6M7 10h6M7 13h4" stroke="#4F6EF7" strokeWidth="1.25" strokeLinecap="round"/>,
+              icon: <path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1ZM7 7h6M7 10h6M7 13h4" stroke="#1d4ed8" strokeWidth="1.25" strokeLinecap="round"/>,
               dir: "left" as const,
             },
             {
               href: "/solutions/sponsorship-checker",
               title: "Check a company",
               sub: "Sponsorship checker",
-              icon: <><circle cx="9" cy="9" r="6" stroke="#4F6EF7" strokeWidth="1.25"/><path d="M13.5 13.5L17 17" stroke="#4F6EF7" strokeWidth="1.5" strokeLinecap="round"/></>,
+              icon: <><circle cx="9" cy="9" r="6" stroke="#1d4ed8" strokeWidth="1.25"/><path d="M13.5 13.5L17 17" stroke="#1d4ed8" strokeWidth="1.5" strokeLinecap="round"/></>,
               dir: "up" as const,
             },
             {
               href: "/solutions/immigration-guide",
               title: "Visa routes",
               sub: "Immigration guide",
-              icon: <><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2Z" stroke="#4F6EF7" strokeWidth="1.25"/><path d="M2 10h16M10 2c-2 2.5-3 5-3 8s1 5.5 3 8" stroke="#4F6EF7" strokeWidth="1" strokeLinecap="round"/></>,
+              icon: <><path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2Z" stroke="#1d4ed8" strokeWidth="1.25"/><path d="M2 10h16M10 2c-2 2.5-3 5-3 8s1 5.5 3 8" stroke="#1d4ed8" strokeWidth="1" strokeLinecap="round"/></>,
               dir: "right" as const,
             },
           ].map((item, i) => (
             <HomeReveal key={item.href} direction={item.dir} className={i === 1 ? "home-reveal-d2" : "home-reveal-d3"}>
             <li>
-              <Link href={item.href} className="home-card home-card--welcome shine-card" onMouseMove={handleShineMove} style={{ display: "block", padding: "1.25rem", textDecoration: "none" }}>
+              <Link href={item.href} className="home-card home-card--welcome" style={{ display: "block", padding: "1.25rem", textDecoration: "none" }}>
                 <div style={{ width: 36, height: 36, borderRadius: 8, background: "var(--color-gold-pale)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "0.75rem" }}>
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>{item.icon}</svg>
                 </div>

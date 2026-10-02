@@ -150,11 +150,11 @@ export default function AboutPage() {
               <span>Live ads + Home Office register in one search</span>
             </li>
             <li>
-              <CheckCircle size={18} weight="fill" color="#4F6EF7" aria-hidden />
+              <CheckCircle size={18} weight="fill" color="#1d4ed8" aria-hidden />
               <span>Verified, likely, and possible confidence labels</span>
             </li>
             <li>
-              <Path size={18} weight="fill" color="#7C3AED" aria-hidden />
+              <Path size={18} weight="fill" color="#2563eb" aria-hidden />
               <span>Skill gaps and CV guidance from your search data</span>
             </li>
             <li>
@@ -281,7 +281,7 @@ export default function AboutPage() {
             return (
               <article key={item.t} className="about-promise">
                 <span className="about-promise__icon" aria-hidden>
-                  <Icon size={20} weight="duotone" color="#4F6EF7" />
+                  <Icon size={20} weight="duotone" color="#1d4ed8" />
                 </span>
                 <h3>{item.t}</h3>
                 <p>{item.d}</p>
@@ -302,7 +302,7 @@ export default function AboutPage() {
         <div className="about-compare__grid">
           <article className="about-compare__card about-compare__card--yes">
             <p className="about-compare__label">
-              <CheckCircle size={18} weight="fill" color="#4F6EF7" aria-hidden />
+              <CheckCircle size={18} weight="fill" color="#1d4ed8" aria-hidden />
               This is
             </p>
             <ul>
@@ -335,7 +335,7 @@ export default function AboutPage() {
         </div>
         <div className="about-sources__grid">
           <article className="about-source-card">
-            <Briefcase size={22} weight="duotone" color="#4F6EF7" aria-hidden />
+            <Briefcase size={22} weight="duotone" color="#1d4ed8" aria-hidden />
             <h3>Live job ads</h3>
             <p>
               Reed and Adzuna for aggregator listings. Greenhouse, Ashby, Workable, and
@@ -343,7 +343,7 @@ export default function AboutPage() {
             </p>
           </article>
           <article className="about-source-card">
-            <SealCheck size={22} weight="duotone" color="#4F6EF7" aria-hidden />
+            <SealCheck size={22} weight="duotone" color="#1d4ed8" aria-hidden />
             <h3>Home Office register</h3>
             <p>
               The current Skilled Worker sponsor list, refreshed monthly, with historical
@@ -351,7 +351,7 @@ export default function AboutPage() {
             </p>
           </article>
           <article className="about-source-card">
-            <Student size={22} weight="duotone" color="#4F6EF7" aria-hidden />
+            <Student size={22} weight="duotone" color="#1d4ed8" aria-hidden />
             <h3>Your CV, optionally</h3>
             <p>
               Read in memory for the assessment, then gone. Not stored, not trained on,

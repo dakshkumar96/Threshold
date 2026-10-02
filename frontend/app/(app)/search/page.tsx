@@ -285,12 +285,6 @@ function SearchPageInner() {
 
   return (
     <div className="search-wizard">
-      <div className="search-wizard__orbs" aria-hidden>
-        <span className="search-wizard__orb search-wizard__orb--a" />
-        <span className="search-wizard__orb search-wizard__orb--b" />
-        <span className="search-wizard__orb search-wizard__orb--c" />
-      </div>
-
       <div className="search-wizard__stage">
           <AnimatePresence mode="wait">
             {loading ? (

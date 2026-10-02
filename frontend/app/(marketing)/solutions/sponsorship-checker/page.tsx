@@ -57,7 +57,7 @@ export default function SponsorshipCheckerPage() {
             boxSizing: "border-box", outline: "none",
             transition: "border-color 150ms, box-shadow 150ms",
           }}
-          onFocus={(e) => { e.target.style.borderColor = "var(--color-gold-dark)"; e.target.style.boxShadow = "0 0 0 3px rgba(79,110,247,0.2)"; }}
+          onFocus={(e) => { e.target.style.borderColor = "var(--color-gold-dark)"; e.target.style.boxShadow = "0 0 0 3px rgba(29, 78, 216,0.2)"; }}
           onBlur={(e) => { e.target.style.borderColor = "var(--color-line-hover)"; e.target.style.boxShadow = "none"; }}
         />
         <button

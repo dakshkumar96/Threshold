@@ -24,7 +24,7 @@ import {
   weeksEstimate,
 } from "@/lib/results-utils";
 
-const GRID = "rgba(99,102,241,0.12)";
+const GRID = "rgba(29, 78, 216,0.12)";
 const TICK = "#6B7280";
 
 function Panel({
@@ -179,7 +179,7 @@ export default function DashboardGrid({
                   <Tooltip
                     formatter={(v) => [`${v}% of roles`, "Share"]}
                     labelFormatter={(_, p) => (p?.[0]?.payload?.full as string) || ""}
-                    contentStyle={{ borderRadius: 12, border: "1px solid rgba(99,102,241,0.15)", fontSize: 12 }}
+                    contentStyle={{ borderRadius: 12, border: "1px solid rgba(29, 78, 216,0.15)", fontSize: 12 }}
                   />
                   <Bar dataKey="share" radius={[0, 6, 6, 0]} barSize={12}>
                     {skillDemand.map((d) => (
@@ -225,7 +225,7 @@ export default function DashboardGrid({
                 <BarChart data={buckets} margin={{ left: 0, right: 4, top: 4, bottom: 0 }}>
                   <XAxis dataKey="label" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: TICK }} width={24} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(99,102,241,0.15)", fontSize: 12 }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(29, 78, 216,0.15)", fontSize: 12 }} />
                   <Bar dataKey="count" fill="var(--color-gold)" radius={[6, 6, 0, 0]} barSize={22} />
                 </BarChart>
               </ResponsiveContainer>
@@ -275,8 +275,8 @@ export default function DashboardGrid({
               <BarChart data={bandData} layout="vertical" margin={{ left: 0, right: 8, top: 0, bottom: 0 }}>
                 <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" width={36} tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(99,102,241,0.15)", fontSize: 12 }} />
-                <Bar dataKey="count" fill="#818CF8" radius={[0, 6, 6, 0]} barSize={14} />
+                <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(29, 78, 216,0.15)", fontSize: 12 }} />
+                <Bar dataKey="count" fill="#3b82f6" radius={[0, 6, 6, 0]} barSize={14} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -297,7 +297,7 @@ export default function DashboardGrid({
                 <BarChart data={trendPoints} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
                   <XAxis dataKey="label" tick={{ fontSize: 10, fill: TICK }} axisLine={false} tickLine={false} />
                   <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: TICK }} width={24} axisLine={false} tickLine={false} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(99,102,241,0.15)", fontSize: 12 }} />
+                  <Tooltip contentStyle={{ borderRadius: 12, border: "1px solid rgba(29, 78, 216,0.15)", fontSize: 12 }} />
                   <ReferenceLine y={MATCH_TARGET} stroke={GRID} strokeDasharray="4 4" />
                   <Bar dataKey="score" fill="var(--color-gold)" radius={[6, 6, 0, 0]} barSize={18} />
                 </BarChart>

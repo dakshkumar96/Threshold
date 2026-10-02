@@ -18,7 +18,7 @@ const INPUT_STYLE: React.CSSProperties = {
 
 function onFocus(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
   e.target.style.borderColor = "var(--color-gold-dark)";
-  e.target.style.boxShadow = "0 0 0 3px rgba(79,110,247,0.2)";
+  e.target.style.boxShadow = "0 0 0 3px rgba(29, 78, 216,0.2)";
 }
 function onBlur(e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) {
   e.target.style.borderColor = "var(--color-line-hover)";
@@ -98,8 +98,8 @@ export default function ProfilePage() {
                 alignItems: "center",
                 marginTop: "0.85rem",
                 background: "transparent",
-                border: "1px solid rgba(79,110,247,0.30)",
-                color: "#4F6EF7",
+                border: "1px solid rgba(29, 78, 216,0.30)",
+                color: "#1d4ed8",
                 borderRadius: 8,
                 padding: "8px 16px",
                 fontSize: 13,

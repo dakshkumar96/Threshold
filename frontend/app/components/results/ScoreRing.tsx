@@ -59,7 +59,7 @@ export default function ScoreRing({
             cy={cy}
             r={radius}
             fill="none"
-            stroke="rgba(99, 102, 241, 0.12)"
+            stroke="rgba(29, 78, 216, 0.12)"
             strokeWidth={stroke}
           />
           <motion.circle
@@ -67,7 +67,7 @@ export default function ScoreRing({
             cy={cy}
             r={radius}
             fill="none"
-            stroke={score == null ? "rgba(99, 102, 241, 0.2)" : "#4F6EF7"}
+            stroke={score == null ? "rgba(29, 78, 216, 0.2)" : "#1d4ed8"}
             strokeWidth={stroke}
             strokeLinecap="round"
             strokeDasharray={circumference}

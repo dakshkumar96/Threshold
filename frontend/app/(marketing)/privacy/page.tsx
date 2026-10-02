@@ -127,7 +127,7 @@ export default function PrivacyPage() {
           <ul>
             {GLANCE.map((line) => (
               <li key={line}>
-                <Eye size={18} weight="fill" color="#4F6EF7" aria-hidden />
+                <Eye size={18} weight="fill" color="#1d4ed8" aria-hidden />
                 <span>{line}</span>
               </li>
             ))}
@@ -148,7 +148,7 @@ export default function PrivacyPage() {
         <div className="about-compare__grid">
           <article className="about-compare__card about-compare__card--yes">
             <p className="about-compare__label">
-              <CheckCircle size={18} weight="fill" color="#4F6EF7" aria-hidden />
+              <CheckCircle size={18} weight="fill" color="#1d4ed8" aria-hidden />
               We store
             </p>
             <ul>
@@ -176,7 +176,7 @@ export default function PrivacyPage() {
           <section key={heading} aria-labelledby={heading} style={{ paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
               <span className="about-promise__icon" style={{ margin: 0 }} aria-hidden>
-                <Icon size={20} weight="duotone" color="#4F6EF7" />
+                <Icon size={20} weight="duotone" color="#1d4ed8" />
               </span>
               <h2 id={heading} style={{ margin: 0, fontSize: "1.15rem", fontWeight: 500, letterSpacing: "-0.02em", color: "var(--color-ink)" }}>
                 {heading}

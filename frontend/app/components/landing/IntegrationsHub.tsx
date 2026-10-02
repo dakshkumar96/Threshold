@@ -49,11 +49,7 @@ export default function IntegrationsHub() {
   const inView = useInView(ref, { once: true, amount: 0.35 });
 
   return (
-    <section className="section-dark-bg" aria-labelledby="sources-heading">
-      <div className="section-dark-orb-left" aria-hidden />
-      <div className="section-dark-orb-right" aria-hidden />
-      <div className="section-dark-dots" aria-hidden />
-
+    <section className="section-dark-bg full-bleed" aria-labelledby="sources-heading">
       <div className="section-inner">
         <div className="integrations-split">
           <div className="integrations-copy">
@@ -89,7 +85,7 @@ export default function IntegrationsHub() {
                   orient="auto"
                   markerUnits="strokeWidth"
                 >
-                  <path d="M 0 1 L 9 5 L 0 9 Z" fill="rgba(165,180,252,0.55)" />
+                  <path d="M 0 1 L 9 5 L 0 9 Z" fill="rgba(96, 165, 250,0.55)" />
                 </marker>
               </defs>
 
@@ -98,7 +94,7 @@ export default function IntegrationsHub() {
                 cy={CY}
                 r={R_ARROW_TIP}
                 fill="none"
-                stroke="rgba(165,180,252,0.1)"
+                stroke="rgba(96, 165, 250,0.1)"
                 strokeWidth={1}
                 strokeDasharray="3 7"
               />
@@ -113,7 +109,7 @@ export default function IntegrationsHub() {
                     y1={a.y}
                     x2={b.x}
                     y2={b.y}
-                    stroke="rgba(165,180,252,0.35)"
+                    stroke="rgba(96, 165, 250,0.35)"
                     strokeWidth={1.75}
                     strokeLinecap="round"
                     markerEnd="url(#int-arrow-tip)"
@@ -150,7 +146,7 @@ export default function IntegrationsHub() {
                       delay: 0.08 * i + 0.35,
                     }}
                   >
-                    <Icon size={14} color="rgba(165,180,252,0.95)" weight="duotone" />
+                    <Icon size={14} color="rgba(96, 165, 250,0.95)" weight="duotone" />
                     <span>{node.short}</span>
                   </motion.div>
                 </div>

@@ -34,9 +34,9 @@ const ROLE_TABLE = [
 ];
 
 const SECTORS = [
-  { name: "Technology / Software", density: 92, salary: "£45k–£80k", sponsors: "8,000+", color: "#4f6ef7", risk: "low" },
-  { name: "AI / Machine Learning",  density: 88, salary: "£60k–£100k+", sponsors: "3,200+", color: "#7c3aed", risk: "low" },
-  { name: "Finance / Banking",      density: 82, salary: "£45k–£85k", sponsors: "4,500+", color: "#6366f1", risk: "low" },
+  { name: "Technology / Software", density: 92, salary: "£45k–£80k", sponsors: "8,000+", color: "#1d4ed8", risk: "low" },
+  { name: "AI / Machine Learning",  density: 88, salary: "£60k–£100k+", sponsors: "3,200+", color: "#2563eb", risk: "low" },
+  { name: "Finance / Banking",      density: 82, salary: "£45k–£85k", sponsors: "4,500+", color: "#1d4ed8", risk: "low" },
   { name: "Consulting / Big Four",  density: 78, salary: "£45k–£65k", sponsors: "2,100+", color: "#0ea5e9", risk: "low" },
   { name: "Engineering",            density: 64, salary: "£40k–£70k", sponsors: "5,600+", color: "#10b981", risk: "low" },
   { name: "Retail / Hospitality",   density: 22, salary: "£22k–£35k", sponsors: "Active", color: "#ef4444", risk: "high" },
@@ -69,7 +69,7 @@ function HiddenFact({
         backdropFilter: "blur(8px)",
         WebkitBackdropFilter: "blur(8px)",
         borderRadius: "var(--radius-card)",
-        borderLeft: "3px solid #4f6ef7",
+        borderLeft: "3px solid #1d4ed8",
         padding: "1.125rem 1.25rem",
       }}
     >
@@ -255,7 +255,7 @@ export default function InsightsPage() {
                 {[
                   { label: "Graduate Route (applied before Jan 2027)", months: 24, max: 36, color: "#10b981", badge: "24 months", badgeStyle: { background: "#ecfdf5", color: "#065f46" } },
                   { label: "Graduate Route (applied from Jan 2027)", months: 18, max: 36, color: "#f59e0b", badge: "18 months. shortened", badgeStyle: { background: "#fffbeb", color: "#92400e" }, warn: true },
-                  { label: "PhD Graduate Route", months: 36, max: 36, color: "#4f6ef7", badge: "36 months", badgeStyle: { background: "#eef2ff", color: "#2338c7" } },
+                  { label: "PhD Graduate Route", months: 36, max: 36, color: "#1d4ed8", badge: "36 months", badgeStyle: { background: "#eef2ff", color: "#1e3a8a" } },
                 ].map((r) => (
                   <div key={r.label}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.75rem", marginBottom: "0.5rem" }}>
@@ -312,7 +312,7 @@ export default function InsightsPage() {
 
           {/* Left: employer cost */}
           <div style={{ borderRadius: "var(--radius-card)", overflow: "hidden", border: "1px solid var(--color-line)" }}>
-            <ColHeader text="What your employer pays to hire you" gradient="linear-gradient(135deg,#4f6ef7,#2338c7)" />
+            <ColHeader text="What your employer pays to hire you" gradient="linear-gradient(135deg,#1d4ed8,#1e3a8a)" />
             <div style={{ background: "var(--color-paper)", padding: "1.25rem" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
                 <thead>
@@ -329,7 +329,7 @@ export default function InsightsPage() {
                     ["Immigration Skills Charge /yr", "£480/yr", "£1,320/yr"],
                     ["Total for a 3-year hire", "~£2,576", "~£6,567"],
                   ].map(([fee, small, large], i) => (
-                    <tr key={fee} style={{ borderBottom: "1px solid var(--color-line)", background: i % 2 === 0 ? "transparent" : "rgba(79,110,247,0.04)" }}>
+                    <tr key={fee} style={{ borderBottom: "1px solid var(--color-line)", background: i % 2 === 0 ? "transparent" : "rgba(29, 78, 216,0.04)" }}>
                       <td style={{ padding: "0.625rem 0.75rem", color: i === 3 ? "var(--color-ink)" : "var(--color-ink-soft)", fontWeight: i === 3 ? 500 : 400 }}>{fee}</td>
                       <td style={{ padding: "0.625rem 0.75rem", color: "var(--color-ink-soft)", fontVariantNumeric: "tabular-nums", fontWeight: i === 3 ? 500 : 400 }}>{small}</td>
                       <td style={{ padding: "0.625rem 0.75rem", color: i === 3 ? "var(--color-gold)" : "var(--color-ink-soft)", fontVariantNumeric: "tabular-nums", fontWeight: i === 3 ? 500 : 400 }}>{large}</td>
@@ -337,7 +337,7 @@ export default function InsightsPage() {
                   ))}
                 </tbody>
               </table>
-              <div style={{ margin: "1rem 0 0", padding: "1rem", background: "rgba(79,110,247,0.06)", borderRadius: 10, border: "1px solid rgba(79,110,247,0.15)" }}>
+              <div style={{ margin: "1rem 0 0", padding: "1rem", background: "rgba(29, 78, 216,0.06)", borderRadius: 10, border: "1px solid rgba(29, 78, 216,0.15)" }}>
                 <p style={{ margin: 0, fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", lineHeight: 1.6 }}>
                   A large employer sponsoring you for 3 years pays approximately <span style={{ color: "var(--color-gold)" }}>£6,500 in fees alone</span> before your salary. This is why many SMEs say no even when they want to hire you.
                 </p>
@@ -348,7 +348,7 @@ export default function InsightsPage() {
 
           {/* Right: employee cost */}
           <div style={{ borderRadius: "var(--radius-card)", overflow: "hidden", border: "1px solid var(--color-line)" }}>
-            <ColHeader text="What you pay" gradient="linear-gradient(135deg,#7c3aed,#4f46e5)" />
+            <ColHeader text="What you pay" gradient="linear-gradient(135deg,#2563eb,#4f46e5)" />
             <div style={{ background: "var(--color-paper)", padding: "1.25rem" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem", marginBottom: "1rem" }}>
                 <thead>
@@ -364,7 +364,7 @@ export default function InsightsPage() {
                     ["Immigration Health Surcharge", "£1,035/year"],
                     ["Total for 3 years", "~£5,000"],
                   ].map(([fee, amount], i) => (
-                    <tr key={fee} style={{ borderBottom: "1px solid var(--color-line)", background: i % 2 === 0 ? "transparent" : "rgba(124,58,237,0.04)" }}>
+                    <tr key={fee} style={{ borderBottom: "1px solid var(--color-line)", background: i % 2 === 0 ? "transparent" : "rgba(37, 99, 235,0.04)" }}>
                       <td style={{ padding: "0.625rem 0.75rem", color: i === 2 ? "var(--color-ink)" : "var(--color-ink-soft)", fontWeight: i === 2 ? 500 : 400 }}>{fee}</td>
                       <td style={{ padding: "0.625rem 0.75rem", color: "var(--color-ink-soft)", fontVariantNumeric: "tabular-nums", fontWeight: i === 2 ? 500 : 400 }}>{amount}</td>
                     </tr>
@@ -395,11 +395,11 @@ export default function InsightsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ marginBottom: "1rem" }}>
           {[
             {
-              label: "Test 1", title: "General minimum", val: "£41,700", valNew: "£33,400", color: "#4f6ef7", bg: "#eef2ff",
+              label: "Test 1", title: "General minimum", val: "£41,700", valNew: "£33,400", color: "#1d4ed8", bg: "#eef2ff",
               body: "£41,700 per year for most new applicants from April 2026. Or £33,400 if you qualify as a new entrant. graduated within 2 years, under 26, or switching from a Student visa.",
             },
             {
-              label: "Test 2", title: "SOC going rate", val: "Varies", color: "#7c3aed", bg: "#f5f3ff",
+              label: "Test 2", title: "SOC going rate", val: "Varies", color: "#2563eb", bg: "#f5f3ff",
               body: "Your occupation's specific going rate from Appendix Skilled Occupations. Software Developer: ~£46,000. Data Analyst: ~£34,000. Marketing Manager: ~£44,000.",
             },
             {
@@ -625,10 +625,10 @@ export default function InsightsPage() {
                     <td style={{ padding: "0.625rem 0.875rem", color: "var(--color-muted)" }}>{r.soc}</td>
                     <td style={{ padding: "0.625rem 0.875rem", color: "var(--color-ink-soft)", fontVariantNumeric: "tabular-nums" }}>{fmt(r.going)}</td>
                     <td style={{ padding: "0.625rem 0.875rem", fontVariantNumeric: "tabular-nums" }}>
-                      <span style={{ color: r.wins === "going" ? "#4f6ef7" : "var(--color-ink-soft)", fontWeight: r.wins === "going" ? 500 : 400 }}>
+                      <span style={{ color: r.wins === "going" ? "#1d4ed8" : "var(--color-ink-soft)", fontWeight: r.wins === "going" ? 500 : 400 }}>
                         {r.wins === "going" ? fmt(r.going) : fmt(41700)}
                       </span>
-                      <span style={{ display: "block", fontSize: "0.6rem", color: r.wins === "going" ? "#4f6ef7" : "var(--color-muted)", marginTop: 2 }}>
+                      <span style={{ display: "block", fontSize: "0.6rem", color: r.wins === "going" ? "#1d4ed8" : "var(--color-muted)", marginTop: 2 }}>
                         {r.wins === "going" ? "going rate" : "general min"}
                       </span>
                     </td>
@@ -760,8 +760,8 @@ export default function InsightsPage() {
             <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
               {[
                 { step: "Step 1", label: "Graduate Route", duration: "2 years (18 months from Jan 2027)", color: "#10b981" },
-                { step: "Step 2", label: "Skilled Worker visa", duration: "5 years required for settlement", color: "#4f6ef7" },
-                { step: "Step 3", label: "Indefinite Leave to Remain", duration: "Requires 5 years continuous UK residence", color: "#7c3aed" },
+                { step: "Step 2", label: "Skilled Worker visa", duration: "5 years required for settlement", color: "#1d4ed8" },
+                { step: "Step 3", label: "Indefinite Leave to Remain", duration: "Requires 5 years continuous UK residence", color: "#2563eb" },
               ].map((s, i) => (
                 <div key={s.step} style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -778,7 +778,7 @@ export default function InsightsPage() {
                 </div>
               ))}
             </div>
-            <div style={{ marginTop: "1.5rem", padding: "1rem 1.25rem", background: "rgba(79,110,247,0.06)", borderRadius: 10, border: "1px solid rgba(79,110,247,0.15)" }}>
+            <div style={{ marginTop: "1.5rem", padding: "1rem 1.25rem", background: "rgba(29, 78, 216,0.06)", borderRadius: 10, border: "1px solid rgba(29, 78, 216,0.15)" }}>
               <p style={{ margin: 0, fontSize: "1rem", fontWeight: 500, color: "var(--color-ink)" }}>
                 Minimum <span style={{ color: "var(--color-gold)" }}>7 years</span> from graduation to ILR
               </p>
@@ -820,12 +820,12 @@ export default function InsightsPage() {
 
             {/* Left: search-specific insights */}
             <div style={{ borderRadius: "var(--radius-card)", overflow: "hidden", border: "1px solid var(--color-line)" }}>
-              <ColHeader text={`Based on your search for ${lastMatch.role ?? "your role"}`} gradient="linear-gradient(135deg,#4f6ef7,#2338c7)" />
+              <ColHeader text={`Based on your search for ${lastMatch.role ?? "your role"}`} gradient="linear-gradient(135deg,#1d4ed8,#1e3a8a)" />
               <div style={{ background: "var(--color-paper)", padding: "1.25rem" }}>
                 <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.875rem" }}>
                   <li style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                     <span style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--color-gold-pale)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#4f6ef7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#1d4ed8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </span>
                     <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
                       Your CV&apos;s match score against current market requirements for that search was{" "}
@@ -838,7 +838,7 @@ export default function InsightsPage() {
                   {topSkills.length > 0 && (
                     <li style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                       <span style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--color-gold-pale)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#4f6ef7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#1d4ed8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </span>
                       <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
                         <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>{topSkills[0]?.skill}</strong> appears in {topSkills[0]?.share_pct}% of ads in your search. The single highest-priority gap to close.
@@ -847,7 +847,7 @@ export default function InsightsPage() {
                   )}
                   <li style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                     <span style={{ width: 20, height: 20, borderRadius: "50%", background: "var(--color-gold-pale)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
-                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#4f6ef7" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#1d4ed8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </span>
                     <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
                       Cross-reference your employer shortlist from that search against the licence revocation data above. especially any sponsors in hospitality, retail, or construction.
@@ -859,7 +859,7 @@ export default function InsightsPage() {
 
             {/* Right: market flags */}
             <div style={{ borderRadius: "var(--radius-card)", overflow: "hidden", border: "1px solid var(--color-line)" }}>
-              <ColHeader text="What the market data suggests" gradient="linear-gradient(135deg,#7c3aed,#4f46e5)" />
+              <ColHeader text="What the market data suggests" gradient="linear-gradient(135deg,#2563eb,#4f46e5)" />
               <div style={{ background: "var(--color-paper)", padding: "1.25rem" }}>
                 <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.875rem" }}>
                   {[
@@ -869,7 +869,7 @@ export default function InsightsPage() {
                   ].map((text, i) => (
                     <li key={i} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                       <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#f5f3ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
-                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#7c3aed" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#2563eb" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </span>
                       <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>{text}</p>
                     </li>
@@ -882,8 +882,8 @@ export default function InsightsPage() {
           <div className="surface-card" style={{ padding: "2.5rem", textAlign: "center" }}>
             <div style={{ width: 48, height: 48, borderRadius: "50%", background: "var(--color-gold-pale)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
               <svg width="22" height="22" viewBox="0 0 22 22" fill="none" aria-hidden>
-                <circle cx="10" cy="10" r="7" stroke="#4f6ef7" strokeWidth="1.5"/>
-                <path d="M15.5 15.5L19 19" stroke="#4f6ef7" strokeWidth="1.75" strokeLinecap="round"/>
+                <circle cx="10" cy="10" r="7" stroke="#1d4ed8" strokeWidth="1.5"/>
+                <path d="M15.5 15.5L19 19" stroke="#1d4ed8" strokeWidth="1.75" strokeLinecap="round"/>
               </svg>
             </div>
             <p style={{ margin: 0, fontSize: "0.9375rem", fontWeight: 500, color: "var(--color-ink)" }}>Run a search to see personalised insights</p>

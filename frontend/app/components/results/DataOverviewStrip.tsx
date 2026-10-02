@@ -104,7 +104,7 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
   const confTotal = Math.max(conf.total, 1);
   const donutData = [
     { key: "verified", name: "Verified", count: conf.verified, color: "rgba(5, 150, 105, 0.85)" },
-    { key: "likely", name: "Likely", count: conf.likely, color: "rgba(79, 110, 247, 0.9)" },
+    { key: "likely", name: "Likely", count: conf.likely, color: "rgba(29, 78, 216, 0.9)" },
     { key: "possible", name: "Possible", count: conf.possible, color: "rgba(180, 132, 52, 0.75)" },
   ].filter((d) => d.count > 0);
 
@@ -261,7 +261,7 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
                     style={{
                       background: d.have
                         ? `rgba(16, 185, 129, ${0.1 + opacity * 0.4})`
-                        : `rgba(79, 110, 247, ${opacity})`,
+                        : `rgba(29, 78, 216, ${opacity})`,
                       color: d.have ? "var(--color-signal)" : "var(--color-gold-dark)",
                     }}
                     title={d.skill}
@@ -307,8 +307,8 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
                 <BarChart data={buckets} margin={{ left: 0, right: 4, top: 4, bottom: 0 }} barCategoryGap="18%">
                   <defs>
                     <linearGradient id="salaryAbove" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(79,110,247,0.72)" />
-                      <stop offset="100%" stopColor="rgba(79,110,247,0.28)" />
+                      <stop offset="0%" stopColor="rgba(29, 78, 216,0.72)" />
+                      <stop offset="100%" stopColor="rgba(29, 78, 216,0.28)" />
                     </linearGradient>
                     <linearGradient id="salaryBelow" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="rgba(185,28,28,0.45)" />
@@ -325,7 +325,7 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
                   <Tooltip
                     contentStyle={{
                       borderRadius: 12,
-                      border: "1px solid rgba(99,102,241,0.15)",
+                      border: "1px solid rgba(29, 78, 216,0.15)",
                       fontSize: 12,
                     }}
                   />
@@ -379,7 +379,7 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
                   <Tooltip
                     contentStyle={{
                       borderRadius: 12,
-                      border: "1px solid rgba(99,102,241,0.15)",
+                      border: "1px solid rgba(29, 78, 216,0.15)",
                       fontSize: 12,
                     }}
                   />
@@ -394,7 +394,7 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
               {(
                 [
                   ["Verified", conf.verified, "rgba(5, 150, 105, 0.85)"],
-                  ["Likely", conf.likely, "rgba(79, 110, 247, 0.9)"],
+                  ["Likely", conf.likely, "rgba(29, 78, 216, 0.9)"],
                   ["Possible", conf.possible, "rgba(180, 132, 52, 0.75)"],
                 ] as const
               ).map(([label, count, color]) => (

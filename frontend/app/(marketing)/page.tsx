@@ -57,47 +57,10 @@ function HeroHeadline() {
   );
 }
 
-function SectionOrb({
-  variant,
-  side,
-}: {
-  variant: "blue" | "violet" | "sky";
-  side: "left" | "right";
-}) {
-  const [offset, setOffset] = useState(0);
-
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) return;
-    const onScroll = () => setOffset(window.scrollY * 0.3);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <div
-      aria-hidden
-      className={`orb orb-${variant}`}
-      style={{
-        width: variant === "blue" ? 700 : 600,
-        height: variant === "blue" ? 700 : 600,
-        top: side === "left" ? "-120px" : "40px",
-        left: side === "left" ? "-220px" : "auto",
-        right: side === "right" ? "-220px" : "auto",
-        filter: "blur(60px)",
-        transform: `translate3d(0, ${offset * (side === "left" ? 0.15 : -0.1)}px, 0)`,
-      }}
-    />
-  );
-}
-
-function handleShineMove(e: React.MouseEvent<HTMLElement>) {
-  const rect = e.currentTarget.getBoundingClientRect();
-  const x = ((e.clientX - rect.left) / rect.width) * 100;
-  const y = ((e.clientY - rect.top) / rect.height) * 100;
-  e.currentTarget.style.setProperty("--shine-x", `${x}%`);
-  e.currentTarget.style.setProperty("--shine-y", `${y}%`);
+// Flat design: no more glow-blob orbs behind sections. Kept as a no-op so the
+// many <SectionOrb ... /> call sites don't all need to be hand-removed.
+function SectionOrb(_props: { variant: "blue" | "violet" | "sky"; side: "left" | "right" }) {
+  return null;
 }
 
 const FEATURES = [
@@ -217,41 +180,26 @@ export default function LandingPage() {
 
   return (
     <main className="pb-0">
-      <section className="hero-bento section-orb" style={{ position: "relative" }}>
-        <SectionOrb variant="violet" side="left" />
-        <SectionOrb variant="blue" side="right" />
-        <div
-          aria-hidden
-          className="orb orb-sky"
-          style={{
-            width: 650,
-            height: 650,
-            bottom: "-20%",
-            left: "30%",
-            filter: "blur(60px)",
-          }}
-        />
-
+      <section className="hero-bento section-orb full-bleed" style={{ position: "relative" }}>
         <div className="hero-bento__scale">
           <div className="hero-bento__top">
             <div className="hero-bento__copy" style={{ position: "relative" }}>
-              <div className="hero-text-glow" aria-hidden />
               <span className="hero-eyebrow">
-                <span className="hero-eyebrow__dot" aria-hidden />
-                Home Office sponsor register, live
+                Home Office sponsor register, updated monthly
               </span>
               <HeroHeadline />
 
               <p
                 style={{
                   margin: "1.1rem 0 0",
-                  maxWidth: "40ch",
+                  maxWidth: "42ch",
                   fontSize: "clamp(0.95rem, 1.3vw, 1.0625rem)",
                   lineHeight: 1.55,
-                  color: "var(--color-ink-soft)",
+                  color: "rgba(255, 255, 255, 0.64)",
                 }}
               >
-                Type a role. We check sponsors, map skill gaps, and give you a clear next step.
+                We check every job ad against 133,979 Home Office sponsor licences,
+                so you only apply where a visa is actually possible.
               </p>
 
               <div
@@ -300,7 +248,7 @@ export default function LandingPage() {
               </div>
 
               <p className="hero-trust-line">
-                No sign-up needed · Live UK data · CV never stored
+                Search without an account. Upload a CV and we read it once, then forget it.
               </p>
             </div>
 
@@ -352,8 +300,7 @@ export default function LandingPage() {
             return (
               <motion.article
                 key={f.t}
-                className={`feature-tile feature-tile--${f.tone} shine-card`}
-                onMouseMove={handleShineMove}
+                className={`feature-tile feature-tile--${f.tone}`}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.25 }}
@@ -373,7 +320,7 @@ export default function LandingPage() {
                     {f.t}
                   </h3>
                   <span className="dash-card-icon" aria-hidden>
-                    <Icon size={18} color="#4F6EF7" weight="duotone" />
+                    <Icon size={18} color="#1d4ed8" weight="duotone" />
                   </span>
                 </div>
 
@@ -382,7 +329,7 @@ export default function LandingPage() {
                     <div style={{ display: "grid", gap: "0.55rem" }}>
                       {[
                         { name: "Monzo", label: "Verified", color: "#065F46", bg: "rgba(209,250,229,0.95)", fill: "#10B981", pct: 92 },
-                        { name: "Deliveroo", label: "Likely", color: "#3730A3", bg: "rgba(224,231,255,0.95)", fill: "#4F6EF7", pct: 68 },
+                        { name: "Deliveroo", label: "Likely", color: "#3730A3", bg: "rgba(224,231,255,0.95)", fill: "#1d4ed8", pct: 68 },
                         { name: "LocalCo", label: "Possible", color: "#92400E", bg: "rgba(254,243,199,0.95)", fill: "#F59E0B", pct: 34 },
                       ].map((b) => (
                         <div key={b.label}>
@@ -447,13 +394,13 @@ export default function LandingPage() {
                     <div className="score-ring-wrap">
                       <div className="hero-score-ring" aria-hidden>
                         <svg viewBox="0 0 96 96" width="96" height="96">
-                          <circle cx="48" cy="48" r="36" fill="none" stroke="rgba(79,110,247,0.12)" strokeWidth="8" />
+                          <circle cx="48" cy="48" r="36" fill="none" stroke="rgba(29, 78, 216,0.12)" strokeWidth="8" />
                           <circle
                             cx="48"
                             cy="48"
                             r="36"
                             fill="none"
-                            stroke="#4F6EF7"
+                            stroke="#1d4ed8"
                             strokeWidth="8"
                             strokeLinecap="round"
                             strokeDasharray={`${2 * Math.PI * 36 * 0.72} ${2 * Math.PI * 36}`}
@@ -564,7 +511,7 @@ export default function LandingPage() {
           <article className="dash-card dash-card--texture">
             <div className="dash-card__head">
               <span className="dash-card-icon" aria-hidden>
-                <MagnifyingGlass size={16} color="#4F6EF7" weight="duotone" />
+                <MagnifyingGlass size={16} color="#1d4ed8" weight="duotone" />
               </span>
               <h3>Skills</h3>
               <span className="dash-card__menu" aria-hidden>· · ·</span>
@@ -591,7 +538,7 @@ export default function LandingPage() {
           <article className="dash-card dash-card--texture">
             <div className="dash-card__head">
               <span className="dash-card-icon dash-card-icon--violet" aria-hidden>
-                <ChartLineUp size={16} color="#5B21B6" weight="duotone" />
+                <ChartLineUp size={16} color="#1e3a8a" weight="duotone" />
               </span>
               <h3>Tenure</h3>
               <span className="dash-card__menu" aria-hidden>· · ·</span>
@@ -680,7 +627,7 @@ export default function LandingPage() {
                     <p style={{ margin: "0.7rem 0 0", fontSize: "0.875rem", lineHeight: 1.55, color: "var(--color-ink-soft)", flex: 1 }}>
                       {item.body}
                     </p>
-                    <span style={{ marginTop: "1.15rem", fontSize: "0.8125rem", fontWeight: 500, color: "#4F6EF7" }}>
+                    <span style={{ marginTop: "1.15rem", fontSize: "0.8125rem", fontWeight: 500, color: "#1d4ed8" }}>
                       Open →
                     </span>
                   </Link>
@@ -758,7 +705,7 @@ export default function LandingPage() {
         >
           <ChartLineUp
             size={72}
-            color="rgba(79,110,247,0.14)"
+            color="rgba(29, 78, 216,0.14)"
             weight="duotone"
             aria-hidden
             style={{ position: "absolute", top: 12, right: 16 }}
@@ -804,6 +751,18 @@ export default function LandingPage() {
           >
             Things people ask
           </h2>
+          <p
+            style={{
+              margin: "0.65rem 0 0",
+              maxWidth: "36ch",
+              fontSize: "1rem",
+              lineHeight: 1.5,
+              color: "var(--color-ink-soft)",
+            }}
+          >
+            Straight answers about how the matching works, what happens to
+            your CV, and why this beats scrolling job boards alone.
+          </p>
         </Reveal>
         <div style={{ marginTop: "1.35rem", display: "flex", flexDirection: "column", gap: "0.65rem" }}>
           {FAQ_ITEMS.map((item, i) => {
@@ -814,7 +773,7 @@ export default function LandingPage() {
                 className={`demo-panel faq-item${open ? " demo-panel--open faq-item--open" : ""}`}
                 style={{
                   padding: "0.35rem 1.15rem",
-                  boxShadow: open ? "0 12px 32px rgba(79,110,247,0.1)" : "0 6px 20px rgba(79,110,247,0.05)",
+                  boxShadow: open ? "0 12px 32px rgba(29, 78, 216,0.1)" : "0 6px 20px rgba(29, 78, 216,0.05)",
                   transition: "box-shadow 0.2s ease",
                 }}
               >
@@ -843,7 +802,7 @@ export default function LandingPage() {
                   <span
                     aria-hidden
                     style={{
-                      color: "#4F6EF7",
+                      color: "#1d4ed8",
                       display: "inline-block",
                       fontSize: "1.1rem",
                       transform: open ? "rotate(90deg)" : "rotate(0deg)",

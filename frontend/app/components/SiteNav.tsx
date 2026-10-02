@@ -77,7 +77,7 @@ function SolutionIcon({ Icon }: { Icon: (typeof SOLUTION_ITEMS)[number]["Icon"] 
         animate={{ y: [0, -1.5, 0] }}
         transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
       >
-        <Icon size={14} weight="fill" color="#4F6EF7" />
+        <Icon size={14} weight="fill" color="#1d4ed8" />
       </motion.span>
     </motion.span>
   );
@@ -142,10 +142,10 @@ export default function SiteNav() {
         aria-label="Primary"
         className="glass-dark"
         style={{
-          maxWidth: 960,
+          maxWidth: 1180,
           margin: "0 auto",
           borderRadius: 999,
-          padding: "6px 6px 6px 20px",
+          padding: "6px 2.5rem",
           display: "flex",
           alignItems: "center",
           gap: "0.5rem",
@@ -168,7 +168,7 @@ export default function SiteNav() {
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
             <path
               d="M9 1v16M1 9h16M3.1 3.1l11.8 11.8M14.9 3.1L3.1 14.9"
-              stroke="#4F6EF7"
+              stroke="#1d4ed8"
               strokeWidth="2"
               strokeLinecap="round"
             />
@@ -373,7 +373,7 @@ export default function SiteNav() {
                   fontWeight: 500,
                   color: "var(--color-gold-ink)",
                   textDecoration: "none",
-                  boxShadow: "0 2px 8px rgba(79,110,247,0.35)",
+                  boxShadow: "0 2px 8px rgba(29, 78, 216,0.35)",
                 }}
               >
                 Search a role
@@ -410,7 +410,7 @@ export default function SiteNav() {
                   fontWeight: 500,
                   color: "var(--color-gold-ink)",
                   textDecoration: "none",
-                  boxShadow: "0 2px 8px rgba(79,110,247,0.35)",
+                  boxShadow: "0 2px 8px rgba(29, 78, 216,0.35)",
                   whiteSpace: "nowrap",
                 }}
               >

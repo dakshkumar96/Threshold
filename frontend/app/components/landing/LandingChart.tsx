@@ -76,13 +76,9 @@ export default function LandingChart() {
 
   return (
     <section
-      className="section-dark-bg landing-numbers"
+      className="section-dark-bg landing-numbers full-bleed"
       aria-labelledby="numbers"
     >
-      <div className="section-dark-orb-left" aria-hidden />
-      <div className="section-dark-orb-right" aria-hidden />
-      <div className="section-dark-dots" aria-hidden />
-
       <div className="section-inner">
         <div className="landing-chart-split">
           <div className="landing-chart-copy">
@@ -118,13 +114,13 @@ export default function LandingChart() {
                 <AreaChart data={chartData} margin={{ top: 4, right: 8, left: 0, bottom: 2 }}>
                   <defs>
                     <linearGradient id="fillSponsorsDark" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="rgba(165,180,252,0.90)" stopOpacity={0.28} />
-                      <stop offset="100%" stopColor="rgba(165,180,252,0.90)" stopOpacity={0} />
+                      <stop offset="0%" stopColor="rgba(96, 165, 250,0.90)" stopOpacity={0.28} />
+                      <stop offset="100%" stopColor="rgba(96, 165, 250,0.90)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid
                     vertical={false}
-                    stroke="rgba(165,180,252,0.08)"
+                    stroke="rgba(96, 165, 250,0.08)"
                     strokeDasharray="4 6"
                   />
                   <XAxis
@@ -138,14 +134,14 @@ export default function LandingChart() {
                   <Area
                     type="monotone"
                     dataKey="Sponsors"
-                    stroke="rgba(165,180,252,0.90)"
+                    stroke="rgba(96, 165, 250,0.90)"
                     fill="url(#fillSponsorsDark)"
                     strokeWidth={3.25}
                     animationBegin={200}
                     animationDuration={1200}
                     animationEasing="ease-out"
                     dot={false}
-                    activeDot={{ r: 5, fill: "rgba(165,180,252,0.95)" }}
+                    activeDot={{ r: 5, fill: "rgba(96, 165, 250,0.95)" }}
                   />
                 </AreaChart>
               </ResponsiveContainer>

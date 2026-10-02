@@ -119,7 +119,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
                   <Icon
                     size={18}
                     weight={active ? "fill" : "regular"}
-                    color={active ? "#4F6EF7" : "#9CA3AF"}
+                    color={active ? "#1d4ed8" : "#9CA3AF"}
                     aria-hidden
                   />
                   {label}
