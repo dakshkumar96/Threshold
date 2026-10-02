@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
-import { creato } from "./fonts";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-inter-face",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins-face",
   display: "swap",
 });
 
-const fontVariables = `${inter.variable} ${creato.variable}`;
+const fontVariables = poppins.variable;
 
 export const metadata: Metadata = {
   title: {
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
 
 const DIRECTION_CONTRACT = `
 THESIS: Sponsor evidence as a calm signal desk; refuses the noisy job-board dashboard.
-OWN-WORLD: Warm off-white paper, near-black type doing the work, amber the only action colour, green only for confirmed evidence.
+OWN-WORLD: Flat off-white paper, near-black type doing the work, dark professional blue the only action colour, green only for confirmed evidence.
 STORY: Marketing landing for guests; signed-in home and search for members.
 `;
 
