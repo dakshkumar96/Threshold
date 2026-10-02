@@ -9,7 +9,7 @@ matplotlib
 fastapi
 uvicorn
 python-multipart
-pdfplumber
+pymupdf
 PyJWT
 
 # Lets pydantic evaluate Python 3.10+ union syntax ("str | None") on older

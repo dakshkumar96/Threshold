@@ -62,6 +62,20 @@ EMPTY_PDF_MSG = (
     "This PDF has no text layer (it's likely a scan or photo). "
     "Export or save as a text-based PDF and try again."
 )
+GARBLED_PDF_MSG = (
+    "This PDF's text layer looks corrupted (unresolvable font glyphs), "
+    "so it can't be read reliably. Try exporting it again, or save as a "
+    "different PDF/text format."
+)
+# Signature of "glyph has no usable Unicode mapping" fallback — happens with
+# some font-subsetting/embedding tools that omit a ToUnicode CMap. Unlike a
+# missing text layer, this still "extracts" non-empty text, so it would
+# otherwise sail through as if it were real CV content. The exact signature
+# is extractor-specific: pdfminer/pdfplumber emit literal "(cid:N)" text;
+# PyMuPDF emits raw Unicode control codepoints (confirmed by direct test
+# against the same corrupted PDF) — check for both.
+_CID_PLACEHOLDER_RE = re.compile(r"\(cid:\d+\)")
+_CONTROL_CHAR_RE = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 TENURE_CAVEAT = (
     "Licence tenure from our register archive (left-truncated) - "
     "not a guarantee of active hiring"
@@ -608,6 +622,13 @@ async def analyze(
                 ) from None
             if uploaded_pdf and not text.strip():
                 raise HTTPException(status_code=400, detail=EMPTY_PDF_MSG)
+            if uploaded_pdf and text.strip():
+                garbage_hits = len(_CID_PLACEHOLDER_RE.findall(text)) + len(
+                    _CONTROL_CHAR_RE.findall(text)
+                )
+                word_count = max(len(text.split()), 1)
+                if garbage_hits and garbage_hits / word_count > 0.15:
+                    raise HTTPException(status_code=400, detail=GARBLED_PDF_MSG)
 
     has_cv = bool(text.strip())
 

@@ -2,33 +2,45 @@
 
 from __future__ import annotations
 
-import io
+import unicodedata
 from pathlib import Path
-from typing import BinaryIO
 
 
-def _extract(source: str | Path | BinaryIO) -> str:
-    import pdfplumber
+def _extract(data: bytes) -> str:
+    import pymupdf
 
+    # PyMuPDF uses the PDF's own internal word/character layout rather than
+    # inferring word gaps from a tunable x-distance (pdfplumber's approach),
+    # which silently merges adjacent words into one ("ComputerScience...")
+    # on PDFs that position glyphs precisely without a literal space
+    # character between them - common with LaTeX output (Carlito/Computer
+    # Modern CVs especially). Confirmed via a reproduction test: the exact
+    # merge-no-space layout that breaks pdfplumber's default extraction
+    # extracts correctly with PyMuPDF.
     chunks: list[str] = []
-    with pdfplumber.open(source) as pdf:
-        for page in pdf.pages:
-            t = page.extract_text() or ""
+    with pymupdf.open(stream=data, filetype="pdf") as doc:
+        for page in doc:
+            t = page.get_text("text") or ""
             if t.strip():
                 chunks.append(t)
-    return "\n".join(chunks).strip()
+    text = "\n".join(chunks).strip()
+    # Some CV fonts (exported from Canva/Word/LaTeX) use ligature glyphs
+    # ("ﬁ", "ﬂ", ...) that PyMuPDF passes through as the raw ligature
+    # codepoint rather than expanding it; NFKC folds these back to plain
+    # ASCII so downstream skill/keyword matching does not silently miss
+    # words like "office" -> "oce".
+    return unicodedata.normalize("NFKC", text)
 
 
 def extract_text_from_pdf(path: str | Path) -> str:
-    return _extract(Path(path))
+    return _extract(Path(path).read_bytes())
 
 
 def extract_text_from_bytes(data: bytes, filename: str = "cv.pdf") -> str:
-    """Parse uploaded file bytes. PDF via pdfplumber; .txt as utf-8."""
+    """Parse uploaded file bytes. PDF via PyMuPDF; .txt as utf-8."""
     name = filename.lower()
     if name.endswith(".txt"):
         return data.decode("utf-8", errors="ignore").strip()
     if name.endswith(".pdf") or data[:4] == b"%PDF":
-        # In-memory buffer avoids Windows temp-file locking
-        return _extract(io.BytesIO(data))
+        return _extract(data)
     return data.decode("utf-8", errors="ignore").strip()
