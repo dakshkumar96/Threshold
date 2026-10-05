@@ -13,10 +13,12 @@ Employer identity is certain for roles fetched directly from a company's own app
 
 | Label | Rule |
 |-------|------|
-| **Verified sponsor** | Fetched from the employer's own ATS board |
+| **Verified sponsor** | Fetched from the employer's own ATS board, and the employer is on the latest register |
 | **Likely sponsor** | Name match ≥ 90 |
 | **Possible sponsor** | Name match 80–89, or recruitment-agency match |
 | *(dropped)* | Name match &lt; 80 |
+
+Every label needs the matched company to be on the latest register (28 July 2026). The data keeps all 133,979 companies seen in any snapshot since 2023, and an ad whose best match is one of the 12,780 that have since left the register is not shown as a sponsor, because that company may have lost its licence.
 
 Overall aggregator precision remains approximately **59%** (n=100). The ATS mapping is built lazily from real searches and requires no scheduled maintenance.
 

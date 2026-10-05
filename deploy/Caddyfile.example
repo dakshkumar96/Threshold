@@ -1,0 +1,23 @@
+# The Caddy site block that serves the Threshold API in production.
+# Caddy gets and renews the HTTPS certificate for the domain by itself.
+#
+# Replace the domain with yours. After editing the Caddyfile:
+#   caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+#   caddy reload   --config /etc/caddy/Caddyfile --adapter caddyfile
+
+threshold-backend.duckdns.org {
+	# A CV can be up to 5 MB. Anything much bigger is refused here, before it
+	# reaches the API (which also checks the declared size).
+	request_body {
+		max_size 6MB
+	}
+
+	reverse_proxy 127.0.0.1:8000 {
+		# A search can take up to a few minutes (job boards, matching, the AI
+		# review), so wait longer than the usual timeouts.
+		transport http {
+			response_header_timeout 230s
+			read_timeout 230s
+		}
+	}
+}

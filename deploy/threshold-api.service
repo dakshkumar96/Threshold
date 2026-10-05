@@ -1,14 +1,17 @@
-# systemd unit for the Threshold API (FastAPI/uvicorn).
+# systemd unit for the Threshold API (FastAPI under uvicorn).
 # Install: sudo cp deploy/threshold-api.service /etc/systemd/system/
 #          sudo systemctl daemon-reload
 #          sudo systemctl enable --now threshold-api
 #
-# Assumes the repo is cloned to /home/ubuntu/Threshold and the venv lives at
-# /home/ubuntu/Threshold/.venv (see deploy/setup.sh). Adjust User/WorkingDirectory/
-# paths if your instance uses a different username or clone location.
+# Assumes the repo is cloned to /home/ubuntu/uk-sponsor-analysis with its
+# Python 3.13 venv in .venv (see deploy/setup.sh, which also rewrites these
+# paths if you clone somewhere else).
 #
-# Binds to 127.0.0.1 only — nginx (deploy/nginx-threshold-api.conf) is the public
-# reverse proxy in front of it. Do not expose uvicorn directly on 0.0.0.0 here.
+# uvicorn listens on 127.0.0.1 only. Caddy (or nginx) is the public HTTPS proxy
+# in front of it. Do not expose uvicorn on 0.0.0.0.
+#
+# `python -m uvicorn` rather than the `uvicorn` script: the script hard-codes
+# the venv's path, so a venv that has been moved or swapped would break it.
 
 [Unit]
 Description=Threshold API (FastAPI/uvicorn)
@@ -17,13 +20,13 @@ After=network.target
 [Service]
 Type=simple
 User=ubuntu
-WorkingDirectory=/home/ubuntu/Threshold
-EnvironmentFile=/home/ubuntu/Threshold/.env
-ExecStart=/home/ubuntu/Threshold/.venv/bin/uvicorn api.main:app --host 127.0.0.1 --port 8000 --workers 2
+WorkingDirectory=/home/ubuntu/uk-sponsor-analysis
+EnvironmentFile=/home/ubuntu/uk-sponsor-analysis/.env
+ExecStart=/home/ubuntu/uk-sponsor-analysis/.venv/bin/python -m uvicorn api.main:app --host 127.0.0.1 --port 8000 --workers 2
 Restart=always
 RestartSec=5
-# Give in-flight /analyze requests (up to ~210s per the frontend timeout) room to
-# finish on a restart/deploy instead of being killed mid-request.
+# Give a search that is still running (up to about 210 s, the website's own
+# timeout) time to finish on a restart instead of being cut off.
 TimeoutStopSec=220
 
 [Install]
