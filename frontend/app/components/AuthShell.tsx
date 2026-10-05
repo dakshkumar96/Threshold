@@ -1,8 +1,10 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CURRENT_SPONSORS, formatCount } from "@/lib/register";
+import Logo from "./Logo";
 
 const POINTS = [
-  "133,979 licensed sponsors, live",
+  `${formatCount(CURRENT_SPONSORS)} licensed sponsors on the latest register`,
   "CV match score against real ads",
   "Verified confidence tiers",
   "Priority skill gap roadmap",
@@ -11,14 +13,7 @@ const POINTS = [
 function BrandMark({ light = false }: { light?: boolean }) {
   return (
     <Link href="/" className={`auth-brand${light ? " auth-brand--light" : ""}`}>
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-        <path
-          d="M9 1v16M1 9h16M3.1 3.1l11.8 11.8M14.9 3.1L3.1 14.9"
-          stroke={light ? "#93c5fd" : "#1d4ed8"}
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </svg>
+      <Logo height={light ? 28 : 22} tone={light ? "light" : "dark"} />
       <span>Threshold</span>
     </Link>
   );

@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import { SignIn } from "@clerk/nextjs";
 import AuthShell, { clerkAuthAppearance } from "@/app/components/AuthShell";
+
+export const metadata: Metadata = { title: "Sign in" };
 
 export default function SignInPage() {
   return (

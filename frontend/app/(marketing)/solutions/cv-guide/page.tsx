@@ -13,34 +13,41 @@ export default function CvGuidePage() {
           Solutions
         </p>
         <h1 style={{ margin: "0.75rem 0 0", fontSize: "clamp(1.8rem,4vw,2.5rem)", fontWeight: 500, letterSpacing: "-0.03em", color: "var(--color-ink)", maxWidth: "18ch", lineHeight: 1.15 }}>
-          Write a CV that maps to sponsor-market ads
+          Write a CV that matches the jobs you want
         </h1>
       </div>
 
       <div style={{ marginTop: "2rem", maxWidth: "62ch", display: "flex", flexDirection: "column", gap: "1.25rem", fontSize: "0.9375rem", lineHeight: 1.7, color: "var(--color-ink-soft)" }}>
         <p style={{ margin: 0 }}>
-          Employers skim for tools and outcomes they already listed. Your job is to
-          make those matches obvious without inventing experience.
+          A recruiter spends only a few seconds on a CV. They look for the tools and
+          results they already wrote down in the job ad. Your job is to make those
+          matches easy to see without making up experience you do not have.
         </p>
         <ul style={{ margin: 0, paddingLeft: "1.25rem", display: "flex", flexDirection: "column", gap: "0.625rem" }}>
-          <li>Lead with a role title and stack that match the ads you want.</li>
+          <li>Start with a job title and a set of tools that match the ads you want.</li>
           <li>
-            Put high-frequency skills from your Threshold roadmap into project
-            bullets with a result, not a buzzword list.
+            Take the skills that come up most in your Threshold roadmap and show them
+            inside project bullets with a result. A plain list of buzzwords does not
+            prove anything.
           </li>
           <li>
-            Prefer one shipped artefact (repo, dashboard, case study) over five vague
-            course certificates.
+            Show one finished piece of work, such as a code repository, a dashboard or a
+            case study, instead of five vague course certificates.
           </li>
           <li>
-            Keep location and right-to-work wording honest. Do not claim a CoS you do
-            not have.
+            Be honest about where you live and your right to work. Do not claim a
+            Certificate of Sponsorship you do not have.
+          </li>
+          <li>
+            Never add a number or a result that is not true. Our review checks that any
+            rewrite we suggest only uses facts already in your CV.
           </li>
         </ul>
         <p style={{ margin: 0 }}>
-          When you are ready, upload a text-based PDF on search. We score skills
-          against live ads for that role and return a prioritised gap list. Then an
-          optional LLM note grounded in those frequencies.
+          When you are ready, upload a text-based PDF on the search page. We compare
+          your skills with live ads for that role and give you a ranked list of gaps.
+          Then an AI review reads your CV like a hiring manager and tells you what is
+          shown well, what is missing and what to fix first.
         </p>
       </div>
 

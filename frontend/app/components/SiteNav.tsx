@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserButton, useAuth } from "@clerk/nextjs";
+import Logo from "./Logo";
 import {
   AirplaneTilt,
   Buildings,
@@ -165,17 +166,10 @@ export default function SiteNav() {
             flexShrink: 0,
           }}
         >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-            <path
-              d="M9 1v16M1 9h16M3.1 3.1l11.8 11.8M14.9 3.1L3.1 14.9"
-              stroke="#1d4ed8"
-              strokeWidth="2"
-              strokeLinecap="round"
-            />
-          </svg>
+          <Logo height={30} tone="light" />
           <span
             style={{
-              fontSize: "0.9375rem",
+              fontSize: "1.0625rem",
               fontWeight: 500,
               color: "#ffffff",
               letterSpacing: "-0.01em",

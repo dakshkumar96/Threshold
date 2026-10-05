@@ -84,10 +84,8 @@ export default function ResultsPage() {
         jobs_total: data.jobs_total,
         sponsor_count: uniqueSponsors,
       })
-      .then(() => setSaveNote("Saved to your account"))
-      .catch(() => {
-        /* guest or offline */
-      });
+      .then((saved) => setSaveNote(saved ? "Saved to your account" : null))
+      .catch(() => setSaveNote(null));
   }, [data, api]);
 
   const onBookmark = useCallback((url: string) => {

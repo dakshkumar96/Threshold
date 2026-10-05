@@ -15,9 +15,10 @@ const CHANGELOG: {
   { date: "January 1 2027 (upcoming)", text: "Graduate Route shortens to 18 months for bachelor's and master's graduates. Apply before this date to keep 2 years.", light: "red", sourceLabel: "freeths.co.uk", sourceUrl: "https://freeths.co.uk" },
   { date: "August 3 2026", text: "Graduate Route dependants update. Children born in UK to Graduate visa holders can now apply as dependants.", light: "amber", sourceLabel: "ukcisa.org.uk", sourceUrl: "https://ukcisa.org.uk" },
   { date: "July 2026", text: "Global Talent visa adds dedicated design industry pathway.", light: "amber", sourceLabel: "commonslibrary.parliament.uk", sourceUrl: "https://commonslibrary.parliament.uk" },
-  { date: "April 2026", text: "Salary threshold rose to £41,700 (up from £38,700). ISC rose 32%. New pay-per-period rule: must clear threshold every pay period, not just annually.", light: "red", sourceLabel: "relocly.co.uk", sourceUrl: "https://relocly.co.uk" },
   { date: "January 8 2026", text: "English language requirement raised from B1 to B2 for new Skilled Worker applicants.", light: "red", sourceLabel: "immigrationbarrister.co.uk", sourceUrl: "https://immigrationbarrister.co.uk" },
+  { date: "December 16 2025", text: "The Immigration Skills Charge that sponsors pay rose by 32%. For the first 12 months of a visa it is now £1,320 for a large sponsor and £480 for a small one.", light: "amber", sourceLabel: "legislation.gov.uk", sourceUrl: "https://www.legislation.gov.uk/uksi/2025/1324" },
   { date: "Q4 2025", text: "1,500+ sponsor licences revoked in a single quarter. The highest ever recorded.", light: "red", sourceLabel: "assessnow.co.uk", sourceUrl: "https://assessnow.co.uk" },
+  { date: "July 22 2025", text: "The general salary threshold for new Skilled Worker visas rose to £41,700, up from £38,700. The lower new entrant rate is £33,400.", light: "red", sourceLabel: "gov.uk", sourceUrl: "https://www.gov.uk/skilled-worker-visa/your-job" },
 ];
 
 const ROLE_TABLE = [
@@ -34,12 +35,12 @@ const ROLE_TABLE = [
 ];
 
 const SECTORS = [
-  { name: "Technology / Software", density: 92, salary: "£45k–£80k", sponsors: "8,000+", color: "#1d4ed8", risk: "low" },
-  { name: "AI / Machine Learning",  density: 88, salary: "£60k–£100k+", sponsors: "3,200+", color: "#2563eb", risk: "low" },
-  { name: "Finance / Banking",      density: 82, salary: "£45k–£85k", sponsors: "4,500+", color: "#1d4ed8", risk: "low" },
-  { name: "Consulting / Big Four",  density: 78, salary: "£45k–£65k", sponsors: "2,100+", color: "#0ea5e9", risk: "low" },
-  { name: "Engineering",            density: 64, salary: "£40k–£70k", sponsors: "5,600+", color: "#10b981", risk: "low" },
-  { name: "Retail / Hospitality",   density: 22, salary: "£22k–£35k", sponsors: "Active", color: "#ef4444", risk: "high" },
+  { name: "Technology / Software", density: 92, salary: "£45k to £80k", sponsors: "8,000+", color: "#1d4ed8", risk: "low" },
+  { name: "AI / Machine Learning",  density: 88, salary: "£60k to £100k+", sponsors: "3,200+", color: "#2563eb", risk: "low" },
+  { name: "Finance / Banking",      density: 82, salary: "£45k to £85k", sponsors: "4,500+", color: "#1d4ed8", risk: "low" },
+  { name: "Consulting / Big Four",  density: 78, salary: "£45k to £65k", sponsors: "2,100+", color: "#0ea5e9", risk: "low" },
+  { name: "Engineering",            density: 64, salary: "£40k to £70k", sponsors: "5,600+", color: "#10b981", risk: "low" },
+  { name: "Retail / Hospitality",   density: 22, salary: "£22k to £35k", sponsors: "Active", color: "#ef4444", risk: "high" },
 ];
 
 const LIGHT_META: Record<TrafficLight, { dot: string; label: string }> = {
@@ -83,7 +84,7 @@ function HiddenFact({
           color: "#FFCA6B",
         }}
       >
-        Most students don&apos;t know this
+        Most students do not know this
       </p>
       <p style={{ margin: 0, fontSize: "0.875rem", fontWeight: 500, color: "#fff", lineHeight: 1.65 }}>
         {children}
@@ -103,7 +104,7 @@ function HiddenFact({
             textDecoration: "none",
           }}
         >
-          Source: {sourceLabel} ↗
+          From {sourceLabel} ↗
         </a>
       )}
     </div>
@@ -217,17 +218,17 @@ export default function InsightsPage() {
           What an immigration lawyer knows that you don&apos;t
         </h1>
         <p style={{ margin: "0.75rem 0 0", maxWidth: "60ch", fontSize: "0.9375rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
-          Ten sections. Every fact sourced. The numbers no one told you. About what your employer actually pays, why licences get revoked, and what the salary threshold really means.
+          Ten sections, with every fact sourced. These are the numbers nobody told you. They cover what your employer really pays, why licences get revoked, and what the salary threshold really means.
         </p>
       </div>
 
       {/* ── Headline tiles ─────────────────────────────────────────────────────*/}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: "0.75rem", marginBottom: "3rem" }} className="sm:grid-cols-4">
         {([
-          { n: insights.headline.sponsors_tracked.toLocaleString("en-GB"), l: "licensed sponsors on the register", accent: true },
-          { n: insights.headline.still_active.toLocaleString("en-GB"), l: "still active at latest snapshot" },
-          { n: "3,100+", l: "licences revoked in 2025. The highest ever" },
-          { n: "£41,700", l: "salary threshold from April 2026" },
+          { n: insights.headline.still_active.toLocaleString("en-GB"), l: "licensed sponsors on the latest register", accent: true },
+          { n: insights.headline.exits_observed.toLocaleString("en-GB"), l: "left the register since 2023" },
+          { n: "3,100+", l: "licences revoked in 2025, the highest ever" },
+          { n: "£41,700", l: "salary threshold since July 2025" },
         ] as { n: string; l: string; accent?: boolean }[]).map((s) => (
           <div key={s.l} className="surface-card" style={{ padding: "1.25rem" }}>
             <p style={{ margin: 0, fontSize: "clamp(1.35rem,2.2vw,1.75rem)", fontWeight: 500, letterSpacing: "-0.03em", lineHeight: 1, color: s.accent ? "var(--color-gold)" : "var(--color-ink)", fontVariantNumeric: "tabular-nums" }}>
@@ -243,7 +244,7 @@ export default function InsightsPage() {
         <SectionNum n="01" />
         <SectionHead
           title="Your visa clock"
-          subtitle="How much time you actually have. And one date that changes everything."
+          subtitle="How much time you really have, and one date that changes everything."
         />
         <div className="surface-card" style={{ padding: "1.75rem" }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -254,7 +255,7 @@ export default function InsightsPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                 {[
                   { label: "Graduate Route (applied before Jan 2027)", months: 24, max: 36, color: "#10b981", badge: "24 months", badgeStyle: { background: "#ecfdf5", color: "#065f46" } },
-                  { label: "Graduate Route (applied from Jan 2027)", months: 18, max: 36, color: "#f59e0b", badge: "18 months. shortened", badgeStyle: { background: "#fffbeb", color: "#92400e" }, warn: true },
+                  { label: "Graduate Route (applied from Jan 2027)", months: 18, max: 36, color: "#f59e0b", badge: "18 months, shortened", badgeStyle: { background: "#fffbeb", color: "#92400e" }, warn: true },
                   { label: "PhD Graduate Route", months: 36, max: 36, color: "#1d4ed8", badge: "36 months", badgeStyle: { background: "#eef2ff", color: "#1e3a8a" } },
                 ].map((r) => (
                   <div key={r.label}>
@@ -279,13 +280,13 @@ export default function InsightsPage() {
                   </div>
                 ))}
               </div>
-              <p style={{ margin: "1.25rem 0 0", fontSize: "0.6875rem", color: "var(--color-muted)" }}>Source: Home Office Statement of Changes · UKCISA · House of Commons Library</p>
+              <p style={{ margin: "1.25rem 0 0", fontSize: "0.6875rem", color: "var(--color-muted)" }}>Sources are the Home Office Statement of Changes, UKCISA and the House of Commons Library.</p>
             </div>
 
             {/* Right: insight cards */}
             <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
               <HiddenFact sourceLabel="UKCISA, October 2025" sourceUrl="https://ukcisa.org.uk">
-                Applying before 31 December 2026 locks in your 2-year Graduate Route. Even if you graduate in 2027.
+                Applying before 31 December 2026 locks in your 2-year Graduate Route, even if you graduate in 2027.
               </HiddenFact>
               <div className="surface-card" style={{ padding: "1rem 1.25rem" }}>
                 <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
@@ -306,7 +307,7 @@ export default function InsightsPage() {
         <SectionNum n="02" />
         <SectionHead
           title="What sponsoring you actually costs your employer"
-          subtitle="This is why many SMEs say no even when they want to hire you. Show your employer you already understand."
+          subtitle="This is why many small companies say no even when they want to hire you. Show your employer that you already understand."
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -339,7 +340,7 @@ export default function InsightsPage() {
               </table>
               <div style={{ margin: "1rem 0 0", padding: "1rem", background: "rgba(29, 78, 216,0.06)", borderRadius: 10, border: "1px solid rgba(29, 78, 216,0.15)" }}>
                 <p style={{ margin: 0, fontSize: "0.875rem", fontWeight: 500, color: "var(--color-ink)", lineHeight: 1.6 }}>
-                  A large employer sponsoring you for 3 years pays approximately <span style={{ color: "var(--color-gold)" }}>£6,500 in fees alone</span> before your salary. This is why many SMEs say no even when they want to hire you.
+                  A large employer sponsoring you for 3 years pays approximately <span style={{ color: "var(--color-gold)" }}>£6,500 in fees alone</span> before your salary. This is why many small companies say no even when they want to hire you.
                 </p>
               </div>
               <SourceChip label="getborderless.co.uk · ISC rose 32% on 16 Dec 2025" url="https://getborderless.co.uk" />
@@ -389,22 +390,22 @@ export default function InsightsPage() {
         <SectionNum n="03" />
         <SectionHead
           title="The three salary tests (most students only know one)"
-          subtitle="Your salary must clear all three simultaneously. The Home Office takes the highest as your effective threshold."
+          subtitle="Your salary must clear all three tests at the same time. The Home Office takes the highest one as the amount you actually need."
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ marginBottom: "1rem" }}>
           {[
             {
               label: "Test 1", title: "General minimum", val: "£41,700", valNew: "£33,400", color: "#1d4ed8", bg: "#eef2ff",
-              body: "£41,700 per year for most new applicants from April 2026. Or £33,400 if you qualify as a new entrant. graduated within 2 years, under 26, or switching from a Student visa.",
+              body: "£41,700 a year for most new applicants since 22 July 2025. It is £33,400 if you count as a new entrant, which means you graduated within 2 years, are under 26, or are switching from a Student visa.",
             },
             {
               label: "Test 2", title: "SOC going rate", val: "Varies", color: "#2563eb", bg: "#f5f3ff",
-              body: "Your occupation's specific going rate from Appendix Skilled Occupations. Software Developer: ~£46,000. Data Analyst: ~£34,000. Marketing Manager: ~£44,000.",
+              body: "The going rate for your type of job, taken from the Appendix Skilled Occupations list. For example, it is about £46,000 for a Software Developer, £34,000 for a Data Analyst and £44,000 for a Marketing Manager.",
             },
             {
               label: "Test 3", title: "Hourly floor", val: "£15.88/hr", color: "#0ea5e9", bg: "#f0f9ff",
-              body: "£15.88 per hour minimum regardless of contract type. This applies even if your annual salary clears the other two tests.",
+              body: "You must be paid at least £15.88 an hour whatever type of contract you have. This applies even if your yearly salary clears the other two tests.",
             },
           ].map((t) => (
             <div key={t.label} style={{ border: `1px solid ${t.color}30`, borderRadius: "var(--radius-card)", overflow: "hidden" }}>
@@ -422,7 +423,7 @@ export default function InsightsPage() {
 
         {/* Hidden fact spanning full width */}
         <HiddenFact sourceLabel="ukvisainfo.co.uk" sourceUrl="https://ukvisainfo.co.uk/blog/uk-skilled-worker-visa-salary-threshold-2026">
-          A job paying £42,000 can still fail the visa threshold if the SOC going rate for that role is £46,000. The going rate overrides the general minimum when it is higher. Most students only check the £41,700 figure.
+          A job paying £42,000 can still fail the visa threshold if the going rate for that job is £46,000. The going rate wins over the general minimum when it is higher. Most students only check the £41,700 figure.
         </HiddenFact>
 
         {/* New entrant calculator */}
@@ -440,7 +441,7 @@ export default function InsightsPage() {
             <div>
               <h3 style={{ margin: 0, fontSize: "0.9375rem", fontWeight: 500, color: "var(--color-ink)" }}>New entrant rate checker</h3>
               <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-ink-soft)", maxWidth: "48ch", lineHeight: 1.5 }}>
-                If you qualify, your threshold drops to <strong style={{ fontWeight: 500 }}>£33,400</strong>. Saving £8,300 per year on the general minimum.
+                If you qualify, your threshold drops to <strong style={{ fontWeight: 500 }}>£33,400</strong>, which is £8,300 a year less than the general minimum.
               </p>
             </div>
             <div style={{ background: newEntrant ? "#10b981" : "var(--color-gold)", borderRadius: 12, padding: "0.875rem 1.375rem", textAlign: "center", flexShrink: 0 }}>
@@ -464,7 +465,7 @@ export default function InsightsPage() {
             </div>
           </fieldset>
           <p style={{ margin: "0.875rem 0 0", fontSize: "0.8125rem", fontWeight: 500, color: newEntrant ? "#065f46" : "#92400e" }}>
-            {newEntrant ? "You likely qualify for the new entrant rate of £33,400." : "Standard rate applies: £41,700 or your role's going rate, whichever is higher."}
+            {newEntrant ? "You likely qualify for the new entrant rate of £33,400." : "The standard rate applies, which is £41,700 or your job's going rate, whichever is higher."}
           </p>
         </div>
       </section>
@@ -473,17 +474,17 @@ export default function InsightsPage() {
       <section aria-labelledby="s4" style={{ marginBottom: "3rem", paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }}>
         <SectionNum n="04" />
         <SectionHead
-          title="Licence revocations: the risk no one talks about"
-          subtitle="The number of employers losing their licence is rising sharply. This affects you directly if it happens after you start."
+          title="Licence revocations are a risk no one talks about"
+          subtitle="The number of employers losing their licence is rising sharply. If it happens after you start, it affects you directly."
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           {/* Left: stat trio */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {[
-              { stat: "3,100", label: "Sponsor licences revoked in 2025. The highest since records began in 2012.", sub: "In Q4 2025 alone, more than 1,500 licences were pulled.", source: "relocly.co.uk", url: "https://relocly.co.uk", dot: "#ef4444" },
-              { stat: "8×", label: "The increase in revocations since 2022.", sub: "From 247 in 2022–23 to 1,948 in 2024–25. Approximately eight times the rate of three years ago.", source: "assessnow.co.uk", url: "https://assessnow.co.uk", dot: "#ef4444" },
-              { stat: "60 days", label: "If your employer's licence is revoked after you start, you have 60 days to find a new sponsor.", sub: "No right to appeal. Immediate visa curtailment. All sponsored employment rights lost.", source: "centuroglobal.com", url: "https://centuroglobal.com", dot: "#f59e0b" },
+              { stat: "3,100", label: "Sponsor licences were revoked in 2025, the highest since records began in 2012.", sub: "In Q4 2025 alone, more than 1,500 licences were pulled.", source: "relocly.co.uk", url: "https://relocly.co.uk", dot: "#ef4444" },
+              { stat: "8×", label: "The increase in revocations since 2022.", sub: "The number rose from 247 in 2022 to 23 to 1,948 in 2024 to 25, which is about eight times the rate of three years ago.", source: "assessnow.co.uk", url: "https://assessnow.co.uk", dot: "#ef4444" },
+              { stat: "60 days", label: "If your employer's licence is revoked after you start, you have 60 days to find a new sponsor.", sub: "There is no right to appeal, your visa is cut short straight away, and you lose your right to work for that employer.", source: "centuroglobal.com", url: "https://centuroglobal.com", dot: "#f59e0b" },
             ].map((s) => (
               <div key={s.stat} className="surface-card" style={{ padding: "1.25rem", borderLeft: `3px solid ${s.dot}` }}>
                 <p style={{ margin: 0, fontSize: "clamp(1.5rem,3vw,2rem)", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.04em", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{s.stat}</p>
@@ -497,7 +498,7 @@ export default function InsightsPage() {
           {/* Right: insight cards */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             <HiddenFact sourceLabel="Fragomen / Home Office transparency data" sourceUrl="https://relocly.co.uk">
-              The sectors with the highest revocation rates are adult social care, hospitality, retail, and construction. Common issues: underpayment of staff, facilitating immigration rule circumvention, and failing to provide promised work.
+              The sectors with the highest revocation rates are adult social care, hospitality, retail and construction. Common problems include underpaying staff, helping people get around immigration rules, and not providing the work that was promised.
             </HiddenFact>
             <HiddenFact sourceLabel="relocly.co.uk" sourceUrl="https://relocly.co.uk">
               The Home Office now uses HMRC and Companies House data to identify compliance problems without visiting the company. Problems can be flagged silently before the employer is even aware.
@@ -508,7 +509,7 @@ export default function InsightsPage() {
                 <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "#065f46" }}>This is why licence tenure data matters</p>
               </div>
               <p style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.65, color: "#065f46" }}>
-                Threshold&apos;s <strong style={{ fontWeight: 500 }}>Established</strong> tier = 5+ years continuously on the register. That is not a guarantee, but it is a meaningful signal that the employer has been meeting compliance requirements over time.
+                In Threshold, the <strong style={{ fontWeight: 500 }}>Established</strong> label means the company has been on the register for 5 years or more without a break. That is not a guarantee, but it is a good sign that the employer has been following the rules over time.
               </p>
             </div>
           </div>
@@ -520,7 +521,7 @@ export default function InsightsPage() {
         <SectionNum n="05" />
         <SectionHead
           title="Where the sponsored jobs actually are"
-          subtitle="Sector by sponsorship density, typical salary range, and revocation risk."
+          subtitle="Each sector by how many sponsors it has, what it usually pays, and how risky it is for revocations."
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -535,7 +536,7 @@ export default function InsightsPage() {
                   </div>
                   {s.risk === "high" && (
                     <span style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem", padding: "0.2rem 0.55rem", borderRadius: 999, fontSize: "0.6875rem", fontWeight: 500, background: "#fff5f5", color: "#991b1b", flexShrink: 0 }}>
-                      high revoc. risk
+                      high revocation risk
                     </span>
                   )}
                 </div>
@@ -549,10 +550,10 @@ export default function InsightsPage() {
           {/* Right: hidden fact cards */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
             <HiddenFact sourceLabel="ukvisajobs.com" sourceUrl="https://ukvisajobs.com">
-              Junior tech roles fell approximately 46% and are projected to fall a further 53% in certain segments. Entry-level roles in technology and white-collar fields are being especially affected.
+              Junior tech roles fell by about 46% and are expected to fall a further 53% in some areas. Entry-level roles in technology and office-based fields are being hit especially hard.
             </HiddenFact>
             <HiddenFact sourceLabel="tarve.co.uk" sourceUrl="https://tarve.co.uk">
-              AI and machine learning roles command some of the highest salaries and clear the visa threshold most comfortably. Often £60,000–£100,000+. The government has specifically identified AI as a priority area for international talent attraction.
+              AI and machine learning roles pay some of the highest salaries and clear the visa threshold most easily. Pay is often £60,000 to £100,000 or more. The government has named AI as a priority area for attracting international talent.
             </HiddenFact>
           </div>
         </div>
@@ -561,12 +562,12 @@ export default function InsightsPage() {
         <div style={{ marginTop: "1.25rem", background: "rgba(15,17,23,0.92)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)", borderRadius: "var(--radius-card)", padding: "1.75rem", border: "1px solid rgba(255,255,255,0.08)" }}>
           <p style={{ margin: "0 0 0.75rem", fontSize: "0.6875rem", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.14em", color: "rgba(255,255,255,0.4)" }}>Competition reality</p>
           <p style={{ margin: 0, fontSize: "clamp(1rem,2vw,1.2rem)", fontWeight: 500, color: "#fff", lineHeight: 1.5 }}>
-            Graduate employers received <span style={{ color: "#FFCA6B" }}>23% more applications</span> in the first half of 2025–2026. Graduate recruitment is at its lowest level since 2012.
+            Graduate employers received <span style={{ color: "#FFCA6B" }}>23% more applications</span> in the first half of the 2025 to 2026 year. Graduate recruitment is at its lowest level since 2012.
           </p>
           <p style={{ margin: "0.875rem 0 0", fontSize: "0.875rem", lineHeight: 1.7, color: "rgba(255,255,255,0.65)" }}>
-            The median graduate starting salary among UK leading employers remains £35,000 in 2026. Below the visa threshold for most applicants. In most cases, the challenge is finding employers willing to sponsor visas, not meeting salary thresholds.
+            The median graduate starting salary at the UK's leading employers stays at £35,000 in 2026, which is below the visa threshold for most applicants. In most cases the real challenge is finding employers willing to sponsor visas, not meeting salary thresholds.
           </p>
-          <SourceChip label="High Fliers Research. The Graduate Market in 2026" url="https://highfliers.co.uk" />
+          <SourceChip label="High Fliers Research, The Graduate Market in 2026" url="https://highfliers.co.uk" />
         </div>
       </section>
 
@@ -574,8 +575,8 @@ export default function InsightsPage() {
       <section aria-labelledby="s6" style={{ marginBottom: "3rem", paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }}>
         <SectionNum n="06" />
         <SectionHead
-          title="The SOC code: the number that decides your threshold"
-          subtitle="Most students have never heard of it. Incorrect codes are now a leading cause of visa refusals."
+          title="The SOC code is the number that decides your threshold"
+          subtitle="Most students have never heard of it, and wrong codes are now a leading cause of visa refusals."
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -583,9 +584,9 @@ export default function InsightsPage() {
           <div className="surface-card" style={{ padding: "1.5rem" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               {[
-                { n: 1, head: "Your job title is not your SOC code.", body: "The SOC code is assigned based on actual job duties, not the title at the top of the advert. A Data Analyst and a Business Intelligence Analyst might have different codes with different going rates." },
-                { n: 2, head: "Your SOC code sets your minimum salary.", body: "If the going rate for your SOC code is higher than £41,700, the going rate wins. Software Developers (SOC 2134) have a going rate of approximately £46,000. So the threshold for that role is £46,000, not £41,700." },
-                { n: 3, head: "The wrong SOC code can get your visa refused.", body: "Incorrect codes are now a leading cause of refusals and licence action. Employers must match actual job duties, not job titles, and ensure the salary meets the correct going rate for the chosen code." },
+                { n: 1, head: "Your job title is not your SOC code.", body: "The SOC code is given based on what the job really involves, not the title at the top of the advert. A Data Analyst and a Business Intelligence Analyst might have different codes with different going rates." },
+                { n: 2, head: "Your SOC code sets your minimum salary.", body: "If the going rate for your SOC code is higher than £41,700, the going rate wins. Software Developers (SOC 2134) have a going rate of about £46,000, so the threshold for that role is £46,000 and not £41,700." },
+                { n: 3, head: "The wrong SOC code can get your visa refused.", body: "Wrong codes are now a leading cause of refusals and of action against licences. Employers must match the code to what the job really involves and not to the job title, and they must make sure the salary meets the going rate for that code." },
               ].map((s) => (
                 <div key={s.n} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                   <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--color-gold)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -608,7 +609,7 @@ export default function InsightsPage() {
           {/* Right: lookup table */}
           <div className="surface-card" style={{ padding: 0, overflow: "auto" }}>
             <div style={{ padding: "0.875rem 1rem", borderBottom: "1px solid var(--color-line)", background: "rgba(238,242,255,0.5)" }}>
-              <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "var(--color-ink)" }}>Common roles. going rate vs threshold</p>
+              <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "var(--color-ink)" }}>Common roles, going rate compared with the threshold</p>
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.75rem" }}>
               <thead>
@@ -637,7 +638,7 @@ export default function InsightsPage() {
               </tbody>
             </table>
             <div style={{ padding: "0.75rem 1rem", borderTop: "1px solid var(--color-line)" }}>
-              <SourceChip label="tarve.co.uk. 2026 going rates" url="https://tarve.co.uk/blog/uk-skilled-worker-going-rate-2026" />
+              <SourceChip label="tarve.co.uk, 2026 going rates" url="https://tarve.co.uk/blog/uk-skilled-worker-going-rate-2026" />
             </div>
           </div>
         </div>
@@ -648,7 +649,7 @@ export default function InsightsPage() {
         <SectionNum n="07" />
         <SectionHead
           title="The English language trap"
-          subtitle="A change most students don't know about. With a consequence that affects them directly."
+          subtitle="A change most students do not know about, with a result that affects them directly."
         />
         <div className="surface-card" style={{ padding: "1.75rem" }}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -663,7 +664,7 @@ export default function InsightsPage() {
                 This change applies only to first-time applicants. Those already holding permission can extend without demonstrating the higher proficiency level.
               </p>
               <div style={{ marginTop: "1.25rem", padding: "1rem", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: 10 }}>
-                <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "#065f46" }}>B2 on CEFR = IELTS 5.5–6.0 overall, with no single band below 5.5. Check your current score before assuming you qualify.</p>
+                <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "#065f46" }}>B2 on the CEFR scale is the same as IELTS 5.5 to 6.0 overall, with no single band below 5.5. Check your current score before you assume you qualify.</p>
               </div>
             </div>
 
@@ -735,7 +736,7 @@ export default function InsightsPage() {
                     </div>
                     <p style={{ margin: 0, fontSize: "0.9rem", lineHeight: 1.65, color: "var(--color-ink)" }}>{item.text}</p>
                     <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ display: "inline-block", marginTop: "0.5rem", fontSize: "0.6875rem", color: "var(--color-link)" }}>
-                      Read more. {item.sourceLabel} ↗
+                      Read more at {item.sourceLabel} ↗
                     </a>
                   </div>
                 </div>
@@ -745,12 +746,12 @@ export default function InsightsPage() {
         </div>
       </section>
 
-      {/* ══ S9: Settlement: the long game ════════════════════════════════════*/}
+      {/* ══ S9: Settlement, the long game ════════════════════════════════════*/}
       <section aria-labelledby="s9" style={{ marginBottom: "3rem", paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }}>
         <SectionNum n="09" />
         <SectionHead
-          title="Settlement: the long game"
-          subtitle="What comes after the Skilled Worker visa. And the rules that just changed."
+          title="Settlement is the long game"
+          subtitle="What comes after the Skilled Worker visa, and the rules that just changed."
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
@@ -789,15 +790,15 @@ export default function InsightsPage() {
           {/* Right: hidden facts */}
           <div style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
             <HiddenFact sourceLabel="immigrationbarrister.co.uk" sourceUrl="https://immigrationbarrister.co.uk">
-              The 10-year long residence route. Which let people aggregate time across different visa types. has been abolished. You can no longer count up years from different visas to reach settlement faster.
+              The 10-year long residence route, which let people add up time across different visa types, has been abolished. You can no longer count years from different visas to reach settlement faster.
             </HiddenFact>
             <HiddenFact sourceLabel="immigrationbarrister.co.uk" sourceUrl="https://immigrationbarrister.co.uk">
-              From April 2026, the standard settlement route extends to 10 years for most sponsored workers. Unless you earn above a high-earner threshold that qualifies you for faster settlement.
+              From April 2026, the standard settlement route is 10 years for most sponsored workers, unless you earn above a high-earner threshold that qualifies you for faster settlement.
             </HiddenFact>
             <div style={{ background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.25)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
                 <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#10b981" }} />
-                <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "#065f46" }}>PhD graduates. The immigration case is stronger than ever</p>
+                <p style={{ margin: 0, fontSize: "0.8125rem", fontWeight: 500, color: "#065f46" }}>PhD graduates have a stronger immigration case than ever</p>
               </div>
               <p style={{ margin: 0, fontSize: "0.8125rem", lineHeight: 1.65, color: "#065f46" }}>
                 PhD graduates keep the 3-year Graduate Route and may qualify for the Global Talent visa pathway faster. If you are considering a PhD, the immigration case for it has strengthened significantly.
@@ -832,7 +833,7 @@ export default function InsightsPage() {
                       <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>
                         {lastMatch.score != null ? Math.round(lastMatch.score) : "N/A"}%
                       </strong>
-                      . This measures skill overlap with live ads, not a prediction of hiring outcome. We don&apos;t have confirmed sponsorship-hire data to benchmark against.
+                      . This measures how much your skills overlap with live ads. It does not predict whether you will be hired, because we do not have confirmed sponsorship hiring data to compare against.
                     </p>
                   </li>
                   {topSkills.length > 0 && (
@@ -841,7 +842,7 @@ export default function InsightsPage() {
                         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#1d4ed8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                       </span>
                       <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
-                        <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>{topSkills[0]?.skill}</strong> appears in {topSkills[0]?.share_pct}% of ads in your search. The single highest-priority gap to close.
+                        <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>{topSkills[0]?.skill}</strong> appears in {topSkills[0]?.share_pct}% of ads in your search, so it is the most requested skill to look at first.
                       </p>
                     </li>
                   )}
@@ -850,7 +851,7 @@ export default function InsightsPage() {
                       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden><path d="M2 5h6M5 2l3 3-3 3" stroke="#1d4ed8" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     </span>
                     <p style={{ margin: 0, fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)" }}>
-                      Cross-reference your employer shortlist from that search against the licence revocation data above. especially any sponsors in hospitality, retail, or construction.
+                      Compare your employer shortlist from that search with the licence revocation data above, especially any sponsors in hospitality, retail or construction.
                     </p>
                   </li>
                 </ul>
@@ -863,9 +864,9 @@ export default function InsightsPage() {
               <div style={{ background: "var(--color-paper)", padding: "1.25rem" }}>
                 <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: "0.875rem" }}>
                   {[
-                    "Sponsors in retail, hospitality, and adult social care carry the highest revocation risk in 2025 data. We flag these with a caution indicator in search results.",
-                    "If any salary-stated ads in your search fell below £41,700, those roles cannot legally sponsor you unless you qualify for the new entrant discount above.",
-                    "The 23% application volume surge means response rates are lower than historical data suggests. A strong CV match and verified sponsor are more important than ever.",
+                    "Sponsors in retail, hospitality and adult social care carry the highest revocation risk in the 2025 data. We mark these with a caution sign in search results.",
+                    "If any ad in your search shows a salary below £41,700, that role cannot legally sponsor you unless you qualify for the new entrant rate above.",
+                    "Applications rose by 23%, so employers reply less often than older data suggests. A strong CV match and a verified sponsor matter more than ever.",
                   ].map((text, i) => (
                     <li key={i} style={{ display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                       <span style={{ width: 20, height: 20, borderRadius: "50%", background: "#f5f3ff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
@@ -888,7 +889,7 @@ export default function InsightsPage() {
             </div>
             <p style={{ margin: 0, fontSize: "0.9375rem", fontWeight: 500, color: "var(--color-ink)" }}>Run a search to see personalised insights</p>
             <p style={{ margin: "0.5rem 0 1.5rem", fontSize: "0.875rem", lineHeight: 1.65, color: "var(--color-ink-soft)", maxWidth: "40ch", marginLeft: "auto", marginRight: "auto" }}>
-              Once you search a role, this panel combines your results with the published data above to surface role-specific flags.
+              Once you search a role, this panel puts your results next to the published data above and points out anything that matters for that role.
             </p>
             <a href="/search" className="cta-primary" style={{ display: "inline-flex", alignItems: "center", minHeight: 40, padding: "0 1.25rem", fontSize: "0.9375rem", fontWeight: 500, textDecoration: "none" }}>
               Search a role
@@ -897,7 +898,7 @@ export default function InsightsPage() {
         )}
 
         <p style={{ margin: "1.25rem 0 0", fontSize: "0.75rem", color: "var(--color-muted)", lineHeight: 1.6 }}>
-          Insights generated from your search data, combined with published Home Office and HESA statistics. Not legal advice. Sources: House of Commons Library, UKCISA, High Fliers Research 2026, HESA Graduate Outcomes, DLA Piper, Home Office Statement of Changes, GOV.UK Appendix Skilled Occupations.
+          These insights come from your search data combined with published Home Office and HESA statistics. This is not legal advice. Sources include the House of Commons Library, UKCISA, High Fliers Research 2026, HESA Graduate Outcomes, DLA Piper, the Home Office Statement of Changes and the GOV.UK Appendix Skilled Occupations.
         </p>
       </section>
     </main>

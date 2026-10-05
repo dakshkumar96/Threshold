@@ -8,23 +8,23 @@ export const metadata: Metadata = {
 const STEPS = [
   {
     t: "Pick a realistic target role",
-    d: "Use a title employers actually advertise. Check Insights or run a Threshold search before rewriting your entire CV around a vague ambition.",
+    d: "Use a job title that employers really advertise. Run a Threshold search first and see how many sponsored roles come up. Do this before you rewrite your whole CV around a vague idea of what you want.",
   },
   {
     t: "Separate sponsored leads from noise",
-    d: "Prioritise verified and likely sponsors. Treat possible matches as research leads. Apply where identity evidence is strongest first.",
+    d: "Start with the verified and likely sponsors, because those are the ones we are most sure about. Treat possible matches as leads to look into, and check the company on the official register before you spend time on them.",
   },
   {
-    t: "Close one high-frequency skill gap",
-    d: "From your roadmap, ship one concrete project for the skill that appears most often and is learnable in weeks. Then put it on the CV.",
+    t: "Close one skill gap that comes up a lot",
+    d: "Look at your roadmap and pick the skill that appears in the most ads and can be learned in a few weeks. Build one small real project with it, then add it to your CV with a clear result.",
   },
   {
     t: "Apply with a direct link",
-    d: "Use the Apply button on each card. Tailor three bullets to that JD; do not blast a generic letter to fifty agencies.",
+    d: "Use the Apply button on each card. Change three bullets on your CV so they match that job description. Do not send the same generic letter to fifty agencies.",
   },
   {
-    t: "Track and follow up calmly",
-    d: "Note where you applied. Follow up once if the process allows. Keep searching while you wait. Silence is normal, not a verdict on you.",
+    t: "Track your applications and follow up calmly",
+    d: "Write down where you applied and when. Follow up once if the process allows it, and keep searching while you wait. A quiet inbox is normal and it says nothing bad about you.",
   },
 ];
 
@@ -39,7 +39,7 @@ export default function JobHuntGuidePage() {
           A UK job hunt that respects your visa clock
         </h1>
         <p style={{ margin: "1rem 0 0", maxWidth: "60ch", fontSize: "0.9375rem", lineHeight: 1.6, color: "var(--color-ink-soft)" }}>
-          Pressure is real. This sequence is meant to reduce thrash, not add hustle theatre.
+          The pressure is real. These five steps are meant to stop you wasting time, not to make you work harder.
         </p>
       </div>
 

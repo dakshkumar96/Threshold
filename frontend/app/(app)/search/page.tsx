@@ -30,7 +30,7 @@ const EXPERIENCE_OPTIONS: { value: ExperienceLevel; label: string; hint: string 
   { value: "auto", label: "Match my CV", hint: "Read from your CV" },
   { value: "any", label: "Any level", hint: "No experience filter" },
   { value: "graduate", label: "Graduate / entry", hint: "First roles" },
-  { value: "junior", label: "Junior", hint: "1–2 years" },
+  { value: "junior", label: "Junior", hint: "1-2 years" },
   { value: "mid", label: "Mid-level", hint: "Solid experience" },
   { value: "senior", label: "Senior", hint: "Deep ownership" },
   { value: "lead", label: "Lead / principal", hint: "Team or domain lead" },
@@ -50,6 +50,12 @@ const LOADING_STEPS = [
   "Reading skill requirements",
   "Preparing your CV roadmap",
 ];
+// Seconds after which each step usually starts. The server does not report its
+// progress, so the steps and the bar follow the clock. The bar slows down as
+// time passes and never shows the search as finished until it is.
+const LOADING_STEP_STARTS = [0, 10, 20, 25];
+const LOADING_BAR_MAX = 92;
+const LOADING_BAR_PACE_SECONDS = 40;
 
 const STEP_META = [
   {
@@ -70,7 +76,7 @@ const STEP_META = [
   {
     title: "Add a CV for a match score?",
     description:
-      "Optional. Upload a text-based PDF or TXT to score skills against live demand for this role.",
+      "Optional. Upload a text-based PDF or TXT and we will compare your skills with live demand for this role.",
   },
 ] as const;
 
@@ -107,13 +113,12 @@ function SearchPageInner() {
   const [loadStep, setLoadStep] = useState(0);
   const [loadProgress, setLoadProgress] = useState(0);
   const [loadBarDone, setLoadBarDone] = useState(false);
-  const [loadTransitionMs, setLoadTransitionMs] = useState(4000);
+  const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [entrantOpen, setEntrantOpen] = useState(false);
   const [graduatedRecent, setGraduatedRecent] = useState(false);
   const [under26, setUnder26] = useState(false);
   const [switchingVisa, setSwitchingVisa] = useState(false);
-  const loadTimers = useRef<number[]>([]);
   const entrantHydrated = useRef(false);
 
   const isNewEntrant = graduatedRecent || under26 || switchingVisa;
@@ -159,37 +164,23 @@ function SearchPageInner() {
       setLoadStep(0);
       setLoadProgress(0);
       setLoadBarDone(false);
-      setLoadTransitionMs(4000);
-      loadTimers.current.forEach((id) => window.clearTimeout(id));
-      loadTimers.current = [];
+      setElapsed(0);
       return;
     }
-    const steps = file ? LOADING_STEPS : LOADING_STEPS.slice(0, 3);
-    const id = window.setInterval(() => {
-      setLoadStep((s) => Math.min(s + 1, steps.length - 1));
-    }, 2400);
-
-    setLoadProgress(0);
-    setLoadTransitionMs(4000);
-    const t1 = window.setTimeout(() => {
-      setLoadTransitionMs(4000);
-      setLoadProgress(30);
-    }, 40);
-    const t2 = window.setTimeout(() => {
-      setLoadTransitionMs(3000);
-      setLoadProgress(70);
-    }, 4040);
-    const t3 = window.setTimeout(() => {
-      setLoadTransitionMs(2000);
-      setLoadProgress(95);
-    }, 7040);
-    loadTimers.current = [t1, t2, t3];
-
-    return () => {
-      window.clearInterval(id);
-      loadTimers.current.forEach((tid) => window.clearTimeout(tid));
-      loadTimers.current = [];
+    const stepCount = file ? LOADING_STEPS.length : LOADING_STEPS.length - 1;
+    const started = Date.now();
+    const tick = () => {
+      const seconds = (Date.now() - started) / 1000;
+      setElapsed(Math.floor(seconds));
+      setLoadProgress(
+        Math.round(LOADING_BAR_MAX * (1 - Math.exp(-seconds / LOADING_BAR_PACE_SECONDS))),
+      );
+      const reached = LOADING_STEP_STARTS.slice(0, stepCount).filter((start) => seconds >= start);
+      setLoadStep(reached.length - 1);
     };
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
   }, [loading, file]);
 
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
@@ -247,7 +238,6 @@ function SearchPageInner() {
         experience,
         isNewEntrant,
       );
-      setLoadTransitionMs(50);
       setLoadProgress(100);
       setLoadBarDone(true);
       sessionStorage.setItem("threshold_results", JSON.stringify(data));
@@ -256,8 +246,8 @@ function SearchPageInner() {
       const msg = err instanceof Error ? err.message : "Request failed";
       if (msg.toLowerCase().includes("no jobs") || msg.toLowerCase().includes("404")) {
         setError(`${msg} Try a broader title or switch experience to Any level.`);
-      } else if (msg.toLowerCase().includes("cannot reach")) {
-        setError(`${msg} Start the API, then search again.`);
+      } else if (msg.toLowerCase().includes("could not reach")) {
+        setError(msg);
       } else {
         setError(`${msg} You can adjust the role wording and try again.`);
       }
@@ -305,7 +295,7 @@ function SearchPageInner() {
                   <span
                     style={{
                       width: `${loadProgress}%`,
-                      transition: `width ${loadTransitionMs}ms linear, opacity 0.3s ease`,
+                      transition: `width ${loadBarDone ? 200 : 1000}ms linear, opacity 0.3s ease`,
                     }}
                   />
                 </div>
@@ -324,6 +314,9 @@ function SearchPageInner() {
                     {loadingCopy[loadStep]}…
                   </motion.p>
                 </AnimatePresence>
+                <p className="search-wizard__load-elapsed">
+                  {elapsed} {elapsed === 1 ? "second" : "seconds"} so far
+                </p>
                 <p className="search-wizard__load-note">
                   A full scan can take up to two minutes. You can leave this tab open.
                 </p>
@@ -554,9 +547,9 @@ function SearchPageInner() {
                             />
                           </label>
                           <p className="search-wizard__hint">
-                            Your CV is read in memory, sent to an LLM for the recruiter
-                            assessment, and then deleted. It is not stored on our servers.
-                            Do not upload documents containing sensitive personal data.
+                            Your CV is read once and sent to an AI service that writes
+                            your review. We do not keep a copy on our servers. Please do
+                            not upload documents that contain sensitive personal details.
                           </p>
 
                           <div className="search-wizard__entrant">
@@ -607,8 +600,8 @@ function SearchPageInner() {
                                 </label>
                                 {isNewEntrant ? (
                                   <p className="search-wizard__entrant-chip">
-                                    New entrant rate applies. Your salary threshold is
-                                    £33,400 not £41,700.
+                                    The new entrant rate applies, so your salary
+                                    threshold is £33,400 and not £41,700.
                                   </p>
                                 ) : null}
                               </div>

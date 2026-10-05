@@ -155,6 +155,9 @@ export type AnalyzeResponse = {
     jobs_in_skill_analysis?: number | null;
     jd_excerpts_used?: number | null;
     jobs_context_truncated?: boolean;
+    /** How long the CV is, and how much of it the AI review could read. */
+    cv_chars_total?: number | null;
+    cv_chars_reviewed?: number | null;
     role_family_name?: string | null;
     calibration_band?: string | null;
     label?: string;
@@ -235,8 +238,6 @@ export async function analyzeRole(
   let res: Response;
   try {
     const headers: Record<string, string> = {};
-    const key = process.env.NEXT_PUBLIC_ANALYZE_API_KEY;
-    if (key) headers["X-Analyze-Key"] = key;
     try {
       const clerk = (
         window as unknown as {
@@ -262,7 +263,7 @@ export async function analyzeRole(
       );
     }
     throw new Error(
-      `Cannot reach API at ${API_URL}. Is uvicorn running on port 8000?`,
+      "We could not reach the Threshold server. Check your connection and try again in a minute.",
     );
   } finally {
     clearTimeout(timer);

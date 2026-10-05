@@ -107,6 +107,9 @@ export default function CvFullReview({
     () => (fb?.full_report ? parseFullReport(fb.full_report) : []),
     [fb?.full_report],
   );
+  const cvTotal = fb?.cv_chars_total ?? 0;
+  const cvReviewed = fb?.cv_chars_reviewed ?? 0;
+  const cvWasCut = cvTotal > 0 && cvReviewed > 0 && cvReviewed < cvTotal;
   const liftTo = estimatedMatchLift(data);
   const from = score != null ? Math.round(score) : null;
   const weeks = weeksEstimate(data);
@@ -279,6 +282,14 @@ export default function CvFullReview({
           ) : null}
         </section>
 
+        {cvWasCut ? (
+          <p className="cv-full__cut-note" role="note">
+            Your CV is long, so the written review below is based on its first{" "}
+            {cvReviewed.toLocaleString("en-GB")} of {cvTotal.toLocaleString("en-GB")} characters.
+            Your match score and skill checks used the whole CV.
+          </p>
+        ) : null}
+
         <section className="cv-full__tri">
           <InsightCard
             icon={TrendUp}
@@ -346,7 +357,7 @@ export default function CvFullReview({
                   />
                   <Tooltip
                     formatter={(_, __, p) => [
-                      `Wk ${(p?.payload as { start: number; end: number }).start}–${(p?.payload as { end: number }).end}`,
+                      `Wk ${(p?.payload as { start: number; end: number }).start}-${(p?.payload as { end: number }).end}`,
                       "Window",
                     ]}
                     labelFormatter={(_, p) => (p?.[0]?.payload?.full as string) || ""}
@@ -380,7 +391,7 @@ export default function CvFullReview({
                 <li key={s.skill}>
                   <span className="cv-full__plan-weeks">
                     Wk {s.start}
-                    {s.end > s.start ? `–${s.end}` : ""}
+                    {s.end > s.start ? `-${s.end}` : ""}
                   </span>
                   <span className="cv-full__plan-skill">{s.skill}</span>
                   {s.frequency_pct != null ? (

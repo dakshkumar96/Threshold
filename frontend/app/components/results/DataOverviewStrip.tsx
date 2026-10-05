@@ -50,13 +50,13 @@ function levelNote(data: AnalyzeResponse): string | null {
       : "");
   if (band?.length && data.experience_level_source === "cv") {
     const why = data.experience_level_reason ? ` (${data.experience_level_reason})` : "";
-    return `Showing ${joinLevels(band)} roles, plus roles that don't state a level, to match your CV${why}.${hiddenText}`;
+    return `We are showing ${joinLevels(band)} roles, and roles that do not state a level, to match your CV${why}.${hiddenText}`;
   }
   if (band?.length && data.experience_level_source === "you") {
-    return `Showing ${joinLevels(band)} roles, plus roles that don't state a level, for the ${data.experience_level_used} level you picked.${hiddenText}`;
+    return `We are showing ${joinLevels(band)} roles, and roles that do not state a level, for the ${data.experience_level_used} level you picked.${hiddenText}`;
   }
   if (data.has_cv && data.experience_level_requested === "auto") {
-    return "Couldn't read your experience level from the CV, so all levels are shown. Pick a level on a new search to narrow it.";
+    return "We could not work out your experience level from the CV, so all levels are shown. Pick a level on a new search to narrow the list.";
   }
   return null;
 }
@@ -70,7 +70,7 @@ function newEntrantHint(data: AnalyzeResponse): string | null {
     (s) => s.level_fit === "fits" && s.salary_vs_threshold === "below",
   ).length;
   if (!below) return null;
-  return `${below} role${below === 1 ? "" : "s"} at your level pay${below === 1 ? "s" : ""} under the £41,700 general rate. If you're under 26 or switching from a Student or Graduate visa, the lower £33,400 new-entrant rate applies: turn it on in a new search to include ${below === 1 ? "it" : "them"}.`;
+  return `${below} role${below === 1 ? "" : "s"} at your level pay${below === 1 ? "s" : ""} under the £41,700 general rate. If you are under 26, or switching from a Student or Graduate visa, the lower £33,400 new entrant rate applies. Turn it on in a new search to include ${below === 1 ? "it" : "them"}.`;
 }
 
 function InsightChip({ children }: { children: ReactNode }) {
@@ -132,9 +132,9 @@ export default function DataOverviewStrip({ data }: { data: AnalyzeResponse }) {
 
   const buckets = [
     { label: "<35k", min: 0, max: 35000, mid: 17500 },
-    { label: "35–42k", min: 35000, max: 42000, mid: 38500 },
-    { label: "42–50k", min: 42000, max: 50000, mid: 46000 },
-    { label: "50–65k", min: 50000, max: 65000, mid: 57500 },
+    { label: "35-42k", min: 35000, max: 42000, mid: 38500 },
+    { label: "42-50k", min: 42000, max: 50000, mid: 46000 },
+    { label: "50-65k", min: 50000, max: 65000, mid: 57500 },
     { label: "65k+", min: 65000, max: Infinity, mid: 75000 },
   ].map((b) => ({
     label: b.label,

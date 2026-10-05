@@ -12,34 +12,47 @@ import {
 } from "recharts";
 import insights from "@/data/insights.json";
 
+/**
+ * A number that counts up when it scrolls into view.
+ *
+ * It starts at the real value, so the page shows the right number without
+ * JavaScript, to search engines and before the script loads. It only resets
+ * and counts up when it is still below the screen, and never for visitors who
+ * ask for reduced motion.
+ */
 function CountUp({ to, duration = 2500 }: { to: number; duration?: number }) {
-  const [n, setN] = useState(0);
+  const [n, setN] = useState(to);
   const ref = useRef<HTMLSpanElement>(null);
-  const started = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const box = el.getBoundingClientRect();
+    if (box.top < window.innerHeight && box.bottom > 0) return;
+    setN(0);
+    let frame = 0;
     const io = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting || started.current) return;
-        started.current = true;
+        if (!entry.isIntersecting) return;
+        io.disconnect();
         const t0 = performance.now();
         const tick = (now: number) => {
           const p = Math.min(1, (now - t0) / duration);
-          const eased = 1 - Math.pow(1 - p, 3);
-          setN(Math.round(to * eased));
-          if (p < 1) requestAnimationFrame(tick);
+          setN(Math.round(to * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) frame = requestAnimationFrame(tick);
         };
-        requestAnimationFrame(tick);
+        frame = requestAnimationFrame(tick);
       },
       { threshold: 0.4 },
     );
     io.observe(el);
-    return () => io.disconnect();
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, [to, duration]);
 
-  return <span ref={ref}>{n.toLocaleString()}</span>;
+  return <span ref={ref}>{n.toLocaleString("en-GB")}</span>;
 }
 
 function GlassTip({
@@ -99,10 +112,10 @@ export default function LandingChart() {
             <div className="landing-chart-panel__head">
               <div className="landing-chart-panel__kpi">
                 <strong className="landing-chart-panel__value chart-headline">
-                  <CountUp to={h.sponsors_tracked} />
+                  <CountUp to={h.still_active} />
                 </strong>
                 <span className="landing-chart-panel__desc chart-sublabel">
-                  Sponsor licences checked per search
+                  Licensed sponsors on the latest register
                 </span>
               </div>
               <p className="landing-chart-panel__caption chart-section-label">
@@ -152,8 +165,8 @@ export default function LandingChart() {
         <div className="metric-chip-row landing-numbers__chips">
           {[
             { n: String(h.snapshots), l: "Register snapshots since 2023" },
-            { n: h.still_active.toLocaleString(), l: "Still active at latest snapshot" },
-            { n: "200", l: "Live ads analysed per search" },
+            { n: h.exits_observed.toLocaleString("en-GB"), l: "Sponsors that left the register since 2023" },
+            { n: "200", l: "Live ads read per search, at most" },
             { n: "59%", l: "Name-match precision (100 samples)" },
           ].map((s) => (
             <div key={s.l} className="metric-chip stat-card-dark">

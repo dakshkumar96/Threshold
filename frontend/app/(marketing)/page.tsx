@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { ReactNode } from "react";
 import {
   motion,
@@ -17,6 +17,8 @@ import {
   XCircle,
 } from "@phosphor-icons/react";
 import insights from "@/data/insights.json";
+import { CURRENT_SPONSORS, REGISTER_EDITION, formatCount } from "@/lib/register";
+import Logo from "@/app/components/Logo";
 import HeroDashboard from "@/app/components/landing/HeroDashboard";
 import LandingChart from "@/app/components/landing/LandingChart";
 import IntegrationsHub from "@/app/components/landing/IntegrationsHub";
@@ -57,12 +59,6 @@ function HeroHeadline() {
   );
 }
 
-// Flat design: no more glow-blob orbs behind sections. Kept as a no-op so the
-// many <SectionOrb ... /> call sites don't all need to be hand-removed.
-function SectionOrb(_props: { variant: "blue" | "violet" | "sky"; side: "left" | "right" }) {
-  return null;
-}
-
 const FEATURES = [
   {
     t: "Sponsor check",
@@ -100,37 +96,49 @@ const STEPS = [
 const FAQ_ITEMS = [
   {
     q: "How do you check sponsor licences?",
-    a: "Against the current Home Office register. Verified on the careers page, or name-matched with a confidence score.",
+    a: "We compare every employer in a job ad against the current Home Office register of licensed sponsors. If the company's own careers page shows the same job, we mark it as verified, because then we know the employer is who we think it is. If we can only match the company by its name, we mark it as likely or possible and show how close the match was, so you can decide how much to trust it.",
   },
   {
     q: "What does job analysis cover?",
-    a: "Skills, essential vs desirable language, and salary against the visa threshold. Upload a CV to compare.",
+    a: "For each search we read the job descriptions and count which skills come up most often. We also note when a skill is called essential and when it is only nice to have. Then we compare the salary in the ad with the minimum a sponsored job has to pay. If you add a CV, we show which of those skills you already have and which ones are missing.",
   },
   {
     q: "What's in the roadmap?",
-    a: "Prioritised gaps, weeks to learn, CV rewrites, and which roles to target now.",
+    a: "The roadmap lists the skills you are missing, starting with the ones that will help you most, and gives a rough number of weeks each one takes to learn. It also suggests how to reword weak lines on your CV and which roles to apply for now, and which to leave until you have closed a gap.",
   },
   {
     q: "How is this different from ChatGPT?",
-    a: "Grounded in skill frequencies from your specific search, not generic advice.",
+    a: "A general chatbot gives advice that sounds right but is not based on the jobs you are actually going for. Threshold starts from real, current job ads and the official sponsor register. Every skill percentage and every sponsor label comes from that data, and the AI review of your CV is checked against what your CV really says.",
   },
   {
     q: "What happens to my CV?",
-    a: "Read in memory, used for the assessment, then gone. Not stored or trained on.",
+    a: "Your CV is read once to make your results. The text is sent to the AI service that writes the review, and we do not keep a copy of it afterwards. You can also search without an account and without uploading anything at all. The CV is only needed for your personal score and roadmap.",
   },
   {
-    q: "Is the register current?",
-    a: "Yes, as of 28 July 2026. Refreshed monthly, with 10 snapshots since 2023.",
+    q: "How up to date is the register?",
+    a: `We use the Home Office register from ${REGISTER_EDITION}, which lists ${formatCount(CURRENT_SPONSORS)} licensed sponsors. We update it by hand, so a licence given or taken away after that date will not show yet. We also keep 10 earlier copies going back to 2023. They show how long a company has held its licence, and a company that has held one for years is usually a safer bet than one that was added recently. A company that has dropped off the register is never shown as a sponsor.`,
   },
   {
     q: "Why does salary matter?",
-    a: "Skilled Worker needs £41,700 or the going rate, whichever is higher.",
+    a: "A Skilled Worker visa needs a job that pays at least £41,700 a year or the going rate for that type of job, whichever is higher. If you are under 26, or switching from a Student or Graduate visa, a lower new entrant rate of £33,400 can apply. We flag jobs that pay less than the threshold so you do not spend time on an offer that cannot be sponsored.",
   },
   {
     q: "Do I need to upload a CV?",
-    a: "No. A CV opens the personal gap analysis and roadmap.",
+    a: "No. You can search for a role and see sponsors, salaries and the skills employers ask for without uploading anything. Adding a CV unlocks your personal match score, the list of skills you are missing, the AI review and the roadmap. It also lets us show roles that fit your level, so a graduate is not shown lead or principal jobs.",
+  },
+  {
+    q: "How accurate is the sponsor matching?",
+    a: "Jobs we verify on a company's own careers page are certain. Jobs matched by company name alone were right about 59 times in 100 in our tests, which is why they are labelled likely or possible. Always check the employer yourself before you apply. The full method is written up on our methodology page.",
   },
 ];
+
+const FOOTER_LINKS = [
+  ["/search", "Search"],
+  ["/#solutions", "Solutions"],
+  ["/insights", "Insights"],
+  ["/about", "About"],
+  ["/methodology", "Methodology"],
+] as const;
 
 const NOW_HUNT = [
   "Guess who can sponsor",
@@ -185,7 +193,7 @@ export default function LandingPage() {
           <div className="hero-bento__top">
             <div className="hero-bento__copy" style={{ position: "relative" }}>
               <span className="hero-eyebrow">
-                Home Office sponsor register, updated monthly
+                Home Office sponsor register from {REGISTER_EDITION}
               </span>
               <HeroHeadline />
 
@@ -198,8 +206,9 @@ export default function LandingPage() {
                   color: "rgba(255, 255, 255, 0.64)",
                 }}
               >
-                We check every job ad against 133,979 Home Office sponsor licences,
-                so you only apply where a visa is actually possible.
+                We check every job ad against the {formatCount(CURRENT_SPONSORS)} licensed
+                sponsors on the Home Office register, so you only apply where a visa is
+                actually possible.
               </p>
 
               <div
@@ -267,7 +276,6 @@ export default function LandingPage() {
       <div className="section-divider" />
 
       <section className="section-orb" style={{ padding: "4.5rem 0 2rem" }} aria-labelledby="what-it-does">
-        <SectionOrb variant="blue" side="right" />
         <Reveal className="section-header">
           <h2
             id="what-it-does"
@@ -441,7 +449,6 @@ export default function LandingPage() {
       <div className="section-divider" />
 
       <section className="section-orb" style={{ padding: "3rem 0" }} aria-labelledby="see-working">
-        <SectionOrb variant="violet" side="left" />
         <Reveal className="section-header">
           <h2
             id="see-working"
@@ -570,7 +577,6 @@ export default function LandingPage() {
       <div className="section-divider" />
 
       <section id="how-it-works" className="section-orb" style={{ padding: "2rem 0 3.5rem" }} aria-labelledby="how-heading">
-        <SectionOrb variant="sky" side="right" />
         <div className="how-steps-wrap">
           <Reveal className="how-steps-wrap__intro">
             <h2 id="how-heading" className="how-steps-wrap__title">
@@ -639,7 +645,6 @@ export default function LandingPage() {
       </section>
 
       <section className="section-orb compare-section" style={{ padding: "0 0 4rem" }} aria-labelledby="difference">
-        <SectionOrb variant="violet" side="right" />
         <Reveal className="section-header">
         <h2
           id="difference"
@@ -715,7 +720,7 @@ export default function LandingPage() {
           </h2>
           <p style={{ margin: "0.9rem 0 0" }}>
             <a
-              href="mailto:dakshkumar2k2@gmail.com?subject=My%20Sponsor%20Signal%20story"
+              href="mailto:dakshkumar2k2@gmail.com?subject=My%20Threshold%20story"
               className="cta-primary"
               style={{
                 display: "inline-flex",
@@ -835,216 +840,57 @@ export default function LandingPage() {
       </section>
 
       <footer className="full-bleed site-footer">
-        <div style={{ maxWidth: 1120, margin: "0 auto" }}>
-          {/* Top CTA row: headline left, actions right */}
-          <div
-            className="footer-cta-row"
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "1.5rem",
-              paddingBottom: "2.75rem",
-              borderBottom: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            <div style={{ flex: "1 1 240px", maxWidth: 520 }}>
-              <h2
-                style={{
-                  margin: 0,
-                  fontSize: "clamp(1.5rem, 3vw, 2rem)",
-                  fontWeight: 500,
-                  letterSpacing: "-0.02em",
-                  color: "rgba(255,255,255,0.95)",
-                  lineHeight: 1.2,
-                }}
-              >
-                You&apos;ve read enough. Try a search.
-              </h2>
-              <p
-                style={{
-                  margin: "0.65rem 0 0",
-                  fontSize: "0.9375rem",
-                  color: "rgba(255,255,255,0.65)",
-                  lineHeight: 1.5,
-                }}
-              >
-                No sign-up. Takes 30 seconds. Your CV isn&apos;t stored.
-              </p>
+        <div className="footer-inner">
+          <div className="footer-cta-row">
+            <div className="footer-cta-copy">
+              <h2>You&apos;ve read enough. Try a search.</h2>
+              <p>No sign-up. It takes about 30 seconds. Your CV is not kept after your results.</p>
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "0.75rem",
-                alignItems: "center",
-                flexShrink: 0,
-              }}
-            >
-              <Link
-                href="/search"
-                className="cta-primary"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  minHeight: 44,
-                  padding: "0 1.35rem",
-                  fontWeight: 500,
-                  textDecoration: "none",
-                  borderRadius: 999,
-                }}
-              >
+            <div className="footer-cta-actions">
+              <Link href="/search" className="cta-primary footer-cta-button">
                 Search a role
               </Link>
-              <Link
-                href="/sign-up"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "0.35rem",
-                  minHeight: 44,
-                  padding: "0 1.25rem",
-                  fontWeight: 500,
-                  fontSize: "0.9375rem",
-                  textDecoration: "none",
-                  borderRadius: 999,
-                  background: "rgba(255,255,255,0.12)",
-                  border: "1px solid rgba(255,255,255,0.18)",
-                  color: "rgba(255,255,255,0.9)",
-                }}
-              >
-                Search a role
+              <Link href="/sign-up" className="footer-cta-secondary">
+                Create a free account
                 <span aria-hidden>→</span>
               </Link>
             </div>
           </div>
 
-          {/* Brand left + link columns right */}
-          <div
-            className="footer-nav-row"
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-              gap: "2.5rem",
-              paddingTop: "2.75rem",
-            }}
-          >
-            <div style={{ flex: "1 1 220px", maxWidth: 320 }}>
-              <p
-                style={{
-                  margin: "0 0 0.5rem",
-                  fontSize: "0.95rem",
-                  fontWeight: 500,
-                  color: "rgba(255,255,255,0.9)",
-                }}
-              >
+          <div className="footer-nav-row">
+            <div className="footer-brand">
+              <p className="footer-brand__name">
+                <Logo height={24} tone="light" />
                 Threshold
               </p>
-              <p style={{ margin: 0, fontSize: "0.85rem", color: "rgba(255,255,255,0.55)", lineHeight: 1.55 }}>
+              <p className="footer-brand__tagline">
                 For international students trying to find work in the UK.
               </p>
             </div>
 
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "2.5rem 3.5rem",
-                flex: "2 1 360px",
-                justifyContent: "flex-end",
-              }}
-            >
-              <div>
-                {[
-                  ["/search", "Search"],
-                  ["/#solutions", "Solutions"],
-                  ["/insights", "Insights"],
-                  ["/about", "About"],
-                ].map(([href, label]) => (
-                  <Link
-                    key={label}
-                    href={href}
-                    className="footer-link"
-                    style={{
-                      display: "block",
-                      marginBottom: "0.55rem",
-                      fontSize: "0.875rem",
-                      color: "rgba(255,255,255,0.65)",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-              <div>
-                {[
-                  ["/methodology", "Methodology"],
-                ].map(([href, label]) => (
-                  <Link
-                    key={label}
-                    href={href}
-                    className="footer-link"
-                    style={{
-                      display: "block",
-                      marginBottom: "0.55rem",
-                      fontSize: "0.875rem",
-                      color: "rgba(255,255,255,0.65)",
-                      textDecoration: "none",
-                    }}
-                  >
-                    {label}
-                  </Link>
-                ))}
-              </div>
-              <div>
-                <p
-                  style={{
-                    margin: "0 0 0.55rem",
-                    fontSize: "0.875rem",
-                    fontWeight: 500,
-                    color: "rgba(255,255,255,0.9)",
-                  }}
-                >
-                  Contact
-                </p>
-                <a
-                  href="mailto:dakshkumar2k2@gmail.com"
-                  className="footer-link"
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    color: "rgba(255,255,255,0.65)",
-                    textDecoration: "none",
-                  }}
-                >
-                  dakshkumar2k2@gmail.com
-                </a>
-              </div>
+            <nav className="footer-col" aria-label="Site">
+              {FOOTER_LINKS.map(([href, label]) => (
+                <Link key={label} href={href} className="footer-link">
+                  {label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="footer-col">
+              <p className="footer-col__title">Contact</p>
+              <a href="mailto:dakshkumar2k2@gmail.com" className="footer-link">
+                dakshkumar2k2@gmail.com
+              </a>
             </div>
           </div>
 
-          <div
-            style={{
-              margin: "2.5rem 0 0",
-              paddingTop: "1.25rem",
-              borderTop: "1px solid rgba(255,255,255,0.08)",
-              display: "flex",
-              flexWrap: "wrap",
-              justifyContent: "space-between",
-              gap: "0.75rem 1.5rem",
-            }}
-          >
-            <p style={{ margin: 0, fontSize: "0.8rem", color: "rgba(255,255,255,0.45)" }}>
-              Built by an international student, for international students.
-            </p>
-            <p style={{ margin: 0, display: "flex", gap: "1.25rem", fontSize: "0.8rem" }}>
-              <Link href="/terms" className="footer-link" style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+          <div className="footer-bottom">
+            <p>Built by an international student, for international students.</p>
+            <p className="footer-bottom__links">
+              <Link href="/terms" className="footer-link">
                 Terms
               </Link>
-              <Link href="/privacy" className="footer-link" style={{ color: "rgba(255,255,255,0.45)", textDecoration: "none" }}>
+              <Link href="/privacy" className="footer-link">
                 Privacy
               </Link>
             </p>

@@ -37,8 +37,9 @@ export default function SponsorshipCheckerPage() {
           Is this company on the sponsor register?
         </h1>
         <p style={{ margin: "1rem 0 0", maxWidth: "58ch", fontSize: "0.9375rem", lineHeight: 1.6, color: "var(--color-ink-soft)" }}>
-          Name matching is imperfect. A likely match is not proof they will hire you or
-          assign a CoS. Always confirm on the official register when it matters.
+          Matching by name is not perfect. A likely match does not prove that the company
+          will hire you or give you a Certificate of Sponsorship. When it matters, always
+          confirm on the official register.
         </p>
       </div>
 
@@ -87,15 +88,15 @@ export default function SponsorshipCheckerPage() {
                 {result.match.register_name}
               </p>
               <p style={{ margin: "0.25rem 0 0", fontSize: "0.875rem", color: "var(--color-muted)" }}>
-                Fuzzy {Math.round(result.match.fuzzy_score)} · verdict{" "}
-                {result.match.verdict}
+                Name match score {Math.round(result.match.fuzzy_score)} out of 100.
+                Our check result is {result.match.verdict}.
               </p>
             </>
           ) : (
             <>
               <p style={{ margin: 0, fontSize: "1rem", fontWeight: 500, color: "var(--color-ink)" }}>No confident match</p>
               <p style={{ margin: "0.5rem 0 0", fontSize: "0.875rem", lineHeight: 1.6, color: "var(--color-ink-soft)" }}>
-                {result.note || "Try a fuller legal name."}
+                {result.note || "Try the company's full legal name."}
               </p>
             </>
           )}

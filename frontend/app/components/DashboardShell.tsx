@@ -13,6 +13,7 @@ import { UserButton, useAuth } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 import SiteNav from "@/app/components/SiteNav";
+import Logo from "@/app/components/Logo";
 
 function RouteTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -85,15 +86,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
                 fontSize: "0.9375rem",
               }}
             >
-              <span
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "var(--color-gold)",
-                }}
-                aria-hidden
-              />
+              <Logo height={20} />
               Threshold
             </Link>
           </div>

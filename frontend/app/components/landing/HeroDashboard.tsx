@@ -14,15 +14,15 @@ const STATS = [
     Icon: MagnifyingGlass,
     label: "Job ads scanned",
     value: "200",
-    note: "this search",
+    note: "in one search",
     tone: "blue" as const,
-    badge: { text: "Live", live: true },
+    badge: { text: "Example" },
   },
   {
     Icon: SealCheck,
     label: "Licensed sponsors",
     value: "47",
-    note: "verified",
+    note: "on the register",
     tone: "mint" as const,
     badge: { text: "Verified", Icon: CheckCircle },
   },
@@ -70,13 +70,15 @@ export default function HeroDashboard() {
               <span className="hero-stat-card__note">{s.note}</span>
             </div>
             <span className="hero-stat-card__badge">
-              {s.badge.live ? <span className="hero-stat-card__badge-dot" aria-hidden /> : null}
               {BadgeIcon ? <BadgeIcon size={11} weight="bold" /> : null}
               {s.badge.text}
             </span>
           </motion.div>
         );
       })}
+      <p className="hero-stats__caption">
+        Example numbers from one Data Analyst search. Yours depend on your role and CV.
+      </p>
     </div>
   );
 }

@@ -1,5 +1,8 @@
+import type { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
 import AuthShell, { clerkAuthAppearance } from "@/app/components/AuthShell";
+
+export const metadata: Metadata = { title: "Create account" };
 
 export default function SignUpPage() {
   return (

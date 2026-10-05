@@ -10,6 +10,7 @@ import {
   WarningCircle,
   XCircle,
 } from "@phosphor-icons/react/dist/ssr";
+import { CURRENT_SPONSORS, REGISTER_EDITION, formatCount } from "@/lib/register";
 
 export const metadata: Metadata = {
   title: "About",
@@ -18,8 +19,8 @@ export const metadata: Metadata = {
 };
 
 const STATS = [
-  { value: "133,979", label: "Sponsor licences checked per search", note: "Home Office register, refreshed monthly" },
-  { value: "200", label: "Live UK ads analysed per search", note: "Reed, Adzuna, and mapped ATS boards" },
+  { value: formatCount(CURRENT_SPONSORS), label: "Licensed sponsors checked per search", note: `Home Office register from ${REGISTER_EDITION}` },
+  { value: "200", label: "Live UK ads read per search, at most", note: "Reed, Adzuna, and mapped ATS boards" },
   { value: "59%", label: "Name-match precision", note: "Documented on a 100-sample review" },
   { value: "10", label: "Register snapshots since 2023", note: "Used for licence tenure context" },
 ];
@@ -177,8 +178,9 @@ export default function AboutPage() {
           <p>
             Or it happened earlier. You filtered for &quot;visa sponsorship available&quot; and
             half the results still could not sponsor. You downloaded the Home Office
-            register: more than a hundred thousand companies, alphabetical, almost
-            impossible to search by role. You gave up and started again.
+            register. It lists more than a hundred thousand companies in alphabetical
+            order and is almost impossible to search by role. You gave up and started
+            again.
           </p>
           <p className="about-story__pull">
             I built Threshold because I was that person. I&apos;m on the Graduate
@@ -209,7 +211,7 @@ export default function AboutPage() {
           <h2 id="who-heading">Who it is for</h2>
           <p>
             If you are hunting under visa pressure, you do not need more listings. You
-            need signal: who can sponsor, how sure we are, and what to do next.
+            need a clear answer. Who can sponsor, how sure we are, and what to do next.
           </p>
         </div>
         <div className="about-who-grid">
@@ -346,16 +348,18 @@ export default function AboutPage() {
             <SealCheck size={22} weight="duotone" color="#1d4ed8" aria-hidden />
             <h3>Home Office register</h3>
             <p>
-              The current Skilled Worker sponsor list, refreshed monthly, with historical
-              snapshots used for observed licence tenure bands.
+              The Skilled Worker sponsor list from {REGISTER_EDITION}, with historical
+              snapshots used for observed licence tenure bands. Companies that have
+              left the register are never shown as sponsors.
             </p>
           </article>
           <article className="about-source-card">
             <Student size={22} weight="duotone" color="#1d4ed8" aria-hidden />
             <h3>Your CV, optionally</h3>
             <p>
-              Read in memory for the assessment, then gone. Not stored, not trained on,
-              not shared. Without a CV you still see sponsors and market skills.
+              Read once to make your results. The text goes to the AI service that
+              writes your review, and we do not keep a copy. Without a CV you still
+              see sponsors and market skills.
             </p>
           </article>
         </div>

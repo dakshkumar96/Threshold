@@ -107,12 +107,12 @@ export function readinessLine(data: AnalyzeResponse): string {
     .slice(0, 4)
     .reduce((acc, s) => acc + (s.ease_weeks ?? 3), 0);
   if (data.score >= 70) {
-    return `Strong candidate. ${gaps} skill gap${gaps === 1 ? "" : "s"} between you and the top sponsored roles.`;
+    return `You are a strong candidate. There ${gaps === 1 ? "is" : "are"} ${gaps} skill gap${gaps === 1 ? "" : "s"} between you and the top sponsored roles.`;
   }
   if (data.score >= 40) {
-    return `You're ~${Math.max(weeks, 2)} weeks of learning away from being competitive for this role (estimate).`;
+    return `You are about ${Math.max(weeks, 2)} weeks of learning away from being competitive for this role. This is an estimate.`;
   }
-  return `Not yet competitive for most licensed roles. Start with the highest-ROI gaps below (estimate ~${Math.max(weeks, 4)} weeks).`;
+  return `You are not yet competitive for most licensed roles. Start with the skills that pay off most below. This is an estimate of about ${Math.max(weeks, 4)} weeks.`;
 }
 
 export function weeksEstimate(data: AnalyzeResponse): number | null {
@@ -139,7 +139,7 @@ export function applyVerdict(s: Sponsor): {
     return {
       kind: "skip",
       label:
-        "Skip this one. Stated salary is below the general Skilled Worker threshold (£41,700).",
+        "Skip this one. The salary shown is below the general Skilled Worker threshold of £41,700.",
     };
   }
   const essential = (s.jd_skills || []).filter((j) => j.essential);

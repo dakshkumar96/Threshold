@@ -4,62 +4,62 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Methodology",
   description:
-    "How Threshold finds UK licensed sponsors, how confident each match is, and what the numbers do not mean.",
+    "How Threshold finds UK licensed sponsors, how sure we are about each match, and what the numbers do not mean.",
 };
 
 const PIPELINE = [
   {
     heading: "You name a role",
-    body: "A UK job title is all that is required. A CV is optional. Every result is UK-only; we do not show roles you cannot take on a UK visa.",
+    body: "A UK job title is all we need. A CV is optional. Every result is in the UK, so we do not show roles you could not take on a UK visa.",
   },
   {
     heading: "We pull live ads",
-    body: "Reed and Adzuna are queried for that title, then filtered to UK locations only. A bare \"Remote\" is excluded because it may be anywhere; \"Remote, UK\" is kept.",
+    body: "We search Reed and Adzuna for that title and keep only UK locations. An ad that just says \"Remote\" is left out because it could be anywhere, but \"Remote, UK\" is kept.",
   },
   {
-    heading: "Descriptions are expanded",
-    body: "Reed job IDs are expanded to full descriptions. Adzuna's public API only returns truncated snippets, which limits how many skills we can read from that source.",
+    heading: "We read the full descriptions",
+    body: "For Reed ads we fetch the full job description. Adzuna only gives us a short snippet, so we can read fewer skills from that source.",
   },
   {
     heading: "Employers are matched to the register",
-    body: "Each employer name is fuzzy-matched against the Home Office Skilled Worker register, then re-checked with a symmetric name test so a partial word overlap cannot pass as a match. Recruitment agencies are never treated as confirmed sponsors.",
+    body: "We compare each employer name with the Home Office Skilled Worker register, allowing for small spelling differences. Then we check the match in both directions, so two names that only share one word cannot count as a match. Recruitment agencies are never treated as confirmed sponsors.",
   },
   {
-    heading: "Company job boards are merged in",
-    body: "Where an employer is mapped to a supported applicant tracking system (Greenhouse, Ashby, Workable, Recruitee) we fetch that board and merge those roles in. Employer identity is certain for those rows. Unknown employers are probed in the background after your results are returned, never while you wait.",
+    heading: "Company job boards are added",
+    body: "Some employers publish jobs on a hiring system we can read, such as Greenhouse, Ashby, Workable or Recruitee. When we find one, we fetch that board and add its roles. For those roles we are certain who the employer is. Employers we do not know yet are checked in the background after your results appear, so you never wait for it.",
   },
   {
     heading: "Skills are counted",
-    body: "Skills are counted across every ad we could read in full, primarily Reed full-text descriptions, with Adzuna snippets included where available.",
+    body: "We count skills across every ad we could read in full, mostly Reed descriptions, plus Adzuna snippets where they help. Tools that clearly belong to a skill count for it, so GitHub Actions counts as CI/CD.",
   },
   {
     heading: "Results are ordered",
-    body: "Sponsors are sorted verified first, then by licence tenure band, then by an optional survival score and recency. Tenure bands use observed register tenure in our archive, which is left-truncated, so they describe how long we have seen a licence rather than its true age.",
+    body: "Verified sponsors come first. After that we order by how long the company has held its licence, then by how recent the ad is. The licence length comes from our own archive of past registers, which only goes back to 2023, so it shows how long we have seen a licence and not its true age.",
   },
   {
-    heading: "Your CV is compared, if you upload one",
-    body: "We score your CV against the skill list built from this role's ads and return a match score plus prioritised gaps. A free LLM then writes a recruiter-style review from those aggregates and short skill excerpts. Your CV text may be sent to a third-party LLM provider.",
+    heading: "Your CV is compared if you upload one",
+    body: "We compare your CV with the skills asked for in this role's ads. An AI service then reads your CV like a hiring manager. For each top skill it decides whether you have really shown it in your work, even if you used different words, and it must quote the line from your CV that proves it. We check that the quote is really in your CV. The AI also decides which missing skills would actually stop you getting the role and which are only nice to have. It also works out your level, such as graduate or senior, so you are not shown jobs far above you. Your CV text is sent to the AI service to do this.",
   },
 ];
 
 const CONFIDENCE = [
   {
     tier: "Verified",
-    body: "Fetched directly from the employer's own applicant tracking system. Employer identity is certain.",
+    body: "The role came straight from the employer's own hiring board, so we are certain who the employer is.",
     color: "var(--color-signal)",
     bg: "var(--color-signal-soft)",
     dot: "#10B981",
   },
   {
     tier: "Likely",
-    body: "Aggregator ad whose employer name matches the register at 90% or above and passes the symmetric name check.",
+    body: "The ad came from a job site, and the employer name matches the register at 90% or more and passes our two-way name check.",
     color: "var(--color-gold-dark)",
     bg: "var(--color-gold-pale)",
     dot: "#1e40af",
   },
   {
     tier: "Possible",
-    body: "Name match between 80% and 89%, or an employer that looks like a recruitment agency. Treat as a lead to research, not a fact.",
+    body: "The name matches between 80% and 89%, or the employer looks like a recruitment agency. Treat it as a lead to look into and not as a fact.",
     color: "var(--color-warning)",
     bg: "var(--color-warning-soft)",
     dot: "#c55a0a",
@@ -75,12 +75,12 @@ export default function MethodologyPage() {
           How this works
         </p>
         <h1 style={{ margin: "0.75rem 0 0", fontSize: "clamp(1.7rem,3.5vw,2.4rem)", fontWeight: 500, letterSpacing: "-0.03em", color: "var(--color-ink)", maxWidth: "24ch", lineHeight: 1.15 }}>
-          Methodology, and what the numbers do not mean
+          How it works, and what the numbers do not mean
         </h1>
         <p style={{ margin: "1rem 0 0", maxWidth: "58ch", fontSize: "0.9375rem", lineHeight: 1.6, color: "var(--color-muted)" }}>
-          Threshold shows evidence, not decisions. Nothing here tells you whether a
-          company will sponsor you. It tells you who holds a licence, who is advertising,
-          and how sure we are that the two are the same company.
+          Threshold shows evidence and does not make decisions. Nothing here tells you
+          whether a company will sponsor you. It tells you who holds a licence, who is
+          advertising, and how sure we are that the two are the same company.
         </p>
       </div>
 
@@ -88,11 +88,11 @@ export default function MethodologyPage() {
       <div style={{ marginTop: "2rem", display: "flex", flexWrap: "wrap", gap: "1rem" }}>
         <div style={{ flex: "1 1 160px", background: "var(--color-gold-pale)", border: "1px solid rgba(29, 78, 216,0.25)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
           <p style={{ margin: 0, fontSize: "clamp(1.75rem,3vw,2.25rem)", fontWeight: 500, color: "var(--color-gold-dark)", letterSpacing: "-0.03em", lineHeight: 1 }}>59%</p>
-          <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-gold-dark)", opacity: 0.8 }}>name-match precision, n=100</p>
+          <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-gold-dark)", opacity: 0.8 }}>name matches right, out of 100 checked</p>
         </div>
         <div style={{ flex: "1 1 160px", background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
           <p style={{ margin: 0, fontSize: "clamp(1.75rem,3vw,2.25rem)", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.03em", lineHeight: 1 }}>100%</p>
-          <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-muted)" }}>verified via direct ATS board fetch</p>
+          <p style={{ margin: "0.375rem 0 0", fontSize: "0.8125rem", color: "var(--color-muted)" }}>certain when read from the company's own board</p>
         </div>
         <div style={{ flex: "1 1 160px", background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>
           <p style={{ margin: 0, fontSize: "clamp(1.75rem,3vw,2.25rem)", fontWeight: 500, color: "var(--color-ink)", letterSpacing: "-0.03em", lineHeight: 1 }}>200+</p>
@@ -164,17 +164,20 @@ export default function MethodologyPage() {
           Honest accuracy
         </h2>
         <p style={{ margin: "1rem 0 0", maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.7, color: "var(--color-ink-soft)" }}>
-          For roles fetched from a company&apos;s own applicant tracking system,
-          employer identity is certain. For aggregator-sourced roles it is inferred from
-          the employer name, and on hand-reviewed samples that inference is right about{" "}
-          <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>59% of the time</strong> (n=100; an
-          earlier n=50 sample scored 68%). We show that number rather than hide it,
-          because a name match is not proof.
+          For roles taken from a company&apos;s own hiring board, we are certain who the
+          employer is. For roles from job sites we work it out from the employer name.
+          When we checked 100 of those by hand, the name match was right about{" "}
+          <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>59 times in 100</strong>.
+          An earlier check of 50 scored 68%. We show that number instead of hiding it,
+          because a matching name is not proof.
         </p>
         <p style={{ margin: "1rem 0 0", maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.7, color: "var(--color-ink-soft)" }}>
-          Skill extraction is keyword-based. It reads Reed full text well and Adzuna
-          snippets poorly, so a skill can be under-counted if it only appears deep in a
-          truncated description. Full figures live in{" "}
+          Skills in job ads are found by looking for the skill names and the tools that
+          belong to them. This works well on full Reed descriptions and poorly on short
+          Adzuna snippets, so a skill can be undercounted if it only appears deep in a
+          cut-off description. The AI review of your CV can also be wrong about whether
+          a skill is blocking, and it can give a slightly different answer if you run
+          the same CV twice. Full figures are in our accuracy notes, called{" "}
           <code style={{ borderRadius: 4, border: "1px solid var(--color-line)", background: "var(--color-elevated)", padding: "0.125rem 0.375rem", fontSize: "0.85em" }}>
             ACCURACY.md
           </code>
@@ -188,12 +191,12 @@ export default function MethodologyPage() {
           Where verified coverage is thin
         </h2>
         <p style={{ margin: "1rem 0 0", maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.7, color: "var(--color-ink-soft)" }}>
-          Verified identity only exists where a company publishes roles through a
-          supported applicant tracking system. That is common in technology, fintech,
-          and scale-ups, and rare in healthcare, hospitality, retail, and the public
-          sector, where employers use systems with no public job feed. Roles in those
-          sectors appear with name-matched confidence instead, so a thin verified count
-          in your search may say more about the sector than about the sponsors in it.
+          We can only verify an employer when it publishes roles on a hiring system we
+          can read. That is common in technology, finance and fast-growing companies. It
+          is rare in healthcare, hospitality, retail and the public sector, where
+          employers use systems with no public job feed. Roles in those areas show up
+          with a name match instead. So if your search has few verified roles, that may
+          say more about the sector than about the sponsors in it.
         </p>
       </section>
 

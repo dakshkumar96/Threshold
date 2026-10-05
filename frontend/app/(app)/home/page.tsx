@@ -155,16 +155,16 @@ export default function HomePage() {
         </h1>
         <div style={{ position: "relative", zIndex: 1, marginTop: "0.625rem", display: "flex", flexWrap: "wrap", gap: "1rem", fontSize: "0.875rem", color: "var(--color-muted)" }}>
           <span>
-            Match score:{" "}
+            Match score{" "}
             <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}>
               {score != null ? <AnimatedNumber value={score} format="percentage" /> : "N/A"}
             </strong>
             {lastMatch?.role ? ` for ${lastMatch.role}` : ""}
           </span>
           <span>
-            Saved searches: <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}><AnimatedNumber value={saved.length} /></strong>
+            Saved searches <strong style={{ fontWeight: 500, color: "var(--color-ink)" }}><AnimatedNumber value={saved.length} /></strong>
           </span>
-          <span style={{ color: "var(--color-muted)" }}>Email alerts: not sending yet</span>
+          <span style={{ color: "var(--color-muted)" }}>Email alerts are not switched on yet</span>
         </div>
       </motion.header>
 
@@ -210,12 +210,12 @@ export default function HomePage() {
         </form>
         {saved[0] ? (
           <p style={{ margin: "0.75rem 0 0", fontSize: "0.8125rem", color: "var(--color-muted)" }}>
-            Quick action:{" "}
+            Search again{" "}
             <Link
               href={`/search?role=${encodeURIComponent(saved[0].role)}${saved[0].experience ? `&experience=${saved[0].experience}` : ""}`}
               style={{ fontWeight: 500, color: "var(--color-link)" }}
             >
-              Re-run {saved[0].role}
+              for {saved[0].role}
             </Link>
           </p>
         ) : null}
@@ -235,7 +235,7 @@ export default function HomePage() {
         </h2>
         </HomeReveal>
         {loading ? (
-          <p style={{ color: "var(--color-muted)", fontSize: "0.9375rem" }}>Loading your last searchâ€¦</p>
+          <p style={{ color: "var(--color-muted)", fontSize: "0.9375rem" }}>Loading your last search...</p>
         ) : !lastMatch ? (
           <div className="home-card home-card--welcome" style={{ padding: "2rem", textAlign: "center" }}>
             <div style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--color-gold-pale)", margin: "0 auto 1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -262,7 +262,7 @@ export default function HomePage() {
                 <p style={{ margin: 0, fontSize: "0.8125rem", color: "var(--color-muted)", textAlign: "center" }}>for {lastMatch.role}</p>
               )}
               <Link href="/results" style={{ fontSize: "0.8125rem", fontWeight: 500, color: "var(--color-link)" }}>
-                Open full results Ã¢â€ â€™
+                Open full results →
               </Link>
             </div>
             </HomeReveal>
@@ -283,7 +283,7 @@ export default function HomePage() {
                         <span style={{ fontSize: "0.875rem", color: "var(--color-ink)" }}>
                           {g.skill}
                           {g.frequency_pct != null ? (
-                            <span style={{ color: "var(--color-muted)" }}> Â· {g.frequency_pct}%</span>
+                            <span style={{ color: "var(--color-muted)" }}> · {g.frequency_pct}%</span>
                           ) : null}
                         </span>
                       </li>
@@ -306,7 +306,7 @@ export default function HomePage() {
                       <li key={`${s.company}-${i}`} style={{ fontSize: "0.875rem", color: "var(--color-ink)" }}>
                         <span style={{ fontWeight: 500 }}>{s.company}</span>
                         {s.stability_band ? (
-                          <span style={{ color: "var(--color-muted)" }}> Â· {s.stability_band}</span>
+                          <span style={{ color: "var(--color-muted)" }}> · {s.stability_band}</span>
                         ) : null}
                       </li>
                     ))
@@ -368,7 +368,7 @@ export default function HomePage() {
               of 2023-first-seen sponsors later left the register.
             </p>
             <Link href="/insights" style={{ display: "inline-block", marginTop: "0.625rem", fontSize: "0.8125rem", fontWeight: 500, color: "var(--color-link)" }}>
-              Open insights Ã¢â€ â€™
+              Open insights →
             </Link>
           </li>
           </HomeReveal>

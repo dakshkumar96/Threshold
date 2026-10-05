@@ -197,7 +197,7 @@ export function splitLeadBold(text: string): { lead: string; rest: string } | nu
   if (colon && colon[1].split(/\s+/).length <= 8 && !/put[-\s]?forward/i.test(colon[1])) {
     return { lead: `${colon[1].trim()}:`, rest: colon[2].trim() };
   }
-  const dash = cleaned.match(/^(.{2,40}?)\s+([–—])\s+(.+)$/);
+  const dash = cleaned.match(/^(.{2,40}?)\s+([–—-])\s+(.+)$/);
   if (dash && dash[1].split(/\s+/).length <= 8) {
     return { lead: `${dash[1].trim()} ${dash[2]}`, rest: dash[3].trim() };
   }

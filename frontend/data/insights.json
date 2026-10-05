@@ -5,7 +5,7 @@
     "still_active": 121199,
     "pct_2023_cohort_exited": 12.9,
     "snapshots": 10,
-    "window": "Sep 2023 – Jul 2026"
+    "window": "Sep 2023 to Jul 2026"
   },
   "regions": [
     { "region": "Scotland", "n": 3815, "exit_rate_pct": 8.3 },
@@ -16,8 +16,8 @@
   ],
   "tenure_bands": [
     { "band": "Established", "label": "5+ years observed tenure", "meaning": "Longer observed register history in our archive" },
-    { "band": "Moderate", "label": "2–5 years", "meaning": "Mid-length observed tenure" },
-    { "band": "Newly registered", "label": "<2 years", "meaning": "Shorter observed tenure; left-truncated for older licences" }
+    { "band": "Moderate", "label": "2 to 5 years", "meaning": "Mid-length observed tenure" },
+    { "band": "Newly registered", "label": "<2 years", "meaning": "Shorter observed tenure, which is cut off for older licences" }
   ],
   "caveat": "Stability is a relative ranking signal from our snapshot archive, not a prediction that an employer will hire or keep sponsoring you."
 }

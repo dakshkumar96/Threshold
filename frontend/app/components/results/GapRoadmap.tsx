@@ -269,7 +269,7 @@ function PlanTimeline({
         >
           <span className="skill-strip__wk">
             W{s.start}
-            {s.end! > s.start! ? `–${s.end}` : ""}
+            {s.end! > s.start! ? `-${s.end}` : ""}
           </span>
           <div className="skill-strip__plan-main">
             <div className="skill-strip__plan-top">

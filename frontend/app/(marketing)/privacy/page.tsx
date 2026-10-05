@@ -17,26 +17,26 @@ import {
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description:
-    "What Threshold stores, what it sends to third parties, and what it never keeps, written from the actual code, not boilerplate.",
+    "What Threshold stores, what it sends to other companies, and what it never keeps, written from the real code and not copied from a template.",
 };
 
 const GLANCE = [
   "No CV text or file is ever stored in our database.",
   "Signing in is optional. Searching works without an account.",
-  "One third-party LLM call, only when you upload a CV.",
+  "One call to a third-party AI service, and only when you upload a CV.",
   "No analytics or ad-tracking scripts run in this app.",
 ];
 
 const WE_STORE = [
-  "Saved searches: role, experience level, minimum salary, timestamp",
-  "Preferences: default experience, locations, alert setting, CV filename",
-  "Your last search snapshot: match score, skill gaps, sponsor list, job counts",
-  "Standard server logs: IP address, timestamp, requested path",
+  "Saved searches, which means the role, experience level, minimum salary and the time you searched",
+  "Your preferences, which means your default level, locations, alert setting and CV file name",
+  "A snapshot of your last search, which means your match score, skill gaps, sponsor list and job counts",
+  "Normal server logs, which means your IP address, the time and the page you asked for",
 ];
 
 const WE_NEVER_STORE = [
-  "Your CV file or its extracted text",
-  "Your password. Clerk handles authentication",
+  "Your CV file or the text taken from it",
+  "Your password, because Clerk handles sign-in",
   "Any third-party analytics or advertising identifiers",
   "Your search history beyond the single most recent snapshot",
 ];
@@ -46,57 +46,57 @@ const SECTIONS = [
     Icon: UserCircle,
     heading: "Account data (Clerk)",
     body: [
-      "Sign-in is handled by Clerk, a third-party authentication provider. Clerk stores your email and authentication details under its own privacy policy. We receive a user ID from Clerk and do not see or store your password.",
+      "Sign-in is handled by Clerk, a separate company that specialises in logging people in. Clerk keeps your email and sign-in details under its own privacy policy. We only receive a user ID from Clerk. We never see or store your password.",
     ],
   },
   {
     Icon: Database,
     heading: "What we store, precisely",
     body: [
-      "The summary above covers it. If you are signed in, we store your saved searches, your preferences, and a snapshot of your last search result so /insights and /home can show it back to you. None of that snapshot includes your CV text.",
+      "The lists above cover it. If you are signed in, we keep your saved searches, your preferences and a snapshot of your last search, so the insights and home pages can show them back to you. The snapshot never includes your CV text.",
     ],
   },
   {
     Icon: FileText,
     heading: "CV uploads",
     body: [
-      "When you upload a CV, in PDF or plain text, it is parsed in memory for that single request to extract its text. That text is used to compute a deterministic skill-overlap score on our server and, only if configured, sent to a third-party LLM provider, currently Groq, an OpenAI-compatible API, to generate narrative feedback: strengths, gaps, and a recruiter-style review.",
-      "That LLM call happens only when you upload a CV. The provider processes the text to generate a response and is not used by us for any other purpose. The CV file and extracted text are not written to disk or saved in our database beyond that request.",
+      "When you upload a CV as a PDF or plain text, we read it in memory for that one request and pull out the text. We use the text on our server to work out your skill match score. We also send it to an AI service, currently Groq, which writes the review of your strengths, your gaps and how a recruiter might see your CV.",
+      "That AI call only happens when you upload a CV. The provider uses the text to write its response, and we do not use it for anything else. Your CV file and its text are not saved to disk or to our database once the request is finished.",
     ],
   },
   {
     Icon: Buildings,
     heading: "Job and sponsor data",
     body: [
-      "Job ads come from Reed and Adzuna's public APIs, and from employer applicant-tracking boards such as Greenhouse, Ashby, Workable, and Recruitee, where we have mapped an employer to one. Sponsor licence data comes from the UK Home Office's public Register of Licensed Sponsors. None of this is personal data about you. It is public information about employers and live job listings.",
+      "Job ads come from Reed and Adzuna, and from employer hiring boards such as Greenhouse, Ashby, Workable and Recruitee where we have linked an employer to one. Sponsor licence data comes from the Home Office's public Register of Licensed Sponsors. None of this is personal data about you. It is public information about employers and live job ads.",
     ],
   },
   {
     Icon: Monitor,
     heading: "What's stored in your browser",
     body: [
-      "Your most recent search result is kept in sessionStorage on your device so results survive a page refresh. It clears when you close the tab. A small match-score history, role, score, and date only, is kept in localStorage on your device to draw the trend chart on /insights, and stays until you clear your browser storage.",
+      "Your most recent search result is kept in your browser on your own device so it survives a page refresh. It clears when you close the tab. We also keep a small history of match scores in your browser, with only the role, the score and the date, so we can draw the trend chart on the insights page. That history stays until you clear your browser storage.",
     ],
   },
   {
     Icon: XCircle,
     heading: "What we don't do",
     body: [
-      "No third-party analytics or ad-tracking scripts run in this app. We do not sell data, and we do not use your CV or search history for anything beyond generating the result you asked for.",
+      "No third-party analytics or ad-tracking scripts run in this app. We do not sell data. We do not use your CV or search history for anything except making the result you asked for.",
     ],
   },
   {
     Icon: CloudCheck,
     heading: "Hosting and logs",
     body: [
-      "The app runs on standard hosting infrastructure, currently Vercel for the frontend and a Python host for the API, which generates ordinary server logs, such as IP address, timestamp, and requested path, for operating and securing the service. These are not linked to your account beyond what is needed to debug an issue you report.",
+      "The app runs on normal hosting, currently Vercel for the website and a separate server for the API. These make ordinary logs, such as your IP address, the time and the page you asked for, so the service can run safely. We only link them to your account when we need to look into a problem you report.",
     ],
   },
   {
     Icon: Scales,
     heading: "Your rights",
     body: [
-      "You can request deletion of your saved searches, preferences, and last-match snapshot at any time. Email dakshkumar2k2@gmail.com and we will action it. This is a small, independently run product without a self-service deletion flow yet.",
+      "You can ask us to delete your saved searches, preferences and last search snapshot at any time. Email dakshkumar2k2@gmail.com and we will do it. This is a small product run by one person, so there is no delete button yet.",
     ],
   },
   {
@@ -118,8 +118,8 @@ export default function PrivacyPage() {
             Privacy Policy
           </h1>
           <p style={{ margin: "1rem 0 0", maxWidth: "58ch", fontSize: "0.9375rem", lineHeight: 1.6, color: "var(--color-muted)" }}>
-            Last updated 17 August 2026. This describes what the product
-            actually does, checked against the code that runs it.
+            Last updated 17 August 2026. This explains what the product
+            actually does, and we checked it against the code that runs it.
           </p>
         </div>
         <aside className="about-hero__panel" aria-label="At a glance">

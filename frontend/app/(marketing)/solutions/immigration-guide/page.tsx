@@ -20,11 +20,11 @@ export default function ImmigrationGuidePage() {
           Solutions
         </p>
         <h1 style={{ margin: "0.75rem 0 0", fontSize: "clamp(1.8rem,4vw,2.5rem)", fontWeight: 500, letterSpacing: "-0.03em", color: "var(--color-ink)", maxWidth: "20ch", lineHeight: 1.15 }}>
-          UK immigration routes, without the jargon fog
+          UK visa routes in plain English
         </h1>
         <p style={{ margin: "1rem 0 0", maxWidth: "62ch", fontSize: "0.9375rem", lineHeight: 1.6, color: "var(--color-ink-soft)" }}>
-          This is orientation, not legal advice. Always confirm details on GOV.UK.
-          thresholds and rules change.
+          This is a simple overview and not legal advice. Salary thresholds and rules
+          change often, so always confirm the details on GOV.UK.
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export default function ImmigrationGuidePage() {
       </section>
 
       <section style={{ marginTop: "2.5rem", paddingTop: "2rem", borderTop: "1px solid var(--color-line)" }}>
-        <h2 style={{ margin: 0, fontSize: "1.125rem", fontWeight: 500, color: "var(--color-ink)" }}>Key ideas we explain in-product</h2>
+        <h2 style={{ margin: 0, fontSize: "1.125rem", fontWeight: 500, color: "var(--color-ink)" }}>Key ideas we explain inside the product</h2>
         <ul style={{ listStyle: "none", margin: "1.25rem 0 0", padding: 0, display: "flex", flexDirection: "column", gap: "0.75rem" }}>
           {tips.map((t) => (
             <li key={t.label} style={{ background: "var(--color-paper)", border: "1px solid var(--color-line)", borderRadius: "var(--radius-card)", padding: "1.25rem" }}>

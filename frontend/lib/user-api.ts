@@ -159,14 +159,17 @@ export function useUserApi() {
     return lastMatchFromSession();
   }, [apiFetch]);
 
+  /** Save the latest result to the account. True only when the server stored it. */
   const putLastMatch = useCallback(
-    async (body: LastMatch): Promise<void> => {
-      await apiFetch("/me/last-match", {
+    async (body: LastMatch): Promise<boolean> => {
+      if (!isSignedIn) return false;
+      const res = await apiFetch("/me/last-match", {
         method: "PUT",
         body: JSON.stringify(body),
       });
+      return res.ok;
     },
-    [apiFetch],
+    [apiFetch, isSignedIn],
   );
 
   return useMemo(
