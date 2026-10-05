@@ -1,0 +1,7 @@
+# The notebooks and the offline survival analysis (src/run_survival.py).
+# The API does not need any of this.
+-r requirements.txt
+
+jupyter==1.1.1
+matplotlib==3.11.1
+lifelines==0.30.3

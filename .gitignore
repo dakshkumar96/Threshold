@@ -19,6 +19,9 @@ ats-scrapers/
 logs/
 skills-lock.json
 
+# Private security notes. They describe open problems, so they must never be committed.
+AUDIT.md
+
 # Local AI / editor skill packs (not product code)
 .agents/
 .claude/
