@@ -2,8 +2,8 @@
 # Threshold API: set up a fresh Ubuntu server (Oracle Cloud or similar).
 #
 # Run it from inside the cloned repo:
-#   git clone https://github.com/dakshkumar96/uk-sponsor-analysis.git
-#   cd uk-sponsor-analysis
+#   git clone https://github.com/dakshkumar96/Threshold.git
+#   cd Threshold
 #   chmod +x deploy/setup.sh
 #   ./deploy/setup.sh
 #

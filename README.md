@@ -1,6 +1,6 @@
 # Threshold
 
-[![CI](https://github.com/dakshkumar96/uk-sponsor-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/dakshkumar96/uk-sponsor-analysis/actions/workflows/ci.yml)
+[![CI](https://github.com/dakshkumar96/Threshold/actions/workflows/ci.yml/badge.svg)](https://github.com/dakshkumar96/Threshold/actions/workflows/ci.yml)
 
 Threshold helps international students in the UK find jobs that can actually sponsor a Skilled Worker visa.
 
