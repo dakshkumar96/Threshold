@@ -242,15 +242,15 @@ def filter_jobs_by_experience(
     if match_count >= min_matches or not fallback_to_all:
         out = kept.drop(columns=["_exp_level"]).reset_index(drop=True)
         note = (
-            f"{context} shows {band_text} ads plus ads with no stated level"
-            + (f"; {hidden} ads outside that range hidden." if hidden else ".")
+            f"{context} shows {band_text} ads and ads with no stated level."
+            + (f" {hidden} ads outside that range are hidden." if hidden else "")
         )
         return out, True, match_count, note
 
     out = df.drop(columns=["_exp_level"]).reset_index(drop=True)
     note = (
-        f"Only {match_count} ads fit the {requested} level "
-        f"(need {min_matches}); {context.lower()} uses all {len(out)} ads instead."
+        f"Only {match_count} ads fit the {requested} level, and we need {min_matches}. "
+        f"The {context.lower()} uses all {len(out)} ads instead."
     )
     return out, False, match_count, note
 
@@ -424,12 +424,12 @@ def infer_cv_level(cv_text: str, *, today: date | None = None) -> dict[str, Any]
     if not professional:
         if study_end is None and not other_work and not studying_or_recent:
             return None
-        parts = ["No full-time paid roles yet"]
+        parts = ["no full-time paid roles yet"]
         if other_work:
-            parts.append("internships, part-time or volunteer work only")
+            parts.append("only internships, part-time or volunteer work")
         if studying_or_recent:
-            parts.append("current or recent degree")
-        return {"level": "graduate", "years": 0.0, "reason": "; ".join(parts)}
+            parts.append("a current or recent degree")
+        return {"level": "graduate", "years": 0.0, "reason": ", ".join(parts)}
 
     if years < 1:
         by_years: ExperienceLevel = "graduate"
@@ -446,20 +446,20 @@ def infer_cv_level(cv_text: str, *, today: date | None = None) -> dict[str, Any]
     level: ExperienceLevel = by_years
     title_note = ""
     if _TITLE_LEAD.search(latest_ctx) and years >= 3:
-        level, title_note = "lead", "latest title is a lead role"
+        level, title_note = "lead", "your latest job title is a lead role"
     elif _TITLE_SENIOR.search(latest_ctx) and years >= 2:
-        level, title_note = "senior", "latest title is senior"
+        level, title_note = "senior", "your latest job title is senior"
     elif _TITLE_GRAD.search(latest_ctx) and years < 3:
-        level, title_note = "graduate", "latest title is a graduate role"
+        level, title_note = "graduate", "your latest job title is a graduate role"
     elif _TITLE_JUNIOR.search(latest_ctx) and years < 5:
-        level, title_note = "junior", "latest title is junior"
+        level, title_note = "junior", "your latest job title is junior"
 
     whole = round(years)
     reason = (
-        "Under a year in paid roles"
+        "under a year in paid roles"
         if years < 1
-        else f"About {whole} year{'s' if whole != 1 else ''} in paid roles"
+        else f"about {whole} year{'s' if whole != 1 else ''} in paid roles"
     )
     if title_note:
-        reason += f"; {title_note}"
+        reason += f", and {title_note}"
     return {"level": level, "years": years, "reason": reason}

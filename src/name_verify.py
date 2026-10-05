@@ -8,15 +8,9 @@ not in the register name, or vice versa, it signals a wrong match.
 
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-
 from rapidfuzz import fuzz
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-
-from clean_names import clean_company_name  # noqa: E402
+from clean_names import clean_company_name
 
 _STOPWORDS = {
     "the", "and", "of", "for", "group", "holdings", "international", "global",

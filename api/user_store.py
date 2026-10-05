@@ -4,18 +4,19 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from contextlib import AbstractContextManager
 from pathlib import Path
 from typing import Any
+
+from .db import connect
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "user_data.db"
 
 
-def _connect() -> sqlite3.Connection:
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(DB_PATH))
-    conn.row_factory = sqlite3.Row
-    return conn
+def _connect() -> AbstractContextManager[sqlite3.Connection]:
+    # DB_PATH is read on every call so a test can point it at a temporary file.
+    return connect(DB_PATH, row_factory=sqlite3.Row)
 
 
 def init_db() -> None:
@@ -85,7 +86,6 @@ def add_saved_search(
             "VALUES (?, ?, ?, ?)",
             (user_id, role.strip(), experience, min_salary),
         )
-        conn.commit()
         row = conn.execute(
             "SELECT id, role, experience, min_salary, created_at FROM saved_searches "
             "WHERE id = ?",
@@ -100,7 +100,6 @@ def delete_saved_search(user_id: str, search_id: int) -> bool:
             "DELETE FROM saved_searches WHERE id = ? AND user_id = ?",
             (search_id, user_id),
         )
-        conn.commit()
         return cur.rowcount > 0
 
 
@@ -154,7 +153,6 @@ def upsert_preferences(user_id: str, data: dict[str, Any]) -> dict[str, Any]:
             """,
             (user_id, experience, locations, email_alerts, cv_filename, is_new_entrant),
         )
-        conn.commit()
     return get_preferences(user_id)
 
 
@@ -202,5 +200,4 @@ def put_last_match(user_id: str, body: dict[str, Any]) -> dict[str, Any]:
             """,
             (user_id, role, score, json.dumps(payload)),
         )
-        conn.commit()
     return get_last_match(user_id) or {}

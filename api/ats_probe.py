@@ -2,11 +2,16 @@
 
 from __future__ import annotations
 
+import logging
 import re
 from html import unescape
 from typing import Any
 
 import requests
+
+from http_errors import describe
+
+logger = logging.getLogger(__name__)
 
 TIMEOUT = 8
 UA = "Threshold/1.0 (+https://threshold.local)"
@@ -206,21 +211,24 @@ FETCHERS = {
 
 
 def fetch_board(ats: str, token: str) -> dict[str, Any] | None:
-    """Fetch a known board. Returns normalised dict or None if dead."""
+    """A known board as a normalised dict, or None if it is dead."""
     fn = FETCHERS.get(ats)
     if not fn:
         return None
     try:
         return fn(token)
-    except Exception:
+    except requests.RequestException as exc:
+        logger.warning("%s board %r could not be reached (%s)", ats, token, describe(exc))
+        return None
+    except Exception as exc:  # a reply that is not the expected JSON means no board there
+        logger.debug("%s board %r gave an unreadable reply: %r", ats, token, exc)
         return None
 
 
 def probe(company_name: str) -> tuple[str, str, str, list[dict]] | None:
-    """
-    Try to find an ATS board for this company.
-    Returns (ats, token, published_name, jobs) or None.
-    Exits on first hit.
+    """Look for an ATS board for this company.
+
+    Returns (ats, token, published_name, jobs) for the first board found, or None.
     """
     for token in slug_variants(company_name):
         for ats in PROVIDERS:

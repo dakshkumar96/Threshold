@@ -1,118 +1,43 @@
-"""Clerk-authenticated user profile routes and sponsor-check."""
+"""Signed-in routes (saved searches, preferences, last result) and the public sponsor check."""
 
 from __future__ import annotations
 
-import os
-import sys
-from pathlib import Path
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from pydantic import BaseModel, Field
 from rapidfuzz import fuzz, process
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+from clean_names import clean_company_name
+from match_sponsors import (
+    SOURCE_PLATFORM_NAMES,
+    last_seen_on_register,
+    latest_register_date,
+    load_sponsor_keys,
+    on_latest_register,
+)
+from name_verify import verify_identity
 
-from clean_names import clean_company_name  # noqa: E402
-from match_sponsors import SOURCE_PLATFORM_NAMES, load_sponsor_keys  # noqa: E402
-from name_verify import verify_identity  # noqa: E402
-
-from . import user_store  # noqa: E402
+from . import user_store
+from .auth import verify_clerk_jwt
+from .security import check_account_rate, check_sponsor_check_rate
 
 router = APIRouter(tags=["user"])
 
-
-def _clerk_issuer() -> str | None:
-    explicit = (os.getenv("CLERK_ISSUER") or "").strip().rstrip("/")
-    return explicit or None
+# A "review" match is only shown, as "possible", when the name score is at least this.
+_POSSIBLE_MIN_SCORE = 85
 
 
-def _jwks_url() -> str | None:
-    url = (os.getenv("CLERK_JWKS_URL") or "").strip()
-    if url:
-        return url
-    issuer = _clerk_issuer()
-    if issuer:
-        return f"{issuer}/.well-known/jwks.json"
-    return None
-
-
-def _issuer_from_token(token: str) -> str | None:
-    try:
-        import jwt
-    except ImportError:
-        return None
-    try:
-        claims = jwt.decode(
-            token,
-            options={
-                "verify_signature": False,
-                "verify_aud": False,
-                "verify_exp": False,
-            },
-        )
-    except Exception:
-        return None
-    iss = claims.get("iss")
-    return iss.rstrip("/") if isinstance(iss, str) and iss else None
-
-
-def _verify_clerk_jwt(token: str) -> dict[str, Any]:
-    jwks_url = _jwks_url()
-    issuer = _clerk_issuer()
-
-    if not jwks_url:
-        token_issuer = _issuer_from_token(token)
-        if token_issuer:
-            issuer = issuer or token_issuer
-            jwks_url = f"{token_issuer}/.well-known/jwks.json"
-
-    if jwks_url:
-        try:
-            import jwt
-            from jwt import PyJWKClient
-        except ImportError as exc:
-            raise HTTPException(
-                status_code=500,
-                detail="PyJWT is required for Clerk JWT verification. pip install PyJWT",
-            ) from exc
-
-        try:
-            jwks_client = PyJWKClient(jwks_url)
-            signing_key = jwks_client.get_signing_key_from_jwt(token)
-            decode_kwargs: dict[str, Any] = {
-                "algorithms": ["RS256"],
-                "options": {"verify_aud": False},
-            }
-            if issuer:
-                decode_kwargs["issuer"] = issuer
-            return jwt.decode(token, signing_key.key, **decode_kwargs)
-        except Exception as exc:
-            raise HTTPException(status_code=401, detail=f"Invalid token: {exc}") from exc
-
-    if (os.getenv("CLERK_DEV_BYPASS") or "").strip() == "1":
-        if token.startswith("user_"):
-            return {"sub": token}
-        raise HTTPException(status_code=401, detail="Dev bypass expects Bearer user_…")
-
-    raise HTTPException(
-        status_code=503,
-        detail="Clerk auth is not configured. Set CLERK_JWKS_URL and CLERK_ISSUER on the API.",
-    )
-
-
-async def require_user(
-    authorization: str | None = Header(default=None),
-) -> str:
+def require_user(request: Request, authorization: str | None = Header(default=None)) -> str:
+    """The signed-in user's id, taken from the Bearer token."""
+    check_account_rate(request)
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(status_code=401, detail="Missing Bearer token")
-    token = authorization.split(" ", 1)[1].strip()
-    claims = _verify_clerk_jwt(token)
-    sub = claims.get("sub")
-    if not sub or not isinstance(sub, str):
+    claims = verify_clerk_jwt(authorization.split(" ", 1)[1].strip())
+    subject = claims.get("sub")
+    if not subject or not isinstance(subject, str):
         raise HTTPException(status_code=401, detail="Token missing subject")
-    return sub
+    return subject
 
 
 class SavedSearchIn(BaseModel):
@@ -147,18 +72,13 @@ def get_saved(user_id: str = Depends(require_user)) -> dict[str, Any]:
 
 
 @router.post("/me/saved-searches")
-def create_saved(
-    body: SavedSearchIn, user_id: str = Depends(require_user)
-) -> dict[str, Any]:
-    return user_store.add_saved_search(
-        user_id, body.role, body.experience, body.min_salary
-    )
+def create_saved(body: SavedSearchIn, user_id: str = Depends(require_user)) -> dict[str, Any]:
+    return user_store.add_saved_search(user_id, body.role, body.experience, body.min_salary)
 
 
 @router.delete("/me/saved-searches/{search_id}")
 def remove_saved(search_id: int, user_id: str = Depends(require_user)) -> dict[str, str]:
-    ok = user_store.delete_saved_search(user_id, search_id)
-    if not ok:
+    if not user_store.delete_saved_search(user_id, search_id):
         raise HTTPException(status_code=404, detail="Saved search not found")
     return {"status": "deleted"}
 
@@ -169,28 +89,53 @@ def preferences_get(user_id: str = Depends(require_user)) -> dict[str, Any]:
 
 
 @router.put("/me/preferences")
-def preferences_put(
-    body: PreferencesIn, user_id: str = Depends(require_user)
-) -> dict[str, Any]:
+def preferences_put(body: PreferencesIn, user_id: str = Depends(require_user)) -> dict[str, Any]:
     return user_store.upsert_preferences(user_id, body.model_dump(exclude_none=True))
 
 
 @router.get("/me/last-match")
 def last_match_get(user_id: str = Depends(require_user)) -> dict[str, Any]:
-    data = user_store.get_last_match(user_id)
-    return data or {}
+    return user_store.get_last_match(user_id) or {}
 
 
 @router.put("/me/last-match")
-def last_match_put(
-    body: LastMatchIn, user_id: str = Depends(require_user)
-) -> dict[str, Any]:
+def last_match_put(body: LastMatchIn, user_id: str = Depends(require_user)) -> dict[str, Any]:
     return user_store.put_last_match(user_id, body.model_dump())
 
 
+def _register_candidate(
+    register_name: str, company_key: str, fuzzy: float, verify: float, confidence: str, verdict: str
+) -> dict[str, Any]:
+    return {
+        "register_name": register_name,
+        "company_key": company_key,
+        "fuzzy_score": float(fuzzy),
+        "verify_score": float(verify),
+        "confidence": confidence,
+        "verdict": verdict,
+    }
+
+
+def _day(value: Any) -> str:
+    return f"{value.day} {value:%B %Y}"
+
+
+def _left_register_note(register_name: str, company_key: str) -> str:
+    last_seen = last_seen_on_register(company_key)
+    latest = latest_register_date()
+    if last_seen is None or latest is None:
+        return f"{register_name} is not on the latest sponsor register."
+    return (
+        f"{register_name} was on the sponsor register until {_day(last_seen)}, but it is not "
+        f"on the latest one from {_day(latest)}. It may have lost or given up its licence, "
+        "or it may be listed under a new name."
+    )
+
+
 @router.get("/sponsor-check")
-def sponsor_check(q: str) -> dict[str, Any]:
+def sponsor_check(q: str, request: Request) -> dict[str, Any]:
     """Public register lookup for the Sponsorship Checker tool."""
+    check_sponsor_check_rate(request)
     query = (q or "").strip()
     if len(query) < 2:
         raise HTTPException(status_code=400, detail="Enter at least 2 characters.")
@@ -210,30 +155,39 @@ def sponsor_check(q: str) -> dict[str, Any]:
     if not hits:
         return {"query": query, "match": None, "note": "No register candidates."}
 
+    # The first candidate that passes the identity check wins. Failing that,
+    # the first "review" candidate with a strong enough name score is offered
+    # as a possible match. Only companies on the latest register count. One
+    # that only appears on an older snapshot is reported as such instead.
     best: dict[str, Any] | None = None
-    for cand_key, score, _idx in hits:
-        register_name = key_to_display.get(cand_key, cand_key)
-        verdict, vscore = verify_identity(register_name, query)
+    former: tuple[str, str] | None = None  # (register name, key) of a match that left the register
+    for candidate_key, score, _index in hits:
+        register_name = key_to_display.get(candidate_key, candidate_key)
+        verdict, verify_score = verify_identity(register_name, query)
+        strong_enough = verdict == "pass" or (verdict == "review" and float(score) >= _POSSIBLE_MIN_SCORE)
+        if not on_latest_register(candidate_key):
+            if former is None and strong_enough:
+                former = (register_name, candidate_key)
+            continue
         if verdict == "pass":
-            best = {
-                "register_name": register_name,
-                "company_key": cand_key,
-                "fuzzy_score": float(score),
-                "verify_score": float(vscore),
-                "confidence": "likely",
-                "verdict": verdict,
-            }
+            best = _register_candidate(
+                register_name, candidate_key, score, verify_score, "likely", verdict
+            )
             break
-        if best is None and verdict == "review" and float(score) >= 85:
-            best = {
-                "register_name": register_name,
-                "company_key": cand_key,
-                "fuzzy_score": float(score),
-                "verify_score": float(vscore),
-                "confidence": "possible",
-                "verdict": verdict,
-            }
+        if best is None and strong_enough:
+            best = _register_candidate(
+                register_name, candidate_key, score, verify_score, "possible", verdict
+            )
 
+    if not best and former:
+        return {
+            "query": query,
+            "match": None,
+            "note": _left_register_note(*former),
+            "candidates": [
+                {"company_key": k, "fuzzy_score": float(s)} for k, s, _ in hits[:3]
+            ],
+        }
     if not best:
         return {
             "query": query,

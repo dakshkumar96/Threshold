@@ -6,7 +6,16 @@ import unicodedata
 from pathlib import Path
 
 
-def _extract(data: bytes) -> str:
+class CvTooLongError(ValueError):
+    """The PDF has more pages than we read."""
+
+    def __init__(self, pages: int, limit: int) -> None:
+        super().__init__(f"{pages} pages, limit {limit}")
+        self.pages = pages
+        self.limit = limit
+
+
+def _extract(data: bytes, max_pages: int | None = None) -> str:
     try:
         import pymupdf
     except ImportError:
@@ -24,6 +33,8 @@ def _extract(data: bytes) -> str:
     # extracts correctly with PyMuPDF.
     chunks: list[str] = []
     with pymupdf.open(stream=data, filetype="pdf") as doc:
+        if max_pages is not None and doc.page_count > max_pages:
+            raise CvTooLongError(doc.page_count, max_pages)
         for page in doc:
             t = page.get_text("text") or ""
             if t.strip():
@@ -41,11 +52,14 @@ def extract_text_from_pdf(path: str | Path) -> str:
     return _extract(Path(path).read_bytes())
 
 
-def extract_text_from_bytes(data: bytes, filename: str = "cv.pdf") -> str:
-    """Parse uploaded file bytes. PDF via PyMuPDF; .txt as utf-8."""
+def extract_text_from_bytes(data: bytes, filename: str = "cv.pdf", max_pages: int | None = None) -> str:
+    """Parse uploaded file bytes. PDF via PyMuPDF; .txt as utf-8.
+
+    A PDF with more than `max_pages` pages raises CvTooLongError before any page is read.
+    """
     name = filename.lower()
     if name.endswith(".txt"):
         return data.decode("utf-8", errors="ignore").strip()
     if name.endswith(".pdf") or data[:4] == b"%PDF":
-        return _extract(data)
+        return _extract(data, max_pages)
     return data.decode("utf-8", errors="ignore").strip()

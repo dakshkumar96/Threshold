@@ -19,12 +19,12 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "src"))
 
+import pandas as pd  # noqa: E402
+
 from api import ats_probe, ats_store  # noqa: E402
 from api.uk_location import board_has_uk_jobs  # noqa: E402
 from clean_names import clean_company_name  # noqa: E402
 from name_verify import verify_identity  # noqa: E402
-
-import pandas as pd  # noqa: E402
 
 SUMMARY_PATH = ROOT / "data" / "processed" / "sponsor_company_summary.parquet"
 CSV_DIR = ROOT / "ats-scrapers" / "ats-companies"

@@ -18,11 +18,9 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from cv_feedback import generate_cv_feedback  # noqa: E402
-from job_schema import load_env  # noqa: E402
 
 
 def main() -> int:
-    load_env()
     # Realistic-length CV (not the tiny stub that used to hide 413s).
     cv = (
         "Jane Doe\nData Analyst, London\n"

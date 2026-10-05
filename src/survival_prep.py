@@ -53,7 +53,7 @@ def first_seen_covariates(panel: pd.DataFrame) -> pd.DataFrame:
     first = ordered.groupby("company_key", as_index=False).first()
     first["rating"] = first["Type & Rating"].map(parse_rating)
     first["region"] = [
-        parse_region(t, c) for t, c in zip(first["Town/City"], first["County"])
+        parse_region(t, c) for t, c in zip(first["Town/City"], first["County"], strict=True)
     ]
     return first[["company_key", "rating", "region", "Organisation Name", "Town/City"]]
 

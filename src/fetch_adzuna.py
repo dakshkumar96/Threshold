@@ -3,26 +3,27 @@
 from __future__ import annotations
 
 import html
-import os
+import logging
 import re
 import sys
-from pathlib import Path
 
 import pandas as pd
-import requests
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-
+import settings
 from clean_names import clean_company_name
-from job_schema import load_env, utc_now_iso
+from http_errors import get_json
+from job_schema import utc_now_iso
+from settings import MissingSettingError
+
+logger = logging.getLogger(__name__)
 
 ADZUNA_SEARCH_URL = "https://api.adzuna.com/v1/api/jobs/gb/search/{page}"
 PAGE_SIZE = 50
+SEARCH_TIMEOUT_SECONDS = 60
 
 
 def _clean_adzuna_description(raw: str) -> str:
-    """Adzuna search snippets are HTML-escaped / truncated (~500 chars)."""
+    """Adzuna search snippets are HTML-escaped and cut off at about 500 characters."""
     text = html.unescape(raw or "")
     text = re.sub(r"<[^>]+>", " ", text)
     text = re.sub(r"&[a-z]+;", " ", text)
@@ -31,11 +32,9 @@ def _clean_adzuna_description(raw: str) -> str:
 
 def fetch_adzuna_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
     """Search Adzuna GB for `role` and return a normalised jobs dataframe."""
-    load_env()
-    app_id = os.getenv("ADZUNA_APP_ID", "").strip()
-    app_key = os.getenv("ADZUNA_APP_KEY", "").strip()
+    app_id, app_key = settings.adzuna_credentials()
     if not app_id or not app_key:
-        raise RuntimeError(
+        raise MissingSettingError(
             "Missing ADZUNA_APP_ID or ADZUNA_APP_KEY in .env "
             "(Adzuna needs both from developer.adzuna.com)"
         )
@@ -45,7 +44,7 @@ def fetch_adzuna_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
     fetched_at = utc_now_iso()
 
     while len(rows) < max_jobs:
-        response = requests.get(
+        reply = get_json(
             ADZUNA_SEARCH_URL.format(page=page),
             params={
                 "app_id": app_id,
@@ -54,22 +53,18 @@ def fetch_adzuna_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
                 "what": role,
                 "content-type": "application/json",
             },
-            timeout=60,
+            timeout=SEARCH_TIMEOUT_SECONDS,
         )
-        response.raise_for_status()
-        results = response.json().get("results") or []
+        results = reply.get("results") or []
         if not results:
             break
 
         for job in results:
             company = (job.get("company") or {}).get("display_name") or ""
             location = (job.get("location") or {}).get("display_name") or ""
-            # Prefer longest available text field from the payload
-            desc_candidates = [
-                job.get("description") or "",
-                job.get("snippet") or "",
-            ]
-            desc = max((_clean_adzuna_description(c) for c in desc_candidates), key=len)
+            # Both fields are snippets: keep whichever is longer.
+            candidates = [job.get("description") or "", job.get("snippet") or ""]
+            description = max((_clean_adzuna_description(c) for c in candidates), key=len)
             rows.append(
                 {
                     "source": "adzuna",
@@ -81,7 +76,7 @@ def fetch_adzuna_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
                     "location": location,
                     "salary_min": job.get("salary_min"),
                     "salary_max": job.get("salary_max"),
-                    "description": desc,
+                    "description": description,
                     "url": job.get("redirect_url") or "",
                     "fetched_at": fetched_at,
                     "description_full": False,
@@ -96,12 +91,11 @@ def fetch_adzuna_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
 
 
 def enrich_adzuna_descriptions(jobs: pd.DataFrame) -> pd.DataFrame:
-    """
-    Best-effort Adzuna enrichment.
+    """Clean every Adzuna description as thoroughly as we can.
 
-    Public Adzuna API has no job-details endpoint and their HTML pages block bots
-    (403/429). We still normalise/unescape every description thoroughly so the
-    LLM and skill extractor get the cleanest text available from search.
+    Adzuna has no job-details endpoint and its web pages block bots, so the
+    search snippet is all there is. Cleaning it gives the skill counter and
+    the AI the best text available from it.
     """
     if jobs.empty or "source" not in jobs.columns:
         return jobs
@@ -114,10 +108,7 @@ def enrich_adzuna_descriptions(jobs: pd.DataFrame) -> pd.DataFrame:
     df.loc[mask, "description"] = df.loc[mask, "description"].map(
         lambda x: _clean_adzuna_description(str(x or ""))
     )
-    print(
-        f"Adzuna JD note: {int(mask.sum())} jobs cleaned; "
-        "API returns truncated snippets only (no public full-JD endpoint)."
-    )
+    logger.info("Adzuna: %d descriptions cleaned (snippets only, no full text)", int(mask.sum()))
     return df
 
 

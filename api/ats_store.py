@@ -1,4 +1,4 @@
-"""SQLite cache of employer → ATS board mappings (data/ats_map.db)."""
+"""SQLite cache of which employers have a public careers board, and where (data/ats_map.db)."""
 
 from __future__ import annotations
 
@@ -6,6 +6,8 @@ import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+
+from .db import connect
 
 ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = ROOT / "data" / "ats_map.db"
@@ -29,8 +31,7 @@ CREATE INDEX IF NOT EXISTS idx_status ON ats_map(status);
 
 
 def init_db(db_path: Path = DB_PATH) -> None:
-    db_path.parent.mkdir(parents=True, exist_ok=True)
-    with sqlite3.connect(db_path) as conn:
+    with connect(db_path) as conn:
         conn.executescript(SCHEMA)
 
 
@@ -39,9 +40,8 @@ def _now() -> str:
 
 
 def get(company_key: str, db_path: Path = DB_PATH) -> dict | None:
-    """Return cached mapping or None if never probed."""
-    with sqlite3.connect(db_path) as conn:
-        conn.row_factory = sqlite3.Row
+    """The cached mapping, or None if the employer was never probed."""
+    with connect(db_path, row_factory=sqlite3.Row) as conn:
         row = conn.execute(
             "SELECT * FROM ats_map WHERE company_key = ?", (company_key,)
         ).fetchone()
@@ -49,12 +49,11 @@ def get(company_key: str, db_path: Path = DB_PATH) -> dict | None:
 
 
 def get_many(company_keys: list[str], db_path: Path = DB_PATH) -> dict[str, dict]:
-    """Batch lookup. Returns {company_key: row} for keys that exist."""
+    """{company_key: row} for every key that has a row."""
     if not company_keys:
         return {}
     placeholders = ",".join("?" * len(company_keys))
-    with sqlite3.connect(db_path) as conn:
-        conn.row_factory = sqlite3.Row
+    with connect(db_path, row_factory=sqlite3.Row) as conn:
         rows = conn.execute(
             f"SELECT * FROM ats_map WHERE company_key IN ({placeholders})",
             company_keys,
@@ -72,7 +71,7 @@ def upsert_hit(
     db_path: Path = DB_PATH,
 ) -> None:
     now = _now()
-    with sqlite3.connect(db_path) as conn:
+    with connect(db_path) as conn:
         conn.execute(
             """
             INSERT INTO ats_map (
@@ -106,9 +105,9 @@ def upsert_hit(
 
 
 def upsert_miss(company_key: str, db_path: Path = DB_PATH) -> None:
-    """No ATS found. Cache the miss so we never probe again."""
+    """No board was found. Remember that so the employer is not probed again."""
     now = _now()
-    with sqlite3.connect(db_path) as conn:
+    with connect(db_path) as conn:
         conn.execute(
             """
             INSERT INTO ats_map (company_key, status, first_seen, last_checked)
@@ -121,8 +120,8 @@ def upsert_miss(company_key: str, db_path: Path = DB_PATH) -> None:
 
 
 def mark_stale(company_key: str, db_path: Path = DB_PATH) -> None:
-    """Board used to work, now 404s. Falls back to fuzzy matching."""
-    with sqlite3.connect(db_path) as conn:
+    """The board used to work and now 404s. The employer falls back to name matching."""
+    with connect(db_path) as conn:
         conn.execute(
             "UPDATE ats_map SET status='stale', last_checked=? WHERE company_key=?",
             (_now(), company_key),
@@ -132,7 +131,7 @@ def mark_stale(company_key: str, db_path: Path = DB_PATH) -> None:
 def load_seed(
     seed_path: Path | str = SEED_PATH, db_path: Path = DB_PATH
 ) -> int:
-    """Import the manual seed file. Idempotent — does not overwrite learned rows."""
+    """Import the manual seed file. Rows already learned are left alone, so it is safe to repeat."""
     p = Path(seed_path)
     if not p.exists():
         return 0
@@ -155,7 +154,7 @@ def load_seed(
 
 
 def stats(db_path: Path = DB_PATH) -> dict[str, int]:
-    with sqlite3.connect(db_path) as conn:
+    with connect(db_path) as conn:
         rows = conn.execute(
             "SELECT status, COUNT(*) FROM ats_map GROUP BY status"
         ).fetchall()

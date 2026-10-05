@@ -3,17 +3,18 @@
 from __future__ import annotations
 
 import re
-import sys
 from collections import Counter
+from collections.abc import Sequence
+from functools import lru_cache
 from pathlib import Path
+from typing import NamedTuple
 
 import pandas as pd
 from rapidfuzz import fuzz, process
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
+from name_verify import verify_identity
 
-from name_verify import verify_identity  # noqa: E402
+ROOT = Path(__file__).resolve().parent.parent
 
 DEFAULT_SUMMARY = ROOT / "data" / "processed" / "sponsor_company_summary.parquet"
 DEFAULT_THRESHOLD = 80
@@ -184,7 +185,7 @@ def _match_candidates(
 
 
 def _pick_best(
-    candidates: list[tuple[str, float, bool]],
+    candidates: Sequence[tuple[str, float, bool]],
     company_raw: str,
     key_to_display: dict[str, str],
     job_location: str | None = None,
@@ -255,9 +256,14 @@ def _classify_match(
     return False, True, "possible"
 
 
+@lru_cache(maxsize=2)
 def load_sponsor_keys(
     summary_path: Path = DEFAULT_SUMMARY,
 ) -> tuple[pd.DataFrame, list[str], dict[str, str]]:
+    """The register summary, its company keys and a readable name for each.
+
+    Loaded once per file. The result is shared, so treat it as read-only.
+    """
     summary = pd.read_parquet(summary_path)
     keys = (
         summary["company_key"]
@@ -277,6 +283,72 @@ def load_sponsor_keys(
     else:
         key_to_display = {k: k for k in keys}
     return summary, keys, key_to_display
+
+
+class _SponsorIndex(NamedTuple):
+    summary_by_key: pd.DataFrame
+    keys: list[str]
+    key_to_display: dict[str, str]
+    token_freq: Counter[str]
+    town_by_key: dict[str, str]
+    # Companies on the latest register. The others were on an older snapshot only.
+    active_keys: frozenset[str]
+
+
+@lru_cache(maxsize=2)
+def _sponsor_index(summary_path: Path) -> _SponsorIndex:
+    """Everything matching needs from the register, built once per file."""
+    summary, keys, key_to_display = load_sponsor_keys(summary_path)
+    summary_by_key = summary.drop_duplicates("company_key").set_index("company_key")
+    town_by_key: dict[str, str] = (
+        summary_by_key["town"].astype(str).to_dict() if "town" in summary_by_key.columns else {}
+    )
+    if "still_active" in summary_by_key.columns:
+        active_keys = frozenset(summary_by_key.index[summary_by_key["still_active"].fillna(False).astype(bool)])
+    else:
+        active_keys = frozenset(summary_by_key.index)
+    return _SponsorIndex(
+        summary_by_key, keys, key_to_display, _build_token_freq(keys), town_by_key, active_keys
+    )
+
+
+def on_latest_register(key: str, summary_path: Path = DEFAULT_SUMMARY) -> bool:
+    """Whether a company is on the latest register, so it can sponsor a visa today.
+
+    The summary keeps every company seen in any snapshot since 2023. A company
+    missing from the latest one may have lost or given up its licence.
+    """
+    return key in _sponsor_index(summary_path).active_keys
+
+
+def last_seen_on_register(key: str, summary_path: Path = DEFAULT_SUMMARY) -> pd.Timestamp | None:
+    summary_by_key = _sponsor_index(summary_path).summary_by_key
+    if key not in summary_by_key.index or "last_seen" not in summary_by_key.columns:
+        return None
+    return pd.Timestamp(summary_by_key.at[key, "last_seen"])
+
+
+@lru_cache(maxsize=2)
+def latest_register_date(summary_path: Path = DEFAULT_SUMMARY) -> pd.Timestamp | None:
+    """The date of the newest register snapshot the summary was built from."""
+    summary_by_key = _sponsor_index(summary_path).summary_by_key
+    if "last_seen" not in summary_by_key.columns or summary_by_key.empty:
+        return None
+    return pd.Timestamp(summary_by_key["last_seen"].max())
+
+
+@lru_cache(maxsize=4096)
+def _register_candidates(summary_path: Path, key: str, threshold: int) -> tuple[tuple[str, float, bool], ...]:
+    """The register names close to one employer key.
+
+    Scanning all 133,979 register names is the slow part of a search, and the
+    answer depends only on the key, so it is worked out once per key. Many ads
+    in one search share an employer, and popular employers come up again in
+    later searches. Everything that depends on the ad itself (its location and
+    the exact employer name) is still checked for every ad in `_pick_best`.
+    """
+    index = _sponsor_index(summary_path)
+    return tuple(_match_candidates(key, index.keys, index.token_freq, threshold))
 
 
 def match_jobs_to_sponsors(
@@ -310,12 +382,8 @@ def match_jobs_to_sponsors(
                 out[col] = pd.Series(dtype="object")
         return out
 
-    summary, keys, key_to_display = load_sponsor_keys(summary_path)
-    summary_by_key = summary.drop_duplicates("company_key").set_index("company_key")
-    token_freq = _build_token_freq(keys)
-    town_by_key: dict[str, str] = (
-        summary_by_key["town"].astype(str).to_dict() if "town" in summary_by_key.columns else {}
-    )
+    index = _sponsor_index(summary_path)
+    summary_by_key, key_to_display, town_by_key = index.summary_by_key, index.key_to_display, index.town_by_key
 
     scores: list[float | None] = []
     matched_keys: list[str | None] = []
@@ -343,7 +411,11 @@ def match_jobs_to_sponsors(
             if raw_conf is not None and not (isinstance(raw_conf, float) and pd.isna(raw_conf)):
                 prior = str(raw_conf)
 
-        if prior == "verified":
+        # A job from an employer's own careers board proves who the employer is,
+        # but only the register says whether it may sponsor. So "verified" needs
+        # the employer to be on the latest register. Any other careers-board job
+        # goes through the same name match as an ad from a job board.
+        if prior == "verified" and key in index.active_keys:
             scores.append(None)
             matched_keys.append(key)
             is_sponsor.append(True)
@@ -360,7 +432,7 @@ def match_jobs_to_sponsors(
             confidences.append(None)
             continue
 
-        candidates = _match_candidates(resolved_key, keys, token_freq, threshold)
+        candidates = _register_candidates(summary_path, resolved_key, threshold)
         mk, sc, verify_verdict = _pick_best(
             candidates, resolved_raw, key_to_display, job_location, town_by_key
         )
@@ -368,7 +440,9 @@ def match_jobs_to_sponsors(
         scores.append(sc)
         matched_keys.append(mk)
 
-        if mk is None:
+        # No match, or the match is only on an older snapshot of the register:
+        # a company that left it cannot sponsor a new visa, so no sponsor claim.
+        if mk is None or mk not in index.active_keys:
             is_sponsor.append(False)
             is_possible.append(False)
             confidences.append(None)

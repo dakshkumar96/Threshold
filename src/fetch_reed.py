@@ -2,31 +2,32 @@
 
 from __future__ import annotations
 
-import os
+import logging
 import sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 
 import pandas as pd
-import requests
 
-ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "src"))
-
+import settings
 from clean_names import clean_company_name
-from job_schema import load_env, utc_now_iso
+from http_errors import get_json
+from job_schema import utc_now_iso
+from settings import MissingSettingError
+
+logger = logging.getLogger(__name__)
 
 REED_SEARCH_URL = "https://www.reed.co.uk/api/1.0/search"
 REED_JOB_URL = "https://www.reed.co.uk/api/1.0/jobs/{job_id}"
 PAGE_SIZE = 100
+SEARCH_TIMEOUT_SECONDS = 60
+JOB_TIMEOUT_SECONDS = 45
 
 
 def fetch_reed_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
     """Search Reed for `role` and return a normalised jobs dataframe."""
-    load_env()
-    api_key = os.getenv("REED_API_KEY", "").strip()
+    api_key = settings.reed_api_key()
     if not api_key:
-        raise RuntimeError("Missing REED_API_KEY in .env")
+        raise MissingSettingError("Missing REED_API_KEY in .env")
 
     rows: list[dict] = []
     skip = 0
@@ -34,18 +35,13 @@ def fetch_reed_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
 
     while len(rows) < max_jobs:
         take = min(PAGE_SIZE, max_jobs - len(rows))
-        response = requests.get(
+        reply = get_json(
             REED_SEARCH_URL,
-            params={
-                "keywords": role,
-                "resultsToTake": take,
-                "resultsToSkip": skip,
-            },
+            params={"keywords": role, "resultsToTake": take, "resultsToSkip": skip},
             auth=(api_key, ""),
-            timeout=60,
+            timeout=SEARCH_TIMEOUT_SECONDS,
         )
-        response.raise_for_status()
-        results = response.json().get("results") or []
+        results = reply.get("results") or []
         if not results:
             break
 
@@ -77,16 +73,16 @@ def fetch_reed_jobs(role: str, max_jobs: int = 250) -> pd.DataFrame:
 
 
 def _fetch_one_full_description(api_key: str, job_id: str) -> tuple[str, str]:
-    """Return (job_id, full_description_or_empty)."""
+    """(job_id, full description), or an empty description if it could not be fetched."""
     try:
-        r = requests.get(
+        reply = get_json(
             REED_JOB_URL.format(job_id=job_id),
             auth=(api_key, ""),
-            timeout=45,
+            timeout=JOB_TIMEOUT_SECONDS,
         )
-        r.raise_for_status()
-        return job_id, (r.json().get("jobDescription") or "").strip()
-    except Exception:
+        return job_id, (reply.get("jobDescription") or "").strip()
+    except Exception as exc:  # best effort: the short snippet from the search is kept
+        logger.warning("Reed job %s: full description not fetched (%s)", job_id, exc)
         return job_id, ""
 
 
@@ -95,15 +91,14 @@ def enrich_reed_full_descriptions(
     max_workers: int = 8,
     max_enrich: int | None = None,
 ) -> pd.DataFrame:
-    """
-    Replace truncated Reed search snippets with full JDs from /jobs/{id}.
-    Adzuna / other sources are left unchanged (no public details endpoint).
+    """Replace Reed's truncated search snippets with full descriptions.
+
+    Other sources are left alone (Adzuna has no public details endpoint).
     """
     if jobs.empty or "source" not in jobs.columns:
         return jobs
 
-    load_env()
-    api_key = os.getenv("REED_API_KEY", "").strip()
+    api_key = settings.reed_api_key()
     if not api_key:
         return jobs
 
@@ -124,23 +119,19 @@ def enrich_reed_full_descriptions(
 
     updates: dict[str, str] = {}
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        futs = [
-            pool.submit(_fetch_one_full_description, api_key, jid) for jid in ids
-        ]
-        for fut in as_completed(futs):
-            jid, full = fut.result()
+        futures = [pool.submit(_fetch_one_full_description, api_key, jid) for jid in ids]
+        for future in as_completed(futures):
+            job_id, full = future.result()
             if full:
-                updates[jid] = full
+                updates[job_id] = full
 
     for idx in df.index[reed_mask]:
-        jid = str(df.at[idx, "source_job_id"])
-        if jid in updates:
-            df.at[idx, "description"] = updates[jid]
+        job_id = str(df.at[idx, "source_job_id"])
+        if job_id in updates:
+            df.at[idx, "description"] = updates[job_id]
             df.at[idx, "description_full"] = True
 
-    print(
-        f"Reed full JD enrichment: {len(updates)}/{len(ids)} jobs upgraded"
-    )
+    logger.info("Reed full description fetch: %d of %d jobs upgraded", len(updates), len(ids))
     return df
 
 

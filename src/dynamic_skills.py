@@ -173,48 +173,6 @@ SKILL_IMPLIES: dict[str, tuple[str, ...]] = {
     "DAX": ("Power BI",),
 }
 
-STOP = {
-    "experience",
-    "experience.",
-    "skills",
-    "skill",
-    "ability",
-    "knowledge",
-    "working",
-    "work",
-    "using",
-    "including",
-    "strong",
-    "good",
-    "team",
-    "role",
-    "job",
-    "company",
-    "please",
-    "required",
-    "essential",
-    "desirable",
-    "years",
-    "year",
-    "within",
-    "across",
-    "based",
-    "will",
-    "must",
-    "have",
-    "with",
-    "from",
-    "that",
-    "this",
-    "your",
-    "our",
-    "the",
-    "and",
-    "for",
-    "are",
-    "you",
-}
-
 
 def _clean_text(text: str) -> str:
     text = re.sub(r"<[^>]+>", " ", text or "")
@@ -222,7 +180,7 @@ def _clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
-def _essential_flag(text: str, skill: str) -> str:
+def essential_flag(text: str, skill: str) -> str:
     """Return essential / desirable / unclear from nearby wording."""
     low = text.lower()
     key = skill.lower()
@@ -260,7 +218,7 @@ def cv_skill_set(cv_text: str) -> set[str]:
     return out
 
 
-def _job_description_text(row) -> str:
+def job_description_text(row) -> str:
     """Prefer Reed full-text JDs; fall back to whatever description we have."""
     title = row.get("title") or ""
     desc = row.get("description") or ""
@@ -299,11 +257,11 @@ def skill_frequencies(
     counter: Counter[str] = Counter()
     essential_hits: Counter[str] = Counter()
     for _, row in df.iterrows():
-        text = _job_description_text(row)
+        text = job_description_text(row)
         skills = extract_skills_from_text(text)
         for s in skills:
             counter[s] += 1
-            if _essential_flag(text, s) == "essential":
+            if essential_flag(text, s) == "essential":
                 essential_hits[s] += 1
 
     rows = []
@@ -318,6 +276,13 @@ def skill_frequencies(
             }
         )
     return pd.DataFrame(rows)
+
+
+def gap_suggestion(top_gap: dict) -> str:
+    """The one-line "learn this first" advice for the highest-priority gap."""
+    advice = f"Learn {top_gap['skill']} first — ~{top_gap.get('frequency_pct')}% of ads"
+    weeks = top_gap.get("ease_weeks")
+    return advice + (f", ~{weeks} weeks." if weeks is not None else ".")
 
 
 def match_cv_to_skills(cv_text: str, frequencies: pd.DataFrame) -> dict:
@@ -373,13 +338,7 @@ def match_cv_to_skills(cv_text: str, frequencies: pd.DataFrame) -> dict:
             )
 
     gaps = sorted(gaps, key=lambda g: g["priority_score"], reverse=True)
-    suggestion = None
-    if gaps:
-        top = gaps[0]
-        suggestion = (
-            f"Learn {top['skill']} first — ~{top['frequency_pct']}% of ads, "
-            f"~{top['ease_weeks']} weeks."
-        )
+    suggestion = gap_suggestion(gaps[0]) if gaps else None
     score = (100 * weighted_hit / weighted_total) if weighted_total else 0.0
     return {
         "score": round(score, 1),

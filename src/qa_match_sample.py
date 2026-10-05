@@ -23,7 +23,6 @@ def label_match(company_raw: str, company_key: str, matched_key: str, score: flo
     Y = same employer (allow legal suffix / minor wording noise)
     N = different firm, recruiter mismatch, or weak token collision
     """
-    raw = norm(company_raw)
     key = norm(company_key)
     matched = norm(matched_key)
 

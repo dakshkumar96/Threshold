@@ -21,7 +21,6 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import os
 import re
 import sys
 import time
@@ -32,8 +31,8 @@ import requests
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+import settings  # noqa: E402
 from dynamic_skills import SKILL_ALIASES  # noqa: E402
-from job_schema import load_env  # noqa: E402
 
 OUT_PATH = ROOT / "data" / "processed" / "skill_alias_candidates.csv"
 
@@ -101,13 +100,11 @@ def main() -> int:
     parser.add_argument("--delay", type=float, default=1.0, help="seconds between batches")
     args = parser.parse_args()
 
-    load_env()
-    api_key = os.getenv("LLM_API_KEY", "").strip()
-    if not api_key:
+    config = settings.llm_config()
+    if not config.api_key:
         print("FAIL: LLM_API_KEY not set — see README for setup.")
         return 1
-    base = os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1").rstrip("/")
-    model = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
+    api_key, base, model = config.api_key, config.base_url, config.model
 
     canonical = _canonical_skills()
     existing = _existing_aliases_by_canonical()

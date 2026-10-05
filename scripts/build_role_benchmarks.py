@@ -102,7 +102,11 @@ def build_benchmark(role: str, dry_run: bool = False) -> dict:
         print(f"  [dry-run] loading cached parquet for {role!r}")
         matched = pd.read_parquet(matched_path)
     else:
-        from run_jobs_pipeline import fetch_all_jobs, _filter_uk_df, _secondary_title_dedupe  # type: ignore[attr-defined]
+        from run_jobs_pipeline import (  # type: ignore[attr-defined]
+            _filter_uk_df,
+            _secondary_title_dedupe,
+            fetch_all_jobs,
+        )
         print(f"  fetching live jobs for {role!r}…")
         jobs = fetch_all_jobs(role, max_per_source=MAX_PER_SOURCE)
         if jobs.empty:
@@ -142,7 +146,8 @@ def build_benchmark(role: str, dry_run: bool = False) -> dict:
 
     band_dist: dict[str, int] = {}
     if "still_active" in matched.columns:
-        from api.main import ESTABLISHED_DAYS, MODERATE_DAYS  # type: ignore[import-untyped]
+        from api.sponsors import ESTABLISHED_DAYS, MODERATE_DAYS
+
         for _, row in matched.iterrows():
             fs = row.get("first_seen")
             ls = row.get("last_seen")
@@ -150,7 +155,7 @@ def build_benchmark(role: str, dry_run: bool = False) -> dict:
                 continue
             try:
                 days = (pd.Timestamp(ls) - pd.Timestamp(fs)).days
-            except Exception:
+            except (ValueError, TypeError):
                 continue
             if days >= ESTABLISHED_DAYS:
                 band_dist["Established"] = band_dist.get("Established", 0) + 1
