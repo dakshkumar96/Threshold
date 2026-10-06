@@ -38,7 +38,7 @@ import {
   type PutForwardResult,
   type ScoreLine,
 } from "@/lib/cv-report-utils";
-import { estimatedMatchLift, weeksEstimate } from "@/lib/results-utils";
+import { estimatedMatchLift, hasEnoughSkills, weeksEstimate } from "@/lib/results-utils";
 import ScoreRing from "./ScoreRing";
 
 const TICK = "#6B7280";
@@ -59,7 +59,7 @@ function PutForwardBadge({ result }: { result: PutForwardResult }) {
   return (
     <div className="cv-put-forward" data-decision={result.decision}>
       <span className="cv-put-forward__pill">
-        <span className="cv-put-forward__label">Put forward</span>
+        <span className="cv-put-forward__label">Ready to send to a recruiter</span>
         <strong className="cv-put-forward__value">{result.label}</strong>
       </span>
       {result.reason ? (
@@ -112,7 +112,8 @@ export default function CvFullReview({
   const cvWasCut = cvTotal > 0 && cvReviewed > 0 && cvReviewed < cvTotal;
   const liftTo = estimatedMatchLift(data);
   const from = score != null ? Math.round(score) : null;
-  const weeks = weeksEstimate(data);
+  const enoughSkills = hasEnoughSkills(data);
+  const weeks = enoughSkills ? weeksEstimate(data) : 0;
   const totalWeeks = plan.length ? plan[plan.length - 1].end : 0;
   const putForward = useMemo(() => {
     const fromJson = putForwardFromSummary(fb?.would_put_forward);
@@ -136,10 +137,10 @@ export default function CvFullReview({
   }));
 
   const scoreBreakdown = [
-    { label: "Matched", value: data.matched_count ?? 0, color: "#10b981" },
+    { label: "Matched", value: enoughSkills ? (data.matched_count ?? 0) : 0, color: "#10b981" },
     {
       label: "Gaps",
-      value: (data.gaps?.length ?? data.skills_to_learn?.length) || 0,
+      value: enoughSkills ? (data.gaps?.length ?? data.skills_to_learn?.length) || 0 : 0,
       color: "#F59E0B",
     },
     {
@@ -284,9 +285,9 @@ export default function CvFullReview({
 
         {cvWasCut ? (
           <p className="cv-full__cut-note" role="note">
-            Your CV is long, so the written review below is based on its first{" "}
+            Your CV is long, so the review and its score are based on the first{" "}
             {cvReviewed.toLocaleString("en-GB")} of {cvTotal.toLocaleString("en-GB")} characters.
-            Your match score and skill checks used the whole CV.
+            Your keyword skill match used the whole CV.
           </p>
         ) : null}
 

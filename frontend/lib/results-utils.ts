@@ -123,8 +123,15 @@ export function weeksEstimate(data: AnalyzeResponse): number | null {
   return Math.max(weeks, 2);
 }
 
+/** Fewer skills than this make the skill counts and the plan estimate too thin to show. */
+export const MIN_SKILLS_FOR_PLAN = 5;
+
+export function hasEnoughSkills(data: AnalyzeResponse): boolean {
+  return (data.top_n ?? 0) >= MIN_SKILLS_FOR_PLAN;
+}
+
 export function estimatedMatchLift(data: AnalyzeResponse): number | null {
-  if (data.score == null) return null;
+  if (data.score == null || !hasEnoughSkills(data)) return null;
   const gapShares = (data.gaps || []).slice(0, 6).reduce((a, g) => a + (g.frequency_pct || 0), 0);
   // Rough: recover a fraction of missing frequency weight
   const lift = Math.min(25, gapShares * 0.35);

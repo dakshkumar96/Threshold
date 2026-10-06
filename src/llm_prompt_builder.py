@@ -353,10 +353,10 @@ def build_system_prompt(
 
 
 # How much of the CV the model reads. The free AI tier caps a whole request
-# (prompt plus reply), and the fixed instructions take about 12,300 of the
-# 16,000 characters there is room for, so a longer CV is cut. The keyword match
-# and the evidence checks still use the whole CV.
-CV_PROMPT_CHARS = 3500
+# (prompt plus reply), and the fixed instructions take about 12,300 characters
+# of the room there is, so a longer CV is cut. The keyword match and the
+# evidence checks still use the whole CV.
+CV_PROMPT_CHARS = 4500
 
 
 def clip_cv(cv_text: str, limit: int = CV_PROMPT_CHARS) -> str:

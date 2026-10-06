@@ -51,11 +51,11 @@ logger = logging.getLogger(__name__)
 
 LABEL = "structured recruiter feedback — subjective narrative, not a hiring prediction"
 
-# The free tier counts the prompt and the reply together. A prompt of 16000
-# characters is about 4000 tokens, which leaves room for a 3800 token reply
+# The free tier counts the prompt and the reply together. A prompt of 17000
+# characters is about 4250 tokens, which leaves room for a 3800 token reply
 # under the limit. A shorter reply cut the last sections off mid-sentence.
 MAX_COMPLETION_TOKENS = 3800
-PROMPT_CHAR_SOFT_LIMIT = 16000
+PROMPT_CHAR_SOFT_LIMIT = 17000
 
 # (characters, ads) of job-ad excerpts to try, biggest first. The excerpts are
 # only colour, since the skill counts already cover every ad, so they shrink
