@@ -391,6 +391,24 @@ def _score_fields(scored: dict[str, Any] | None, top_companies: list[dict]) -> d
     }
 
 
+def _use_review_score(result: dict[str, Any], feedback: dict[str, Any] | None) -> None:
+    """Make the AI review's score the main score when there is one.
+
+    The keyword match only counts skills found in the ads, so a role with few
+    known skills can reach 100% while the review says the CV is a poor fit.
+    The review reads the whole CV against the ads, so its score leads and the
+    keyword match stays available as `keyword_score`.
+    """
+    ai_score = (feedback or {}).get("score_out_of_100")
+    if isinstance(ai_score, bool) or not isinstance(ai_score, (int, float)):
+        return
+    score = float(min(100, max(0, ai_score)))
+    result["keyword_score"] = result.get("keyword_score")
+    result["score"] = score
+    result["readiness_pct"] = score
+    result["score_label"] = "CV review score, from your CV and the job ads"
+
+
 def run_analysis(
     *,
     role: str,
@@ -487,5 +505,6 @@ def run_analysis(
         "chart": {"top_companies": opportunities.top_companies},
     }
     result.update(_score_fields(review.scored, opportunities.top_companies))
+    _use_review_score(result, feedback)
     logger.info("Search finished: %s, ads=%d, cv=%s", timer.summary(), n, "yes" if has_cv else "no")
     return result

@@ -248,11 +248,11 @@ def _reconcile_summary(
     a prompt instruction.
     """
     llm_score = summary.get("score_out_of_100")
-    candidate_scores = [s for s in (llm_score, deterministic_score) if isinstance(s, (int, float))]
-    # The page shows the keyword-match score when there is one and the model's
-    # own score otherwise (`data.score ?? fb.score_out_of_100` in
-    # CvFullReview.tsx). The "Yes" check has to use whichever the reader sees.
-    # Otherwise the two numbers on screen can still contradict each other.
+    # The page shows the model's own score when it gave one (see
+    # `_use_review_score` in api/analysis.py) and the keyword match otherwise.
+    # The "Yes" check uses whichever the reader sees, so the two never contradict.
+    shown = llm_score if isinstance(llm_score, (int, float)) else deterministic_score
+    candidate_scores = [shown] if isinstance(shown, (int, float)) else []
     if candidate_scores and min(candidate_scores) < _PUT_FORWARD_SCORE_FLOOR:
         if str(summary.get("would_put_forward", "")).strip().lower() == "yes":
             summary["would_put_forward"] = "No"

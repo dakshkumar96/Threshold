@@ -614,7 +614,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate and junior ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 22,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 41.7,
+   "readiness_pct": 48.0,
    "requirement_frequencies": [
     {
      "count": 18,
@@ -792,8 +792,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 41.7,
-   "score_label": "match score against current market requirements",
+   "score": 48.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -3395,7 +3395,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate and junior ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 22,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 41.7,
+   "readiness_pct": 48.0,
    "requirement_frequencies": [
     {
      "count": 18,
@@ -3573,8 +3573,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 41.7,
-   "score_label": "match score against current market requirements",
+   "score": 48.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -6237,7 +6237,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate, junior and mid ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 22,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 66.7,
+   "readiness_pct": 76.0,
    "requirement_frequencies": [
     {
      "count": 17,
@@ -6415,8 +6415,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 66.7,
-   "score_label": "match score against current market requirements",
+   "score": 76.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -9054,7 +9054,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows junior, mid and senior ads and ads with no stated level. 5 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 21,
    "opportunities_hidden_by_level": 5,
-   "readiness_pct": 38.7,
+   "readiness_pct": 76.0,
    "requirement_frequencies": [
     {
      "count": 16,
@@ -9232,8 +9232,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 38.7,
-   "score_label": "match score against current market requirements",
+   "score": 76.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -11626,7 +11626,7 @@
     ],
     "truncated": false,
     "where_you_are": "You show real Python work, the gap is Java.",
-    "would_put_forward": "No"
+    "would_put_forward": "Yes"
    },
    "cv_text_chars": 337,
    "experience_filter_applied": true,
@@ -11843,7 +11843,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows mid, senior and lead ads and ads with no stated level. 6 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 20,
    "opportunities_hidden_by_level": 6,
-   "readiness_pct": 29.1,
+   "readiness_pct": 88.0,
    "requirement_frequencies": [
     {
      "count": 17,
@@ -12021,8 +12021,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 29.1,
-   "score_label": "match score against current market requirements",
+   "score": 88.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -14644,7 +14644,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate, junior and mid ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 22,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 66.7,
+   "readiness_pct": 76.0,
    "requirement_frequencies": [
     {
      "count": 17,
@@ -14822,8 +14822,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 66.7,
-   "score_label": "match score against current market requirements",
+   "score": 76.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -17473,7 +17473,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate, junior and mid ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 20,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 65.5,
+   "readiness_pct": 76.0,
    "requirement_frequencies": [
     {
      "count": 15,
@@ -17651,8 +17651,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 65.5,
-   "score_label": "match score against current market requirements",
+   "score": 76.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 33400.0,
    "skills_to_learn": [
     {
@@ -20195,7 +20195,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate, junior and mid ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 22,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 66.7,
+   "readiness_pct": 76.0,
    "requirement_frequencies": [
     {
      "count": 17,
@@ -20373,8 +20373,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 66.7,
-   "score_label": "match score against current market requirements",
+   "score": 76.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -31290,7 +31290,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate, junior and mid ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 22,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 54.8,
+   "readiness_pct": 61.0,
    "requirement_frequencies": [
     {
      "count": 17,
@@ -31468,8 +31468,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 54.8,
-   "score_label": "match score against current market requirements",
+   "score": 61.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -34075,7 +34075,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows mid, senior and lead ads and ads with no stated level. 6 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 20,
    "opportunities_hidden_by_level": 6,
-   "readiness_pct": 29.1,
+   "readiness_pct": 30.0,
    "requirement_frequencies": [
     {
      "count": 17,
@@ -34253,8 +34253,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 29.1,
-   "score_label": "match score against current market requirements",
+   "score": 30.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
@@ -45156,7 +45156,7 @@
    "opportunities_experience_filter_note": "Sponsor list shows graduate, junior and mid ads and ads with no stated level. 4 ads outside that range are hidden.",
    "opportunities_experience_jobs_count": 22,
    "opportunities_hidden_by_level": 4,
-   "readiness_pct": 66.7,
+   "readiness_pct": 76.0,
    "requirement_frequencies": [
     {
      "count": 17,
@@ -45334,8 +45334,8 @@
     }
    ],
    "role": "Software Engineer",
-   "score": 66.7,
-   "score_label": "match score against current market requirements",
+   "score": 76.0,
+   "score_label": "CV review score, from your CV and the job ads",
    "skilled_worker_salary_threshold": 41700.0,
    "skills_to_learn": [
     {
