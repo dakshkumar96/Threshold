@@ -7,7 +7,6 @@ import {
   House,
   MagnifyingGlass,
   Student,
-  UserCircle,
 } from "@phosphor-icons/react";
 import { UserButton, useAuth } from "@clerk/nextjs";
 import { AnimatePresence, motion } from "framer-motion";
@@ -36,8 +35,7 @@ const LINKS = [
   { href: "/home", label: "Home", Icon: House },
   { href: "/search", label: "Search", Icon: MagnifyingGlass },
   { href: "/insights", label: "Insights", Icon: ChartBar },
-  { href: "/#solutions", label: "Solutions", Icon: Student },
-  { href: "/profile", label: "Profile", Icon: UserCircle },
+  { href: "/solutions", label: "Solutions", Icon: Student },
 ];
 
 function titleFor(pathname: string) {

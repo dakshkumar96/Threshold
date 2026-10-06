@@ -25,7 +25,6 @@ const APP_LINKS = [
   { href: "/search", label: "Search" },
   { href: "/insights", label: "Insights" },
   { href: "/about", label: "About" },
-  { href: "/profile", label: "Profile" },
 ];
 
 const SOLUTION_ITEMS = [
